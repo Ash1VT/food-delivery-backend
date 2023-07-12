@@ -41,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
-    """Model, which contains common user data"""
+    """Model, which contains common user personal data"""
 
     user = models.OneToOneField(
         User,
@@ -53,6 +53,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=254)
     age = models.IntegerField()
     phone = modelfields.PhoneNumberField()
+    birth_date = models.DateField()
 
     def __str__(self):
         return str(self.user)
