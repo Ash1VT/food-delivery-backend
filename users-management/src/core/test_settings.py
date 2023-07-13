@@ -88,13 +88,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': env('PG_HOST'),
-        'PORT': env('PG_PORT'),
-        'NAME': env('PG_DATABASE'),
-        'USER': env('PG_USER'),
-        'PASSWORD': env('PG_PASSWORD'),
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3'
     }
 }
 
