@@ -56,5 +56,4 @@ class UserProfile(models.Model):
     birth_date = models.DateField()
 
     def __str__(self):
-        return str(self.user)
-
+        return self.user.email
