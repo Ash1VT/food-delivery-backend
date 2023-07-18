@@ -47,6 +47,7 @@ class UserProfile(models.Model):
         User,
         on_delete=models.PROTECT,
         primary_key=True,
+        related_name='user_profile'
     )
 
     first_name = models.CharField(max_length=254)
