@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/v1/', include(
         [
             path('tokens/', include('tokens.urls')),
+            path('users/', include('users.urls')),
         ]
     ))
 ]

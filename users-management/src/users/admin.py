@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, UserProfile
 
@@ -11,8 +10,6 @@ class UserAdmin(BaseUserAdmin):
             'is_active',
             'is_staff',
             'is_superuser',
-            # 'groups',
-            # 'user_permissions',
         )}),
     )
     add_fieldsets = (
@@ -30,10 +27,6 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ('groups', 'user_permissions',)
-
-
-# class UserProfileAdmin(BaseUserAdmin):
-#     pass
 
 
 admin.site.register(User, UserAdmin)
