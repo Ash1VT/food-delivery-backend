@@ -38,16 +38,16 @@ def refresh_token_cookie_name():
 # Test superuser #
 
 @pytest.fixture
-def superuser(django_user_model, correct_superuser_auth_data):
+def superuser(django_user_model, superuser_valid_auth_data):
     return django_user_model.objects.create_superuser(
-        **correct_superuser_auth_data
+        **superuser_valid_auth_data
     )
 
 
 # Auth data for test superuser #
 
 @pytest.fixture
-def correct_superuser_auth_data() -> dict:
+def superuser_valid_auth_data() -> dict:
     return {
         'email': "n@gmail.com",
         'password': "12345"
@@ -55,7 +55,7 @@ def correct_superuser_auth_data() -> dict:
 
 
 @pytest.fixture
-def incorrect_superuser_auth_data() -> dict:
+def superuser_invalid_auth_data() -> dict:
     return {
         'email': "",
         'password': ""
