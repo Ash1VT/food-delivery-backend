@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from core import settings
-from users.models import User
+from users.models import User, UserRole
 
 
 # Client fixtures #
@@ -40,7 +40,8 @@ def refresh_token_cookie_name():
 @pytest.fixture
 def superuser(django_user_model, superuser_valid_auth_data):
     return django_user_model.objects.create_superuser(
-        **superuser_valid_auth_data
+        **superuser_valid_auth_data,
+        role=UserRole.MODERATOR
     )
 
 

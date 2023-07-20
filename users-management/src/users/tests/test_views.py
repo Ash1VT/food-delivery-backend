@@ -11,8 +11,8 @@ from users.models import User
 @pytest.mark.django_db
 class TestViews:
 
-    def test_register_user_view(self, client: Client, user_register_valid_data: dict):
-        response = client.post(reverse('register_user'),
+    def test_register_customer_view(self, client: Client, user_register_valid_data: dict):
+        response = client.post(reverse('register_customer'),
                                data=json.dumps(user_register_valid_data),
                                content_type="application/json")
         assert response.status_code == 201

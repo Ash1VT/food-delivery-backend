@@ -20,25 +20,38 @@ def user_manager():
 
 
 # User data for registration #
+
+
 @pytest.fixture
-def user_register_valid_data() -> dict:
+def user_data() -> dict:
     return {
         'email': 'n@gmail.com',
-        'password': '12345',
-        'user_profile': {
-            'first_name': 'Test',
-            'last_name': 'Test',
-            'age': '20',
-            'phone': '+375298830141',
-            'birth_date': '2002-02-25'
-        }
+        'password': '12345'
     }
 
 
 @pytest.fixture
-def user_register_invalid_data() -> dict:
+def user_profile_data() -> dict:
     return {
-        'email': 'n@gmail.com',
-        'password': '12345',
+        'first_name': 'Test',
+        'last_name': 'Test',
+        'age': '20',
+        'phone': '+375298830141',
+        'birth_date': '2002-02-25'
+    }
+
+
+@pytest.fixture
+def user_register_valid_data(user_data: dict, user_profile_data: dict) -> dict:
+    return {
+        **user_data,
+        'user_profile': user_profile_data
+    }
+
+
+@pytest.fixture
+def user_register_invalid_data(user_data: dict) -> dict:
+    return {
+        **user_data,
         'user_profile': None
     }

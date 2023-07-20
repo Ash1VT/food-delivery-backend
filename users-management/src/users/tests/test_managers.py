@@ -1,14 +1,14 @@
 import pytest
 from contextlib import nullcontext as does_not_raise
 from users.managers import UserManager
-from users.models import User
+from users.models import User, UserRole
 
 
 @pytest.mark.django_db
 class TestUserManager:
 
     @pytest.mark.parametrize(
-        "email, password, expectation",
+        "email, password,expectation",
         [
             ("n@gmail.com", "12345", does_not_raise()),
             ("", "12345", pytest.raises(ValueError)),
@@ -19,7 +19,8 @@ class TestUserManager:
         with expectation:
             user = user_manager.create_user(
                 email=email,
-                password=password)
+                password=password,
+                role=UserRole.CUSTOMER)
             user_db = User.objects.get(id=user.id)
             assert user == user_db
 
@@ -34,6 +35,7 @@ class TestUserManager:
         with expectation:
             user = user_manager.create_superuser(
                 email=email,
-                password=password)
+                password=password,
+                role=UserRole.MODERATOR)
             user_db = User.objects.get(id=user.id)
             assert user == user_db
