@@ -58,3 +58,25 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class CustomerProfile(models.Model):
+    """Model, which contains customer data"""
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+        primary_key=True,
+        related_name='customer_profile'
+    )
+
+
+class CourierProfile(models.Model):
+    """Model, which contains courier data"""
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+        primary_key=True,
+        related_name='courier_profile'
+    )
