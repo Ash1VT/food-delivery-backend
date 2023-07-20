@@ -1,9 +1,15 @@
 from rest_framework.generics import CreateAPIView
 
-from .serializers import UserSerializer
+from .serializers import CustomerSerializer, CourierSerializer
 
 
-class RegisterUserView(CreateAPIView):
-    """View for registering user's account"""
+class RegisterCustomerView(CreateAPIView):
+    """View for registering customer's account"""
 
-    serializer_class = UserSerializer
+    serializer_class = CustomerSerializer
+
+
+class RegisterCourierView(CreateAPIView):
+    """View for registering courier's account"""
+
+    serializer_class = CourierSerializer
