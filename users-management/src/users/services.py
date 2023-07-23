@@ -1,39 +1,62 @@
 from .models import User, UserRole, UserProfile, CustomerProfile, CourierProfile
 
 
-def __create_user_profile(user: User, user_profile_data: dict) -> UserProfile:
-    return UserProfile.objects.create(user=user, **user_profile_data)
+class UserService:
 
+    @classmethod
+    def _create_user_profile(cls, user: User, user_profile_data: dict) -> UserProfile:
+        return UserProfile.objects.create(user=user, **user_profile_data)
 
-def __create_customer_profile(user: User) -> CustomerProfile:
-    return CustomerProfile.objects.create(user=user)
+    @classmethod
+    def _create_customer_profile(cls, user: User) -> CustomerProfile:
+        return CustomerProfile.objects.create(user=user)
 
+    @classmethod
+    def _create_courier_profile(cls, user: User) -> CourierProfile:
+        return CourierProfile.objects.create(user=user)
 
-def __create_courier_profile(user: User) -> CourierProfile:
-    return CourierProfile.objects.create(user=user)
+    @classmethod
+    def _update_user_profile(cls, user_profile: UserProfile, user_profile_data: dict) -> UserProfile:
+        if user_profile_data:
+            for key, value in user_profile_data.items():
+                setattr(user_profile, key, value)
+            user_profile.save()
+        return user_profile
 
+    @classmethod
+    def update_user(cls, user: User, user_data: dict) -> User:
+        user_profile_data = user_data.pop('user_profile', None)
 
-def create_customer(user_data: dict, user_profile_data: dict) -> User:
-    user = User.objects.create_user(**user_data, role=UserRole.CUSTOMER)
-    __create_user_profile(user=user, user_profile_data=user_profile_data)
-    __create_customer_profile(user=user)
-    return user
+        cls._update_user_profile(user.user_profile, user_profile_data)
 
+        for key, value in user_data.items():
+            setattr(user, key, value)
 
-def create_courier(user_data: dict, user_profile_data: dict):
-    user = User.objects.create_user(**user_data, role=UserRole.COURIER)
-    __create_user_profile(user=user, user_profile_data=user_profile_data)
-    __create_courier_profile(user=user)
-    return user
+        user.save()
+        return user
 
+    @classmethod
+    def create_customer(cls, user_data: dict, user_profile_data: dict) -> User:
+        user = User.objects.create_user(**user_data, role=UserRole.CUSTOMER)
+        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+        cls._create_customer_profile(user=user)
+        return user
 
-def create_restaurant_manager(user_data: dict, user_profile_data: dict):
-    user = User.objects.create_user(**user_data, role=UserRole.RESTAURANT_MANAGER)
-    __create_user_profile(user=user, user_profile_data=user_profile_data)
-    return user
+    @classmethod
+    def create_courier(cls, user_data: dict, user_profile_data: dict) -> User:
+        user = User.objects.create_user(**user_data, role=UserRole.COURIER)
+        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+        cls._create_courier_profile(user=user)
+        return user
 
+    @classmethod
+    def create_restaurant_manager(cls, user_data: dict, user_profile_data: dict) -> User:
+        user = User.objects.create_user(**user_data, role=UserRole.RESTAURANT_MANAGER)
+        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+        return user
 
-def create_moderator(user_data: dict, user_profile_data: dict):
-    user = User.objects.create_user(**user_data, role=UserRole.MODERATOR)
-    __create_user_profile(user=user, user_profile_data=user_profile_data)
-    return user
+    @classmethod
+    def create_moderator(cls, user_data: dict, user_profile_data: dict) -> User:
+        user = User.objects.create_user(**user_data, role=UserRole.MODERATOR)
+        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+        return user
