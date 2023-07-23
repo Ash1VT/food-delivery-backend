@@ -16,8 +16,8 @@ def client_without_tokens():
 
 
 @pytest.fixture
-def client_with_all_tokens(client: Client, access_token_cookie_name, access_token, refresh_token_cookie_name,
-                           refresh_token):
+def client_with_all_tokens(client: Client, access_token_cookie_name: str, access_token: str,
+                           refresh_token_cookie_name: str, refresh_token: str):
     client.cookies[access_token_cookie_name] = access_token
     client.cookies[refresh_token_cookie_name] = refresh_token
     return client
@@ -59,7 +59,6 @@ def superuser_valid_auth_data() -> dict:
 def superuser_invalid_auth_data() -> dict:
     return {
         'email': "",
-        'password': ""
     }
 
 
