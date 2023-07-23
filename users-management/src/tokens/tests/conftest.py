@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from core import settings
-from users.models import User
+from users.models import User, UserRole
 
 
 # Client fixtures #
@@ -16,8 +16,8 @@ def client_without_tokens():
 
 
 @pytest.fixture
-def client_with_all_tokens(client: Client, access_token_cookie_name, access_token, refresh_token_cookie_name,
-                           refresh_token):
+def client_with_all_tokens(client: Client, access_token_cookie_name: str, access_token: str,
+                           refresh_token_cookie_name: str, refresh_token: str):
     client.cookies[access_token_cookie_name] = access_token
     client.cookies[refresh_token_cookie_name] = refresh_token
     return client
@@ -40,7 +40,8 @@ def refresh_token_cookie_name():
 @pytest.fixture
 def superuser(django_user_model, superuser_valid_auth_data):
     return django_user_model.objects.create_superuser(
-        **superuser_valid_auth_data
+        **superuser_valid_auth_data,
+        role=UserRole.MODERATOR
     )
 
 
@@ -58,7 +59,6 @@ def superuser_valid_auth_data() -> dict:
 def superuser_invalid_auth_data() -> dict:
     return {
         'email': "",
-        'password': ""
     }
 
 

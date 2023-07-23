@@ -19,13 +19,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     role = models.CharField(
         max_length=2,
-        choices=UserRole.choices,
-        default=UserRole.CUSTOMER
+        choices=UserRole.choices
     )
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
     last_login = models.DateTimeField(null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -58,3 +57,25 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class CustomerProfile(models.Model):
+    """Model, which contains customer data"""
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+        primary_key=True,
+        related_name='customer_profile'
+    )
+
+
+class CourierProfile(models.Model):
+    """Model, which contains courier data"""
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+        primary_key=True,
+        related_name='courier_profile'
+    )
