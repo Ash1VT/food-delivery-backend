@@ -1,23 +1,29 @@
 import pytest
+from typing import Callable
 
-from users.models import User, UserProfile, CustomerProfile, CourierProfile
-from users.services import create_customer, create_courier, create_restaurant_manager, create_moderator
+from users.models import User, UserProfile, CustomerProfile, CourierProfile, UserRole
+from users.services import UserService
+from .utils import validate_user_profile, generate_valid_register_user_data, \
+    generate_update_user_data, generate_partial_update_user_data
 
 
 @pytest.mark.django_db
-class TestServices:
+class TestUserService:
 
     @pytest.mark.parametrize(
         "create_user, respective_profile",
         [
-            (create_customer, CustomerProfile),
-            (create_courier, CourierProfile),
-            (create_restaurant_manager, None),
-            (create_moderator, None)
+            (UserService.create_customer, CustomerProfile),
+            (UserService.create_courier, CourierProfile),
+            (UserService.create_restaurant_manager, None),
+            (UserService.create_moderator, None)
         ])
-    def test_create_user(self, create_user, respective_profile, user_data: dict, user_profile_data: dict):
+    def test_create_user(self, create_user: Callable[[dict, dict], User], respective_profile):
+        user_register_data = generate_valid_register_user_data()
+        user_profile_register_data = user_register_data.pop('user_profile')
+
         # Call the service function
-        user_instance = create_user(user_data=user_data, user_profile_data=user_profile_data)
+        user_instance = create_user(user_register_data, user_profile_register_data)
         user_profile = user_instance.user_profile
 
         # Get the user instance from the database
@@ -30,3 +36,22 @@ class TestServices:
 
         if respective_profile:
             respective_profile.objects.filter(user=user_db).exists()
+
+    @pytest.mark.parametrize(
+        "user_update_data",
+        [
+            generate_update_user_data(),
+            generate_partial_update_user_data(),
+        ])
+    def test_update_user(self, customer: User, user_update_data: dict):
+
+        update_profile_data = user_update_data.get('user_profile', None)
+
+        updated_user = UserService.update_user(customer, user_update_data)
+        updated_profile = updated_user.user_profile
+
+        # Assert that the user object has been updated
+        assert updated_user.email == user_update_data.get('email')
+
+        # Assert that the user profile has been updated
+        validate_user_profile(user_profile=updated_profile, user_profile_data=update_profile_data)
