@@ -1,30 +1,30 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import IsAuthenticated
 from users.models import UserRole
 
 
-class IsCustomer(BasePermission):
+class IsCustomer(IsAuthenticated):
     """Checks if user has customer permissions"""
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == UserRole.CUSTOMER
+        return super().has_permission(request, view) and request.user.role == UserRole.CUSTOMER
 
 
-class IsCourier(BasePermission):
+class IsCourier(IsAuthenticated):
     """Checks if user has courier permissions"""
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == UserRole.COURIER
+        return super().has_permission(request, view) and request.user.role == UserRole.COURIER
 
 
-class IsRestaurantManager(BasePermission):
+class IsRestaurantManager(IsAuthenticated):
     """Checks if user has restaurant manager permissions"""
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == UserRole.RESTAURANT_MANAGER
+        return super().has_permission(request, view) and request.user.role == UserRole.RESTAURANT_MANAGER
 
 
-class IsModerator(BasePermission):
+class IsModerator(IsAuthenticated):
     """Checks if user has moderator permissions"""
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == UserRole.MODERATOR
+        return super().has_permission(request, view) and request.user.role == UserRole.MODERATOR
