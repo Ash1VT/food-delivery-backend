@@ -26,7 +26,6 @@ class Base(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'django_inlinecss',
         'phonenumber_field',
         'rest_framework',
         'rest_framework_simplejwt',
