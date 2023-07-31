@@ -4,13 +4,14 @@ import pytest
 import json
 
 from django.core import mail
+from django.conf import settings
 from django.db.models import QuerySet
 from django.test import Client
 from django.urls import reverse
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from users.models import User, UserRole
 from users.utils import generate_email_verification_url
-from users.services import UserService
 
 from .utils import validate_user_profile, generate_valid_register_user_data, generate_update_user_data, \
     generate_partial_update_user_data, generate_update_moderator_user_data, \
@@ -41,6 +42,17 @@ class BaseTestCreateUserView:
         user_profile_data: dict = user_register_valid_data.get('user_profile')
 
         validate_user_profile(user_profile=user_profile, user_profile_data=user_profile_data)
+
+        # Ensure there are tokens in response cookies
+        AccessToken(token=response.cookies[settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS']].value).verify()
+        RefreshToken(token=response.cookies[settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH']].value).verify()
+
+        # Validate email
+        assert len(mail.outbox) == 1
+
+        email = mail.outbox.pop(0)
+
+        validate_verification_email(user, email)
 
 
 @pytest.mark.django_db
