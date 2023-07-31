@@ -1,13 +1,12 @@
+from django.conf import settings
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from core import settings
 
 
 class CookieJWTAuthentication(JWTAuthentication):
 
     def authenticate(self, request):
-        cookie = request.COOKIES.get(settings.Base.SIMPLE_JWT['AUTH_COOKIE_ACCESS'])
+        cookie = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS'])
         if cookie is None:
             return
 
