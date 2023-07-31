@@ -18,14 +18,17 @@ def send_verification_email(user: User):
     """
 
     verification_url = generate_email_verification_url(user)
+    company_name = settings.COMPANY_NAME
 
-    message = get_template("account_activation_email.html").render({
-        'user_name': user.user_profile.first_name,
-        'activation_url': verification_url
+    message = get_template("email_verification.html").render({
+        'first_name': user.user_profile.first_name,
+        'last_name': user.user_profile.last_name,
+        'company_name': company_name,
+        'verification_url': verification_url
     })
 
     mail = EmailMessage(
-        subject="Account activation",
+        subject="Email verification",
         body=message,
         from_email=settings.EMAIL_HOST_USER,
         to=[user.email],
