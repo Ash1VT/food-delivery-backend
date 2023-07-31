@@ -1,12 +1,17 @@
 import random
+import re
 import string
+import uuid
 from datetime import datetime, timedelta
 
+from django.core.mail import EmailMessage
 from django.test import Client
+from django.conf import settings
 from django.forms.models import model_to_dict
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from core import settings
 from users.models import UserProfile, User, UserRole
 
 
@@ -19,13 +24,66 @@ def validate_user_profile(user_profile: UserProfile, user_profile_data: dict):
         assert str(user_profile.birth_date) == user_profile_data.get('birth_date', None)
 
 
+def validate_verification_email(user: User, email: EmailMessage):
+    assert 'Email verification' == email.subject  # Check the email subject
+    assert [user.email] == email.to  # Check the recipients
+    assert settings.EMAIL_HOST_USER == email.from_email  # Check the sender
+    assert user.user_profile.first_name and \
+           user.user_profile.last_name in email.body  # Check first and last name in the email body
+    assert email.content_subtype == 'html'  # Check that the email is in HTML format
+    assert settings.COMPANY_NAME in email.body  # Check company name in the email body
+
+
 def create_client_with_all_tokens(user: User) -> Client:
     client = Client()
     access_token = str(AccessToken.for_user(user=user))
     refresh_token = str(RefreshToken.for_user(user=user))
-    client.cookies[settings.Base.SIMPLE_JWT['AUTH_COOKIE_ACCESS']] = access_token
-    client.cookies[settings.Base.SIMPLE_JWT['AUTH_COOKIE_REFRESH']] = refresh_token
+    client.cookies[settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS']] = access_token
+    client.cookies[settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH']] = refresh_token
     return client
+
+
+def _parse_verification_url(verification_url: str) -> tuple[str, str, str]:
+    match = re.search(
+        r'^(?P<base_url>.+)/(?P<uidb64>[0-9A-Za-z_\-]+)/verify/(?P<verification_token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]+)/$',
+        verification_url)
+
+    base_url = match.group('base_url')
+    verification_token = match.group('verification_token')
+    uidb64 = match.group('uidb64')
+
+    return base_url, verification_token, uidb64
+
+
+def get_invalid_token_verification_url(valid_url: str) -> str:
+    base_url, verification_token, uidb64 = _parse_verification_url(valid_url)
+
+    # Generate an invalid verification token
+    invalid_token = verification_token.upper()
+
+    return f"{base_url}/{uidb64}/verify/{invalid_token}/"
+
+
+def get_invalid_uidb64_verification_url(valid_url: str) -> str:
+    base_url, verification_token, uidb64 = _parse_verification_url(valid_url)
+
+    # Generate an invalid uidb64
+    invalid_uidb64 = urlsafe_base64_encode(force_bytes('str'))
+
+    return f"{base_url}/{invalid_uidb64}/verify/{verification_token}/"
+
+
+def get_nonexistent_uidb64_verification_url(valid_url: str) -> str:
+    base_url, verification_token, uidb64 = _parse_verification_url(valid_url)
+
+    # Generate an invalid uidb64
+    while True:
+        nonexistent_uuid = random.randint(0, 100000)
+        if not User.objects.filter(id=nonexistent_uuid).exists():
+            break
+
+    nonexistent_uidb64 = urlsafe_base64_encode(force_bytes(nonexistent_uuid))
+    return f"{base_url}/{nonexistent_uidb64}/verify/{verification_token}/"
 
 
 def generate_random_email():
