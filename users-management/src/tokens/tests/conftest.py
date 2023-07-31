@@ -1,10 +1,10 @@
 import pytest
 from django.core.handlers.wsgi import WSGIRequest
 from django.test import Client, RequestFactory
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from core import settings
 from users.models import User, UserRole
 
 
@@ -27,12 +27,12 @@ def client_with_all_tokens(client: Client, access_token_cookie_name: str, access
 
 @pytest.fixture
 def access_token_cookie_name():
-    return settings.Base.SIMPLE_JWT['AUTH_COOKIE_ACCESS']
+    return settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS']
 
 
 @pytest.fixture
 def refresh_token_cookie_name():
-    return settings.Base.SIMPLE_JWT['AUTH_COOKIE_REFRESH']
+    return settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH']
 
 
 # Test superuser #

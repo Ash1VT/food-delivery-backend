@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+import os
 from configurations import Configuration
 from pathlib import Path
 from .env import env
@@ -12,6 +12,10 @@ class Base(Configuration):
     # Quick-start development settings - unsuitable for production
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = env('SECRET_KEY')
+
+    # App host
+
+    APP_HOST = env('APP_HOST')
 
     # Application definition
 
@@ -30,6 +34,8 @@ class Base(Configuration):
         'tokens',
     ]
 
+    # Middlewares
+
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
@@ -40,12 +46,16 @@ class Base(Configuration):
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ]
 
+    # Urls
+
     ROOT_URLCONF = 'core.urls'
+
+    # Templates
 
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [],
+            'DIRS': [BASE_DIR / 'templates'],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
@@ -57,6 +67,8 @@ class Base(Configuration):
             },
         },
     ]
+
+    # Rest settings
 
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -113,6 +125,8 @@ class Base(Configuration):
 
     }
 
+    # WSGI settings
+
     WSGI_APPLICATION = 'core.wsgi.application'
 
     # Password validation
@@ -131,6 +145,15 @@ class Base(Configuration):
             'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
         },
     ]
+
+    # Email
+
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = env('EMAIL_HOST')
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    EMAIL_PORT = env('EMAIL_PORT')
+    EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
     # Auth user model
 
@@ -151,6 +174,9 @@ class Base(Configuration):
 
     # Default primary key field type
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+    # Company name
+    COMPANY_NAME = 'Eat Express'
 
 
 class Develop(Base):

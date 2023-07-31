@@ -1,7 +1,7 @@
 import pytest
 from typing import Callable
 
-from users.models import User, UserProfile, CustomerProfile, CourierProfile, UserRole
+from users.models import User, UserProfile, CustomerProfile, CourierProfile
 from users.services import UserService
 from .utils import validate_user_profile, generate_valid_register_user_data, \
     generate_update_user_data, generate_partial_update_user_data
@@ -44,7 +44,6 @@ class TestUserService:
             generate_partial_update_user_data(),
         ])
     def test_update_user(self, customer: User, user_update_data: dict):
-
         update_profile_data = user_update_data.get('user_profile', None)
 
         updated_user = UserService.update_user(customer, user_update_data)
@@ -55,3 +54,8 @@ class TestUserService:
 
         # Assert that the user profile has been updated
         validate_user_profile(user_profile=updated_profile, user_profile_data=update_profile_data)
+
+    def test_verify_email(self, customer_with_unverified_email: User):
+        UserService.verify_email(customer_with_unverified_email)
+
+        assert customer_with_unverified_email.is_email_verified

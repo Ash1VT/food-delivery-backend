@@ -1,4 +1,5 @@
 from .models import User, UserRole, UserProfile, CustomerProfile, CourierProfile
+from .utils import send_verification_email
 
 
 class UserService:
@@ -24,6 +25,11 @@ class UserService:
         return user_profile
 
     @classmethod
+    def verify_email(cls, user: User):
+        user.is_email_verified = True
+        user.save()
+
+    @classmethod
     def update_user(cls, user: User, user_data: dict) -> User:
         user_profile_data = user_data.pop('user_profile', None)
 
@@ -40,6 +46,7 @@ class UserService:
         user = User.objects.create_user(**user_data, role=UserRole.CUSTOMER)
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
         cls._create_customer_profile(user=user)
+        send_verification_email(user)
         return user
 
     @classmethod
@@ -47,6 +54,7 @@ class UserService:
         user = User.objects.create_user(**user_data, role=UserRole.COURIER)
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
         cls._create_courier_profile(user=user)
+        send_verification_email(user)
         return user
 
     @classmethod

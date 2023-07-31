@@ -1,9 +1,12 @@
 import pytest
 from django.urls import reverse, resolve
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
+from tokens.generators import email_verification_token_generator
 from users.models import User
 from users.views import CreateCustomerView, CreateCourierView, ListUsersView, RetrieveUpdateUserView, \
-    RetrieveUpdateCurrentUserView
+    RetrieveUpdateCurrentUserView, SendVerificationEmailView, VerifyEmailView
 
 
 class TestUrls:
@@ -28,3 +31,14 @@ class TestUrls:
     def test_retrieve_update_current_user_url_resolves(self):
         url = reverse('retrieve_update_current_user')
         assert resolve(url).func.view_class == RetrieveUpdateCurrentUserView
+
+    def test_send_verification_email_url_resolves(self):
+        url = reverse('send_verification_email')
+        assert resolve(url).func.view_class == SendVerificationEmailView
+
+    @pytest.mark.django_db
+    def test_verify_email_url_resolves(self, customer: User):
+        uid = urlsafe_base64_encode(force_bytes(customer.pk))
+        verification_token = email_verification_token_generator.make_token(customer)
+        url = reverse('verify_user_email', args=[uid, verification_token])
+        assert resolve(url).func.view_class == VerifyEmailView

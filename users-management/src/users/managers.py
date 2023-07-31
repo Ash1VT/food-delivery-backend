@@ -7,7 +7,7 @@ from django.utils import timezone
 class UserManager(BaseUserManager):
     """User model manager for User model with no username field."""
 
-    def _create_user(self, email, password, role, is_active, is_staff, is_superuser, **extra_fields):
+    def _create_user(self, email, password, role, is_active, is_staff, is_superuser, is_email_verified, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
         now = timezone.now()
@@ -18,6 +18,7 @@ class UserManager(BaseUserManager):
             is_staff=is_staff,
             is_active=is_active,
             is_superuser=is_superuser,
+            is_email_verified=is_email_verified,
             last_login=now,
             date_joined=now,
             **extra_fields
@@ -27,7 +28,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, role, **extra_fields):
-        return self._create_user(email, password, role, False, False, False, **extra_fields)
+        return self._create_user(email, password, role, True, False, False, False, **extra_fields)
 
     def create_superuser(self, email, password, role, **extra_fields):
-        return self._create_user(email, password, role, True, True, True, **extra_fields)
+        return self._create_user(email, password, role, True, True, True, True, **extra_fields)
