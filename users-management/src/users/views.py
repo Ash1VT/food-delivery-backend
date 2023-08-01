@@ -1,4 +1,5 @@
 import abc
+import logging
 
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
@@ -15,6 +16,8 @@ from .serializers import CustomerPostSerializer, CourierPostSerializer, UserUpda
 from .permissions import IsModerator, IsEmailVerified
 from .services import UserService
 from .utils import send_verification_email
+
+logger = logging.getLogger(__name__)
 
 
 # Generic API Views #
@@ -124,6 +127,8 @@ class SendVerificationEmailView(APIView):
         user = self.request.user
 
         if user.is_email_verified:
+            logger.warning(f"Attempted to send verification email for already verified user: {user}")
+
             return Response({'detail': 'Email has already been verified'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Send the verification email
@@ -141,13 +146,17 @@ class VerifyEmailView(APIView):
             uid = urlsafe_base64_decode(uidb64)
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError):
+            logger.warning(f"Invalid uidb64: {uidb64}")
             return Response({'detail': 'Given uidb64 is invalid'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
+            logger.warning(f"User with uidb64 not found: {uidb64}")
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         if user is not None and email_verification_token_generator.check_token(user, verification_token):
             UserService.verify_email(user=user)
-
             return Response({'detail': 'Email has been successfully verified'}, status=status.HTTP_200_OK)
         else:
-            return Response({'detail': 'Email has already been verified or token is invalid'}, status=status.HTTP_400_BAD_REQUEST)
+            logger.warning(f"Email verification failed for user: {user}. "
+                           f"Invalid or already used token: {verification_token}")
+            return Response({'detail': 'Email has already been verified or token is invalid'},
+                            status=status.HTTP_400_BAD_REQUEST)
