@@ -70,6 +70,9 @@ class CustomerProfile(models.Model):
         related_name='customer_profile'
     )
 
+    def __str__(self):
+        return self.user.email
+
 
 class CourierProfile(models.Model):
     """Model, which contains courier data"""
@@ -80,3 +83,6 @@ class CourierProfile(models.Model):
         primary_key=True,
         related_name='courier_profile'
     )
+
+    def __str__(self):
+        return self.user.email

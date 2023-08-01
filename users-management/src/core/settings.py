@@ -178,6 +178,46 @@ class Base(Configuration):
     # Company name
     COMPANY_NAME = 'Eat Express'
 
+    # Logging
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            },
+            'simple': {
+                'format': '%(levelname)s %(message)s',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
+            'file': {
+                'class': 'logging.FileHandler',
+                'filename': BASE_DIR / 'logs.log',
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'file'],
+                'level': 'INFO',
+            },
+            'users': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+            },
+            'tokens': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+            },
+        },
+    }
+
 
 class Develop(Base):
     # SECURITY WARNING: don't run with debug turned on in production!
