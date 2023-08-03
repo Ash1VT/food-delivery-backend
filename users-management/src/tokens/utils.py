@@ -3,6 +3,7 @@ from typing import Optional
 
 from django.conf import settings
 from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from users.models import User
 
@@ -155,3 +156,22 @@ def set_jwt_cookies(response: Response, user: User):
     except Exception as e:
         logger.error(f"Error setting JWT cookies in the response. Error: {str(e)}")
         raise
+
+
+def get_user(access_token: str) -> Optional[User]:
+    """
+    Retrieve a User object based on the provided access token.
+
+    Parameters:
+        access_token (str): The access token representing the authenticated user.
+
+    Returns:
+        Optional[User]: The User object associated with the access token, or None
+                        if the access token is invalid or the user does not exist.
+    """
+
+    try:
+        user_id = AccessToken(access_token).get('user_id')
+        return User.objects.get(id=user_id)
+    except (TokenError, User.DoesNotExist):
+        pass

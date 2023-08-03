@@ -29,6 +29,7 @@ class Base(Configuration):
         'phonenumber_field',
         'rest_framework',
         'rest_framework_simplejwt',
+        'django_grpc',
 
         'users',
         'tokens',
@@ -109,7 +110,7 @@ class Base(Configuration):
         "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
         "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
-        "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+        "TOKEN_REFRESH_SERIALIZER": "tokens.serializers.CookieTokenRefreshSerializer",
         "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
         "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
         "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
@@ -216,6 +217,15 @@ class Base(Configuration):
                 'level': 'DEBUG',
             },
         },
+    }
+
+    # GRPC Server
+
+    GRPCSERVER = {
+        'servicers': ['grpc_files.hooks.grpc_hook'],
+        'maximum_concurrent_rpcs': None,
+        'options': [("grpc_files.max_receive_message_length", 1024 * 1024 * 100)],
+        'async': False
     }
 
 

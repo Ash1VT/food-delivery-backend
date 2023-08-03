@@ -4,7 +4,6 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from tokens.generators import email_verification_token_generator
-from users.models import User
 from users.views import CreateCustomerView, CreateCourierView, ListUsersView, RetrieveUpdateUserView, \
     RetrieveUpdateCurrentUserView, SendVerificationEmailView, VerifyEmailView
 
@@ -24,8 +23,8 @@ class TestUrls:
         assert resolve(url).func.view_class == ListUsersView
 
     @pytest.mark.django_db
-    def test_retrieve_update_user_url_resolves(self, customer: User):
-        url = reverse('retrieve_update_user', args=[customer.id])
+    def test_retrieve_update_user_url_resolves(self, verified_customer):
+        url = reverse('retrieve_update_user', args=[verified_customer.id])
         assert resolve(url).func.view_class == RetrieveUpdateUserView
 
     def test_retrieve_update_current_user_url_resolves(self):
@@ -37,8 +36,8 @@ class TestUrls:
         assert resolve(url).func.view_class == SendVerificationEmailView
 
     @pytest.mark.django_db
-    def test_verify_email_url_resolves(self, customer: User):
-        uid = urlsafe_base64_encode(force_bytes(customer.pk))
-        verification_token = email_verification_token_generator.make_token(customer)
+    def test_verify_email_url_resolves(self, verified_customer):
+        uid = urlsafe_base64_encode(force_bytes(verified_customer.pk))
+        verification_token = email_verification_token_generator.make_token(verified_customer)
         url = reverse('verify_user_email', args=[uid, verification_token])
         assert resolve(url).func.view_class == VerifyEmailView
