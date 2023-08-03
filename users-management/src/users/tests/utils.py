@@ -1,9 +1,9 @@
 import random
 import re
 import string
-import uuid
 from datetime import datetime, timedelta
 
+from django.core import mail
 from django.core.mail import EmailMessage
 from django.test import Client
 from django.conf import settings
@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from users.models import UserProfile, User, UserRole
+from users.services import UserService
 
 
 def validate_user_profile(user_profile: UserProfile, user_profile_data: dict):
@@ -175,3 +176,71 @@ def user_to_dict(user: User):
 
     user_data['user_profile'] = user_profile_data
     return user_data
+
+
+def create_verified_customer():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_customer(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    UserService.verify_email(user)
+    return user
+
+
+def create_verified_courier():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_courier(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    UserService.verify_email(user)
+    return user
+
+
+def create_verified_restaurant_manager():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_restaurant_manager(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    UserService.verify_email(user)
+    return user
+
+
+def create_verified_moderator():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_moderator(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    UserService.verify_email(user)
+    return user
+
+
+def create_unverified_customer():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_customer(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    return user
+
+
+def create_unverified_courier():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_courier(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    return user
+
+
+def create_unverified_restaurant_manager():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_restaurant_manager(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    return user
+
+
+def create_unverified_moderator():
+    user_data = generate_valid_register_user_data()
+    user_profile_data = user_data.pop('user_profile')
+    user = UserService.create_moderator(user_data=user_data, user_profile_data=user_profile_data)
+    mail.outbox.clear()
+    return user
