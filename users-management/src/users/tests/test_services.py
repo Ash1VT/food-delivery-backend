@@ -43,10 +43,10 @@ class TestUserService:
             generate_update_user_data(),
             generate_partial_update_user_data(),
         ])
-    def test_update_user(self, customer: User, user_update_data: dict):
+    def test_update_user(self, verified_customer, user_update_data: dict):
         update_profile_data = user_update_data.get('user_profile', None)
 
-        updated_user = UserService.update_user(customer, user_update_data)
+        updated_user = UserService.update_user(verified_customer, user_update_data)
         updated_profile = updated_user.user_profile
 
         # Assert that the user object has been updated
@@ -55,7 +55,7 @@ class TestUserService:
         # Assert that the user profile has been updated
         validate_user_profile(user_profile=updated_profile, user_profile_data=update_profile_data)
 
-    def test_verify_email(self, customer_with_unverified_email: User):
-        UserService.verify_email(customer_with_unverified_email)
+    def test_verify_email(self, unverified_customer):
+        UserService.verify_email(unverified_customer)
 
-        assert customer_with_unverified_email.is_email_verified
+        assert unverified_customer.is_email_verified

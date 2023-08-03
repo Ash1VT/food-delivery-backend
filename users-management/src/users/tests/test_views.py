@@ -71,8 +71,8 @@ class TestRetrieveUpdateCurrentUserView:
     @pytest.mark.parametrize(
         "client_name, customer_name, expected_status_code",
         [
-            ("client_customer_with_all_tokens", "customer", 200),
-            ("client_customer_with_unverified_email", "customer_with_unverified_email", 403)
+            ("client_verified_customer_with_all_tokens", "verified_customer", 200),
+            ("client_unverified_customer_with_all_tokens", "unverified_customer", 403)
         ]
     )
     def test_retrieve_view(self, client_name: str, customer_name: str, expected_status_code: int, request):
@@ -94,8 +94,8 @@ class TestRetrieveUpdateCurrentUserView:
     @pytest.mark.parametrize(
         "client_name, expected_status_code",
         [
-            ("client_customer_with_all_tokens", 200),
-            ("client_customer_with_unverified_email", 403)
+            ("client_verified_customer_with_all_tokens", 200),
+            ("client_unverified_customer_with_all_tokens", 403)
         ]
     )
     def test_put_view(self, client_name: str, expected_status_code: int, request):
@@ -118,8 +118,8 @@ class TestRetrieveUpdateCurrentUserView:
     @pytest.mark.parametrize(
         "client_name, expected_status_code",
         [
-            ("client_customer_with_all_tokens", 200),
-            ("client_customer_with_unverified_email", 403)
+            ("client_verified_customer_with_all_tokens", 200),
+            ("client_unverified_customer_with_all_tokens", 403)
         ]
     )
     def test_patch_view(self, client_name: str, expected_status_code: int, request):
@@ -151,19 +151,19 @@ class TestListUsersView:
         ]
     )
     def test_list_view(self, role: Optional[str], expected_query: QuerySet,
-                       client_moderator_with_all_tokens: Client):
+                       client_verified_moderator_with_all_tokens):
         query_params = {'role': role} if role else {}
-        response = client_moderator_with_all_tokens.get(reverse('list_users'), query_params)
+        response = client_verified_moderator_with_all_tokens.get(reverse('list_users'), query_params)
         assert response.status_code == 200
 
         assert response.data == list(expected_query)
 
-    def test_list_view_non_moderator(self, client_customer_with_all_tokens: Client):
-        response = client_customer_with_all_tokens.get(reverse('list_users'))
+    def test_list_view_non_moderator(self, client_verified_customer_with_all_tokens):
+        response = client_verified_customer_with_all_tokens.get(reverse('list_users'))
         assert response.status_code == 403
 
-    def test_list_view_with_unverified_email(self, client_moderator_with_unverified_email: Client):
-        response = client_moderator_with_unverified_email.get(reverse('list_users'))
+    def test_list_view_with_unverified_email(self, client_unverified_moderator_with_all_tokens):
+        response = client_unverified_moderator_with_all_tokens.get(reverse('list_users'))
         assert response.status_code == 403
 
 
@@ -173,20 +173,20 @@ class TestRetrieveUpdateUserView:
     @pytest.mark.parametrize(
         "client_name, expected_response_code",
         [
-            ("client_moderator_with_all_tokens", 200),
-            ("client_customer_with_all_tokens", 403),
-            ("client_moderator_with_unverified_email", 403)
+            ("client_verified_moderator_with_all_tokens", 200),
+            ("client_verified_customer_with_all_tokens", 403),
+            ("client_unverified_moderator_with_all_tokens", 403)
         ]
     )
     def test_retrieve_view(self, client_name: str, expected_response_code: int,
-                           customer: User, request):
+                           verified_customer, request):
         # Get fixture value by its name
         client: Client = request.getfixturevalue(client_name)
 
         # Getting customer data
-        customer_data = user_to_dict(customer)
+        customer_data = user_to_dict(verified_customer)
 
-        response = client.get(reverse('retrieve_update_user', args=[customer.id]))
+        response = client.get(reverse('retrieve_update_user', args=[verified_customer.id]))
         assert response.status_code == expected_response_code
 
         if 200 <= response.status_code < 300:
@@ -197,19 +197,19 @@ class TestRetrieveUpdateUserView:
     @pytest.mark.parametrize(
         "client_name, expected_response_code",
         [
-            ("client_moderator_with_all_tokens", 200),
-            ("client_customer_with_all_tokens", 403),
-            ("client_moderator_with_unverified_email", 403)
+            ("client_verified_moderator_with_all_tokens", 200),
+            ("client_verified_customer_with_all_tokens", 403),
+            ("client_unverified_moderator_with_all_tokens", 403)
         ]
     )
-    def test_put_view(self, client_name: str, expected_response_code: int, customer: User, request):
+    def test_put_view(self, client_name: str, expected_response_code: int, verified_customer, request):
         # Get fixture value by its name
         client: Client = request.getfixturevalue(client_name)
 
         # Generate user update data
         user_update_data = generate_update_moderator_user_data()
 
-        response = client.put(reverse('retrieve_update_user', args=[customer.id]),
+        response = client.put(reverse('retrieve_update_user', args=[verified_customer.id]),
                               data=json.dumps(user_update_data),
                               content_type="application/json")
 
@@ -223,19 +223,19 @@ class TestRetrieveUpdateUserView:
     @pytest.mark.parametrize(
         "client_name, expected_response_code",
         [
-            ("client_moderator_with_all_tokens", 200),
-            ("client_customer_with_all_tokens", 403),
-            ("client_moderator_with_unverified_email", 403)
+            ("client_verified_moderator_with_all_tokens", 200),
+            ("client_verified_customer_with_all_tokens", 403),
+            ("client_unverified_moderator_with_all_tokens", 403)
         ]
     )
-    def test_patch_view(self, client_name: str, expected_response_code: int, customer: User, request):
+    def test_patch_view(self, client_name: str, expected_response_code: int, verified_customer, request):
         # Get fixture value by its name
         client: Client = request.getfixturevalue(client_name)
 
         # Generate user partial update data
         user_partial_update_data = generate_partial_update_moderator_user_data()
 
-        response = client.patch(reverse('retrieve_update_user', args=[customer.id]),
+        response = client.patch(reverse('retrieve_update_user', args=[verified_customer.id]),
                                 data=json.dumps(user_partial_update_data),
                                 content_type="application/json")
         assert response.status_code == expected_response_code
@@ -248,20 +248,20 @@ class TestRetrieveUpdateUserView:
 @pytest.mark.django_db
 class TestSendVerificationEmailView:
 
-    def test_get_view(self, client_customer_with_unverified_email: Client,
-                      customer_with_unverified_email: User):
-        response = client_customer_with_unverified_email.get(reverse('send_verification_email'))
+    def test_get_view(self, client_unverified_customer_with_all_tokens,
+                      unverified_customer):
+        response = client_unverified_customer_with_all_tokens.get(reverse('send_verification_email'))
         assert response.status_code == 200
 
         assert len(mail.outbox) == 1
 
         email = mail.outbox.pop(0)
 
-        validate_verification_email(customer_with_unverified_email, email)
+        validate_verification_email(unverified_customer, email)
 
-    def test_get_view_already_verified_email(self, client_customer_with_all_tokens: Client,
-                                             customer: User):
-        response = client_customer_with_all_tokens.get(reverse('send_verification_email'))
+    def test_get_view_already_verified_email(self, client_verified_customer_with_all_tokens,
+                                             verified_customer):
+        response = client_verified_customer_with_all_tokens.get(reverse('send_verification_email'))
         assert response.status_code == 400
 
         assert len(mail.outbox) == 0
@@ -270,16 +270,16 @@ class TestSendVerificationEmailView:
 @pytest.mark.django_db
 class TestVerifyEmailView:
 
-    def test_get_view(self, client_customer_with_unverified_email: Client,
-                      customer_with_unverified_email: User):
-        verification_url = generate_email_verification_url(customer_with_unverified_email)
+    def test_get_view(self, client_unverified_customer_with_all_tokens,
+                      unverified_customer):
+        verification_url = generate_email_verification_url(unverified_customer)
 
-        response = client_customer_with_unverified_email.get(verification_url)
+        response = client_unverified_customer_with_all_tokens.get(verification_url)
 
         assert response.status_code == 200
 
         # Get updated user instance
-        user = User.objects.get(id=customer_with_unverified_email.id)
+        user = User.objects.get(id=unverified_customer.id)
 
         assert user.is_email_verified
 
@@ -290,35 +290,35 @@ class TestVerifyEmailView:
             (get_invalid_uidb64_verification_url, 400),
             (get_nonexistent_uidb64_verification_url, 404)
         ])
-    def test_get_view_invalid_url(self, client_customer_with_unverified_email: Client,
-                                  customer_with_unverified_email: User,
+    def test_get_view_invalid_url(self, client_unverified_customer_with_all_tokens,
+                                  unverified_customer,
                                   get_invalid_verification_url: Callable,
                                   expected_response_code: str):
-        valid_verification_url = generate_email_verification_url(customer_with_unverified_email)
+        valid_verification_url = generate_email_verification_url(unverified_customer)
         invalid_verification_url = get_invalid_verification_url(valid_verification_url)
 
-        response = client_customer_with_unverified_email.get(invalid_verification_url)
+        response = client_unverified_customer_with_all_tokens.get(invalid_verification_url)
 
         assert response.status_code == expected_response_code
 
         # Get updated user instance
-        user = User.objects.get(id=customer_with_unverified_email.id)
+        user = User.objects.get(id=unverified_customer.id)
 
         assert not user.is_email_verified
 
-    def test_get_view_multiple_use(self, client_customer_with_unverified_email: Client,
-                                   customer_with_unverified_email: User):
-        verification_url = generate_email_verification_url(customer_with_unverified_email)
+    def test_get_view_multiple_use(self, client_unverified_customer_with_all_tokens,
+                                   unverified_customer):
+        verification_url = generate_email_verification_url(unverified_customer)
 
-        response_1 = client_customer_with_unverified_email.get(verification_url)
+        response_1 = client_unverified_customer_with_all_tokens.get(verification_url)
 
         assert response_1.status_code == 200
 
         # Get updated user instance
-        user = User.objects.get(id=customer_with_unverified_email.id)
+        user = User.objects.get(id=unverified_customer.id)
 
         assert user.is_email_verified
 
-        response_2 = client_customer_with_unverified_email.get(verification_url)
+        response_2 = client_unverified_customer_with_all_tokens.get(verification_url)
 
         assert response_2.status_code == 400

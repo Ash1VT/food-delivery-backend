@@ -16,14 +16,14 @@ def client_without_tokens():
 
 
 @pytest.fixture
-def client_with_all_tokens(client: Client, access_token_cookie_name: str, access_token: str,
-                           refresh_token_cookie_name: str, refresh_token: str):
-    client.cookies[access_token_cookie_name] = access_token
-    client.cookies[refresh_token_cookie_name] = refresh_token
+def client_superuser_with_all_tokens(client: Client, access_token_cookie_name: str, access_token_for_superuser,
+                                     refresh_token_cookie_name: str, refresh_token_for_superuser):
+    client.cookies[access_token_cookie_name] = access_token_for_superuser
+    client.cookies[refresh_token_cookie_name] = refresh_token_for_superuser
     return client
 
 
-# Name of tokens in cookies #
+# Name of tokens in cookies fixtures #
 
 @pytest.fixture
 def access_token_cookie_name():
@@ -35,7 +35,7 @@ def refresh_token_cookie_name():
     return settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH']
 
 
-# Test superuser #
+# Superuser fixture #
 
 @pytest.fixture
 def superuser(django_user_model, superuser_valid_auth_data):
@@ -45,7 +45,7 @@ def superuser(django_user_model, superuser_valid_auth_data):
     )
 
 
-# Auth data for test superuser #
+# Auth data for superuser fixtures #
 
 @pytest.fixture
 def superuser_valid_auth_data() -> dict:
@@ -62,37 +62,50 @@ def superuser_invalid_auth_data() -> dict:
     }
 
 
-# Valid tokens #
+# Valid token fixtures #
 
 @pytest.fixture
-def access_token(superuser: User) -> str:
+def access_token_for_superuser(superuser: User) -> str:
     return str(AccessToken.for_user(user=superuser))
 
 
 @pytest.fixture
-def refresh_token(superuser: User) -> str:
+def refresh_token_for_superuser(superuser: User) -> str:
     return str(RefreshToken.for_user(user=superuser))
 
 
-# Test requests #
+# Invalid token fixtures #
 
 @pytest.fixture
-def request_with_access_token(superuser: User, access_token_cookie_name, access_token) -> WSGIRequest:
+def invalid_access_token() -> str:
+    return "invalid_token"
+
+
+@pytest.fixture
+def nonexistent_access_token() -> str:
+    return str(RefreshToken().access_token)
+
+
+# Test request fixtures #
+
+@pytest.fixture
+def request_with_access_token_for_superuser(superuser: User, access_token_cookie_name,
+                                            access_token_for_superuser) -> WSGIRequest:
     request = RequestFactory().request()
-    request.COOKIES[access_token_cookie_name] = access_token
+    request.COOKIES[access_token_cookie_name] = access_token_for_superuser
     return request
 
 
 @pytest.fixture
-def request_with_all_tokens(superuser: User, access_token_cookie_name, access_token, refresh_token_cookie_name,
-                            refresh_token) -> WSGIRequest:
+def request_with_all_tokens_for_superuser(superuser: User, access_token_cookie_name, access_token_for_superuser,
+                                          refresh_token_cookie_name, refresh_token_for_superuser) -> WSGIRequest:
     request = RequestFactory().request()
-    request.COOKIES[access_token_cookie_name] = access_token
-    request.COOKIES[refresh_token_cookie_name] = refresh_token
+    request.COOKIES[access_token_cookie_name] = access_token_for_superuser
+    request.COOKIES[refresh_token_cookie_name] = refresh_token_for_superuser
     return request
 
 
-# Test responses #
+# Test response fixtures #
 @pytest.fixture
 def response_without_tokens_data():
     response = Response()
@@ -101,7 +114,7 @@ def response_without_tokens_data():
 
 
 @pytest.fixture
-def response_with_tokens_data(access_token, refresh_token):
+def response_with_tokens_data_for_superuser(access_token_for_superuser, refresh_token_for_superuser):
     response = Response()
-    response.data = {'access': access_token, 'refresh': refresh_token}
+    response.data = {'access': access_token_for_superuser, 'refresh': refresh_token_for_superuser}
     return response

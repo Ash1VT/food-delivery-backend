@@ -10,7 +10,7 @@ class TestViews:
     @pytest.mark.parametrize(
         "client_name, superuser_auth_data_name, expected_status_code, expectation",
         [
-            ("client_with_all_tokens", "superuser_valid_auth_data", 200, does_not_raise()),
+            ("client_superuser_with_all_tokens", "superuser_valid_auth_data", 200, does_not_raise()),
             ("client_without_tokens", "superuser_invalid_auth_data", 400, pytest.raises(KeyError))
         ]
     )
@@ -33,7 +33,7 @@ class TestViews:
     @pytest.mark.parametrize(
         "client_name, expected_status_code, expectation",
         [
-            ("client_with_all_tokens", 200, does_not_raise()),
+            ("client_superuser_with_all_tokens", 200, does_not_raise()),
             ("client_without_tokens", 401, pytest.raises(KeyError))
         ]
     )
@@ -54,7 +54,7 @@ class TestViews:
     @pytest.mark.parametrize(
         "client_name",
         [
-            "client_with_all_tokens",
+            "client_superuser_with_all_tokens",
             "client_without_tokens"
         ]
     )

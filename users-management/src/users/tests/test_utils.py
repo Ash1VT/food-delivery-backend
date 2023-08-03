@@ -10,22 +10,22 @@ from .utils import validate_verification_email
 @pytest.mark.django_db
 class TestUtils:
 
-    def test_send_verification_email(self, customer: User):
-        send_verification_email(customer)
+    def test_send_verification_email(self, verified_customer):
+        send_verification_email(verified_customer)
 
         assert len(mail.outbox) == 1
 
         email = mail.outbox.pop(0)
 
-        validate_verification_email(customer, email)
+        validate_verification_email(verified_customer, email)
 
-    def test_generate_email_verification_url(self, client_customer_with_unverified_email: Client,
-                                             customer_with_unverified_email: User):
-        verification_url = generate_email_verification_url(customer_with_unverified_email)
-        response = client_customer_with_unverified_email.get(verification_url)
+    def test_generate_email_verification_url(self, client_unverified_customer_with_all_tokens,
+                                             unverified_customer):
+        verification_url = generate_email_verification_url(unverified_customer)
+        response = client_unverified_customer_with_all_tokens.get(verification_url)
 
         # Get updated user instance
-        user = User.objects.get(id=customer_with_unverified_email.id)
+        user = User.objects.get(id=unverified_customer.id)
 
         assert response.status_code == 200
         assert user.is_email_verified

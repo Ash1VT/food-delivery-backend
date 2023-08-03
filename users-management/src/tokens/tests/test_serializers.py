@@ -12,8 +12,8 @@ class TestCookieTokenRefreshSerializer:
     @pytest.mark.parametrize(
         "request_name, expectation",
         [
-            ('request_with_all_tokens', does_not_raise()),
-            ('request_with_access_token', pytest.raises(InvalidToken))
+            ('request_with_all_tokens_for_superuser', does_not_raise()),
+            ('request_with_access_token_for_superuser', pytest.raises(InvalidToken))
         ]
     )
     def test_validate(self, request_name: str, expectation, request):

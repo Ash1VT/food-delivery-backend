@@ -45,10 +45,11 @@ class BaseTestUserUpdateSerializer(abc.ABC):
     user_update_serializer_class = None
     user_out_serializer_class = None
 
-    def test_update(self, customer: User, user_update_data: dict, is_serializer_valid_expectation: bool, request):
+    def test_update(self, verified_customer: User, user_update_data: dict,
+                    is_serializer_valid_expectation: bool, request):
         update_profile_data = user_update_data.get('user_profile', None)
 
-        serializer = self.user_update_serializer_class(instance=customer, data=user_update_data)
+        serializer = self.user_update_serializer_class(instance=verified_customer, data=user_update_data)
         is_serializer_valid = serializer.is_valid()
 
         assert is_serializer_valid == is_serializer_valid_expectation
@@ -62,11 +63,11 @@ class BaseTestUserUpdateSerializer(abc.ABC):
             # Assert that the user profile has been updated
             validate_user_profile(user_profile=updated_user_profile, user_profile_data=update_profile_data)
 
-    def test_to_representation(self, customer: User):
+    def test_to_representation(self, verified_customer: User):
         user_update_serializer = self.user_update_serializer_class()
-        user_out_serializer = self.user_out_serializer_class(instance=customer)
+        user_out_serializer = self.user_out_serializer_class(instance=verified_customer)
 
-        assert user_update_serializer.to_representation(customer) == user_out_serializer.data
+        assert user_update_serializer.to_representation(verified_customer) == user_out_serializer.data
 
 
 @pytest.mark.django_db
@@ -93,8 +94,8 @@ class TestUserUpdateSerializer(BaseTestUserUpdateSerializer):
             (generate_invalid_register_user_data(), False)
         ]
     )
-    def test_update(self, customer: User, user_update_data: dict, is_serializer_valid_expectation: bool, request):
-        super().test_update(customer, user_update_data, is_serializer_valid_expectation, request)
+    def test_update(self, verified_customer, user_update_data: dict, is_serializer_valid_expectation: bool, request):
+        super().test_update(verified_customer, user_update_data, is_serializer_valid_expectation, request)
 
 
 @pytest.mark.django_db
@@ -109,5 +110,5 @@ class TestUserUpdateModeratorSerializer(BaseTestUserUpdateSerializer):
             (generate_partial_update_moderator_user_data(), False)
         ]
     )
-    def test_update(self, customer: User, user_update_data: dict, is_serializer_valid_expectation: bool, request):
-        super().test_update(customer, user_update_data, is_serializer_valid_expectation, request)
+    def test_update(self, verified_customer, user_update_data: dict, is_serializer_valid_expectation: bool, request):
+        super().test_update(verified_customer, user_update_data, is_serializer_valid_expectation, request)
