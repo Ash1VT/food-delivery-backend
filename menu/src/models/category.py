@@ -1,17 +1,27 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from .base import Base, CustomBase
+
+category_items_association = Table(
+    "category_items_association",
+    Base.metadata,
+    Column("item_id", Integer, ForeignKey('menu_items.id'), primary_key=True),
+    Column("category_id", Integer, ForeignKey('menu_categories.id'), primary_key=True),
+)
 
 
-class Category(Base):
-    __tablename__ = 'categories'
+class MenuCategory(CustomBase):
+    __tablename__ = 'menu_categories'
 
-    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
-    items = relationship("MenuItem", secondary="menu_items_categories_association", back_populates="categories",
+    restaurant_id = Column(Integer, ForeignKey('restaurants.id', use_alter=True), nullable=False)
+
+    items = relationship("MenuItem", secondary="category_items_association", back_populates="categories",
                          uselist=True)
+
+    restaurant = relationship("Restaurant", uselist=False)
 
     def __str__(self):
         return self.name

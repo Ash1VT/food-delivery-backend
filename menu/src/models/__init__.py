@@ -1,7 +1,8 @@
 # IMPORTANT FOR ALEMBIC'S DETECTION OF TABLES #
 # IMPORT ALL MODELS HERE #
-from .base import Base
-from .category import Category
-from .menu import Menu, MenuCategoryAssociation
+from .base import Base, CustomBase
+from .category import MenuCategory, category_items_association
+from .menu import Menu, menu_categories_association
 from .restaurant import Restaurant
-from .item import MenuItem, MenuItemCategoryAssociation
+from .item import MenuItem
+from .manager import RestaurantManager

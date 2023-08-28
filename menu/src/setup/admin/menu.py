@@ -1,5 +1,5 @@
 from sqladmin import ModelView
-from src.models import Menu, MenuItem
+from models import Menu
 
 
 class MenuAdmin(ModelView, model=Menu):
@@ -10,13 +10,3 @@ class MenuAdmin(ModelView, model=Menu):
                    Menu.categories]
 
     icon = "fa-solid fa-file-lines"
-
-
-class MenuItemAdmin(ModelView, model=MenuItem):
-    column_list = [MenuItem.id,
-                   MenuItem.name,
-                   MenuItem.description,
-                   MenuItem.price,
-                   MenuItem.categories]
-
-    icon = "fa-solid fa-bacon"

@@ -1,12 +1,12 @@
 from sqladmin import ModelView
-from src.models import Category
+from models import MenuCategory
 
 
-class CategoryAdmin(ModelView, model=Category):
-    name_plural = "Categories"
+class MenuCategoryAdmin(ModelView, model=MenuCategory):
+    name_plural = "Menu Categories"
 
-    column_list = [Category.id,
-                   Category.name,
-                   Category.items]
+    column_list = [MenuCategory.id,
+                   MenuCategory.name,
+                   MenuCategory.items]
 
     icon = "fa-solid fa-fish"
