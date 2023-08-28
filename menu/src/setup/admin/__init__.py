@@ -3,9 +3,11 @@ from sqladmin import Admin
 from src.db import async_engine
 from ..app import app
 
-from .menu import MenuAdmin, MenuItemAdmin
-from .category import CategoryAdmin
+from .menu import MenuAdmin
+from .item import MenuItemAdmin
+from .category import MenuCategoryAdmin
 from .restaurant import RestaurantAdmin
+from .manager import RestaurantManagerAdmin
 
 # Admin panel initialization #
 
@@ -19,5 +21,6 @@ admin = Admin(
 
 admin.add_model_view(MenuAdmin)
 admin.add_model_view(MenuItemAdmin)
-admin.add_model_view(CategoryAdmin)
+admin.add_model_view(MenuCategoryAdmin)
 admin.add_model_view(RestaurantAdmin)
+admin.add_model_view(RestaurantManagerAdmin)
