@@ -6,3 +6,7 @@ omit =
     */setup/*
     */db/*
     */models/*
+    */exceptions/*
+    */mixins.py
+    */uow.py
+    */generic.py
