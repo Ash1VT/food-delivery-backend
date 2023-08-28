@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Type, Any
 
-from src.models import CustomBase
+from models import CustomBase
 
 
 class AppError(Exception, ABC):

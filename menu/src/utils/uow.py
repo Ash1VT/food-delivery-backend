@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from src.uow import GenericUnitOfWork
+from uow import GenericUnitOfWork
 
 
 @asynccontextmanager

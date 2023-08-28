@@ -1,6 +1,6 @@
 from async_factory_boy.factory.sqlalchemy import AsyncSQLAlchemyFactory
 from factory import Sequence, Faker, SubFactory
-from src.models import RestaurantManager
+from models import RestaurantManager
 
 
 class RestaurantManagerFactory(AsyncSQLAlchemyFactory):

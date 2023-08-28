@@ -5,12 +5,12 @@ from typing import Annotated
 import uvicorn
 from fastapi import Depends
 
-from src.repositories import MenuCategoryRepository, RestaurantRepository
-from src.schemas import MenuCategoryCreateIn, MenuCategoryUpdateIn
-from src.services.category import MenuCategoryService
-from src.services.menu import MenuService
-from src.setup import app
-from src.uow import GenericUnitOfWork, SqlAlchemyUnitOfWork
+from repositories import MenuCategoryRepository, RestaurantRepository
+from schemas import MenuCategoryCreateIn, MenuCategoryUpdateIn
+from services.category import MenuCategoryService
+from services.menu import MenuService
+from setup import app
+from uow import GenericUnitOfWork, SqlAlchemyUnitOfWork
 
 # @app.get("/")
 # async def index(session: AsyncSession = Depends(get_async_session)):
@@ -56,7 +56,7 @@ from src.uow import GenericUnitOfWork, SqlAlchemyUnitOfWork
 #     end = time.time()
 #     return end - start
 
-from src.db import async_session_maker
+from db import async_session_maker
 
 
 def get_async_session_maker():
@@ -76,7 +76,7 @@ def get_async_session_maker():
 #     end = time.time()
 #     return end - start
 
-from src.utils import uow_transaction, uow_transaction_with_commit
+from utils import uow_transaction, uow_transaction_with_commit
 
 
 @app.post("/menus/{menu_id}/categories/")
@@ -126,4 +126,4 @@ async def create_category(menu_id: int,
 
 if __name__ == "__main__":
     os.environ.setdefault('CONFIGURATION', 'Develop')
-    uvicorn.run(app="src.main:app", port=8001, reload=True)
+    uvicorn.run(app="main:app", port=8001, reload=True)

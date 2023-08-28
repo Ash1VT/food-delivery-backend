@@ -1,7 +1,7 @@
 from async_factory_boy.factory.sqlalchemy import AsyncSQLAlchemyFactory
 from factory import Sequence
 
-from src.models import Restaurant
+from models import Restaurant
 
 
 class RestaurantFactory(AsyncSQLAlchemyFactory):

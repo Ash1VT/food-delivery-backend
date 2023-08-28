@@ -1,4 +1,4 @@
-from src.models import MenuCategory
+from models import MenuCategory
 from .base import DatabaseInstanceNotFoundError
 
 

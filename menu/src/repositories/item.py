@@ -1,4 +1,4 @@
-from src.models import MenuItem
+from models import MenuItem
 from .generic import SQLAlchemyRepository
 
 

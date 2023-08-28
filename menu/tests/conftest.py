@@ -9,12 +9,12 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from fastapi.testclient import TestClient
 
-from src.db.session import get_async_session
-from src.main import app
-from src.models import Base
-from src.config import get_settings
-from src.uow import SqlAlchemyUnitOfWork
-from src.utils import uow_transaction
+from db.session import get_async_session
+from main import app
+from models import Base
+from config import get_settings
+from uow import SqlAlchemyUnitOfWork
+from utils import uow_transaction
 
 # Change settings to Test #
 

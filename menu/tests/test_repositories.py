@@ -8,18 +8,18 @@ from collections import Counter
 from sqlalchemy.exc import MissingGreenlet
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models import MenuItem, MenuCategory, Menu, Restaurant, RestaurantManager
-from src.repositories import MenuItemRepository, MenuCategoryRepository, MenuRepository, RestaurantRepository, \
+from models import MenuItem, MenuCategory, Menu, Restaurant, RestaurantManager
+from repositories import MenuItemRepository, MenuCategoryRepository, MenuRepository, RestaurantRepository, \
     RestaurantManagerRepository
 from .factories import MenuItemFactory, MenuCategoryFactory, MenuFactory, RestaurantFactory, RestaurantManagerFactory
-from .utils.item import validate_menu_item, compare_menu_items, \
+from .data.item import validate_menu_item, compare_menu_items, \
     generate_menu_item_create_data, generate_menu_item_update_data
-from .utils.category import validate_menu_category, compare_menu_categories, \
+from .data.category import validate_menu_category, compare_menu_categories, \
     generate_menu_category_create_data, generate_menu_category_update_data
-from .utils.menu import validate_menu, compare_menus, generate_menu_create_data, generate_menu_update_data
-from .utils.restaurant import validate_restaurant, compare_restaurants, \
+from .data.menu import validate_menu, compare_menus, generate_menu_create_data, generate_menu_update_data
+from .data.restaurant import validate_restaurant, compare_restaurants, \
     generate_restaurant_create_data, generate_restaurant_update_data
-from .utils.manager import validate_restaurant_manager, compare_restaurant_managers, \
+from .data.manager import validate_restaurant_manager, compare_restaurant_managers, \
     generate_restaurant_manager_create_data, generate_restaurant_manager_update_data
 
 Model = TypeVar('Model')

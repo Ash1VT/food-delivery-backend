@@ -3,7 +3,7 @@ from typing import Type
 
 import pytest
 
-from src.config.settings import Settings, DevelopSettings as SettingsDevelop, \
+from config.settings import Settings, DevelopSettings as SettingsDevelop, \
     TestSettings as SettingsTest, get_settings
 
 

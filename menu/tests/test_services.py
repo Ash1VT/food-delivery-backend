@@ -6,31 +6,31 @@ import pytest
 from multimethod import multimethod
 
 from .factories import MenuItemFactory, MenuCategoryFactory, MenuFactory, RestaurantFactory, RestaurantManagerFactory
-from src.models import MenuItem, MenuCategory, Menu, Restaurant, RestaurantManager
-from src.services import MenuItemService, MenuCategoryService, MenuService, RestaurantService, RestaurantManagerService
-from src.uow import SqlAlchemyUnitOfWork
-from src.exceptions import DatabaseInstanceNotFoundError, RestaurantNotFoundWithIdError, \
+from models import MenuItem, MenuCategory, Menu, Restaurant, RestaurantManager
+from services import MenuItemService, MenuCategoryService, MenuService, RestaurantService, RestaurantManagerService
+from uow import SqlAlchemyUnitOfWork
+from exceptions import DatabaseInstanceNotFoundError, RestaurantNotFoundWithIdError, \
     RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, RestaurantAlreadyExistsWithIdError
-from src.schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, \
+from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, \
     MenuItemUpdateIn, MenuItemUpdateOut
-from src.schemas.category import MenuCategoryRetrieveOut, MenuCategoryCreateIn, \
+from schemas.category import MenuCategoryRetrieveOut, MenuCategoryCreateIn, \
     MenuCategoryCreateOut, MenuCategoryUpdateIn, MenuCategoryUpdateOut
-from src.schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
-from src.schemas.restaurant import RestaurantRetrieveOut, RestaurantRetrieveForUserOut, \
+from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
+from schemas.restaurant import RestaurantRetrieveOut, RestaurantRetrieveForUserOut, \
     RestaurantRetrieveForManagerOut, RestaurantCreateIn, RestaurantCreateOut
-from src.schemas.manager import RestaurantManagerCreateIn, RestaurantManagerCreateOut
+from schemas.manager import RestaurantManagerCreateIn, RestaurantManagerCreateOut
 
-from .utils.item import validate_menu_item, compare_menu_items, \
+from .data.item import validate_menu_item, compare_menu_items, \
     generate_menu_item_create_data, generate_menu_item_create_data_nonexistent_restaurant, \
     generate_menu_item_update_data
-from .utils.category import validate_menu_category, compare_menu_categories, \
+from .data.category import validate_menu_category, compare_menu_categories, \
     generate_menu_category_create_data, generate_menu_category_create_data_nonexistent_restaurant, \
     generate_menu_category_update_data
-from .utils.menu import validate_menu, compare_menus, generate_menu_create_data, \
+from .data.menu import validate_menu, compare_menus, generate_menu_create_data, \
     generate_menu_create_data_nonexistent_restaurant, generate_menu_update_data
-from .utils.restaurant import validate_restaurant, compare_restaurants, \
+from .data.restaurant import validate_restaurant, compare_restaurants, \
     generate_restaurant_create_data, generate_restaurant_update_data
-from .utils.manager import validate_restaurant_manager, compare_restaurant_managers, \
+from .data.manager import validate_restaurant_manager, compare_restaurant_managers, \
     generate_restaurant_manager_create_data, generate_restaurant_manager_update_data
 
 Model = TypeVar('Model')

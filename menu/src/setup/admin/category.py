@@ -1,5 +1,5 @@
 from sqladmin import ModelView
-from src.models import MenuCategory
+from models import MenuCategory
 
 
 class MenuCategoryAdmin(ModelView, model=MenuCategory):

@@ -1,4 +1,4 @@
-from src.models import RestaurantManager
+from models import RestaurantManager
 from .base import AppError
 
 

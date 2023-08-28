@@ -1,5 +1,5 @@
-from src.models import MenuItem, Restaurant
-from tests.factories import MenuItemFactory, RestaurantFactory
+from models import MenuItem, Restaurant
+from ..factories import MenuItemFactory, RestaurantFactory
 
 
 async def generate_menu_item_create_data(restaurant: Restaurant = None):

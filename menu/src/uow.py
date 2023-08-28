@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable
 
-from src.repositories import MenuItemRepository, MenuCategoryRepository, MenuRepository, \
+from repositories import MenuItemRepository, MenuCategoryRepository, MenuRepository, \
     RestaurantRepository, RestaurantManagerRepository
 
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,4 +1,4 @@
-from src.models import Restaurant
+from models import Restaurant
 from .base import DatabaseInstanceNotFoundError, DatabaseInstanceAlreadyExistsError
 
 

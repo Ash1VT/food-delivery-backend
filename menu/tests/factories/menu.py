@@ -1,7 +1,7 @@
 from async_factory_boy.factory.sqlalchemy import AsyncSQLAlchemyFactory
 from factory import Faker, SubFactory
 
-from src.models import Menu
+from models import Menu
 
 
 class MenuFactory(AsyncSQLAlchemyFactory):

@@ -2,13 +2,13 @@ from typing import Optional, List
 
 from multimethod import multimethod
 
-from src.models import RestaurantManager, Menu, MenuCategory
-from src.exceptions import MenuNotFoundWithIdError, RestaurantNotFoundWithIdError
-from src.schemas import MenuRetrieveOut, \
+from models import RestaurantManager, Menu, MenuCategory
+from exceptions import MenuNotFoundWithIdError, RestaurantNotFoundWithIdError
+from schemas import MenuRetrieveOut, \
     MenuCreateIn, MenuCreateOut, \
     MenuUpdateIn, MenuUpdateOut
-from src.uow import SqlAlchemyUnitOfWork
-from src.utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership
+from uow import SqlAlchemyUnitOfWork
+from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
 from .category import MenuCategoryService
 

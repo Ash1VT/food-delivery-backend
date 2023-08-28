@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.api import api_router
+from api import api_router
 
 # App initialization #
 

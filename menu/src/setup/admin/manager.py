@@ -1,5 +1,5 @@
 from sqladmin import ModelView
-from src.models import RestaurantManager
+from models import RestaurantManager
 
 
 class RestaurantManagerAdmin(ModelView, model=RestaurantManager):

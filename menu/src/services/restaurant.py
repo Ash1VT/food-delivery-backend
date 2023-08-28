@@ -2,12 +2,12 @@ from typing import Optional, List
 
 from multimethod import multimethod
 
-from src.exceptions import RestaurantAlreadyExistsWithIdError, RestaurantNotFoundWithIdError
-from src.models import Restaurant, RestaurantManager, Menu
-from src.schemas import RestaurantRetrieveOut, RestaurantRetrieveForManagerOut, RestaurantRetrieveForUserOut, \
+from exceptions import RestaurantAlreadyExistsWithIdError, RestaurantNotFoundWithIdError
+from models import Restaurant, RestaurantManager, Menu
+from schemas import RestaurantRetrieveOut, RestaurantRetrieveForManagerOut, RestaurantRetrieveForUserOut, \
     RestaurantCreateIn, RestaurantCreateOut
-from src.utils import check_restaurant_manager_ownership, check_restaurant_manager_is_active
-from src.uow import SqlAlchemyUnitOfWork
+from utils import check_restaurant_manager_ownership, check_restaurant_manager_is_active
+from uow import SqlAlchemyUnitOfWork
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, DeleteMixin
 from .menu import MenuService
 

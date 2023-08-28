@@ -1,4 +1,4 @@
-from src.models import Menu
+from models import Menu
 from .base import DatabaseInstanceNotFoundError
 
 

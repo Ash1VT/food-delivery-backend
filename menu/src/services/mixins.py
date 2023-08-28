@@ -3,8 +3,8 @@ from typing import TypeVar, Generic, List
 
 from pydantic import BaseModel
 
-from src.models import CustomBase
-from src.uow import GenericUnitOfWork
+from models import CustomBase
+from uow import GenericUnitOfWork
 
 Model = TypeVar("Model", bound=CustomBase)
 RetrieveOut = TypeVar("RetrieveOut", bound=BaseModel)

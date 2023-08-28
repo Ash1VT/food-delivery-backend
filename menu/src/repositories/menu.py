@@ -3,7 +3,7 @@ from typing import Optional, List
 from sqlalchemy import Select
 from sqlalchemy.orm import selectinload
 
-from src.models import Menu, MenuCategory
+from models import Menu, MenuCategory
 from .generic import SQLAlchemyRepository
 
 

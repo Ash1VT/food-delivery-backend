@@ -4,7 +4,7 @@ from typing import TypeVar, Optional, Generic, List
 from sqlalchemy import select, insert, update, delete, Select, Insert, Update, Delete, exists
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models import CustomBase
+from models import CustomBase
 
 Model = TypeVar("Model", bound=CustomBase)
 

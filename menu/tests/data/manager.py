@@ -1,5 +1,5 @@
-from tests.factories import RestaurantManagerFactory, RestaurantFactory
-from src.models import RestaurantManager
+from models import RestaurantManager
+from ..factories import RestaurantManagerFactory, RestaurantFactory
 
 
 async def generate_restaurant_manager_create_data():

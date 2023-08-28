@@ -1,6 +1,6 @@
-from src.models import RestaurantManager
-from src.schemas import RestaurantManagerCreateIn, RestaurantManagerCreateOut
-from src.uow import SqlAlchemyUnitOfWork
+from models import RestaurantManager
+from schemas import RestaurantManagerCreateIn, RestaurantManagerCreateOut
+from uow import SqlAlchemyUnitOfWork
 from .mixins import CreateMixin, DeleteMixin
 
 

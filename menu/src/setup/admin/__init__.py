@@ -1,6 +1,6 @@
 from sqladmin import Admin
 
-from src.db import async_engine
+from db import async_engine
 from ..app import app
 
 from .menu import MenuAdmin

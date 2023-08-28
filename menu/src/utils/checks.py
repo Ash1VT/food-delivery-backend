@@ -1,6 +1,6 @@
 from typing import Optional
-from src.models import RestaurantManager
-from src.exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError
+from models import RestaurantManager
+from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError
 
 
 def check_restaurant_manager_is_active(restaurant_manager: RestaurantManager):
