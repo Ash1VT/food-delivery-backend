@@ -29,6 +29,17 @@ class RestaurantManagerBaseOut(RestaurantManagerBase, ABC):
     }
 
 
+# Retrieve
+
+class RestaurantManagerRetrieveOut(RestaurantManagerBaseOut):
+    """
+    Schema class for output representation of a retrieved restaurant manager.
+    """
+
+    is_active: bool
+    restaurant_id: int = Field(ge=0)
+
+
 # Create
 
 class RestaurantManagerCreateIn(RestaurantManagerBase):

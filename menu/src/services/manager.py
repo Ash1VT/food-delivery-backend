@@ -1,10 +1,13 @@
 from models import RestaurantManager
-from schemas import RestaurantManagerCreateIn, RestaurantManagerCreateOut
+from schemas import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
 from uow import SqlAlchemyUnitOfWork
-from .mixins import CreateMixin, DeleteMixin
+from exceptions import RestaurantManagerNotFoundWithIdError
+
+from .mixins import RetrieveMixin, CreateMixin, DeleteMixin
 
 
-class RestaurantManagerService(CreateMixin[RestaurantManager, RestaurantManagerCreateIn, RestaurantManagerCreateOut],
+class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManagerRetrieveOut],
+                               CreateMixin[RestaurantManager, RestaurantManagerCreateIn, RestaurantManagerCreateOut],
                                DeleteMixin[RestaurantManager]):
     """
     Service class for managing restaurant managers.
@@ -12,10 +15,31 @@ class RestaurantManagerService(CreateMixin[RestaurantManager, RestaurantManagerC
     This class provides methods for creating and deleting restaurant manager instances.
 
     Attributes:
+        schema_retrieve_out (RestaurantManagerRetrieveOut): The schema for output representation of retrieved instances.
         schema_create_out (RestaurantManagerCreateOut): The schema for output representation of created instances.
     """
 
+    schema_retrieve_out = RestaurantManagerRetrieveOut
     schema_create_out = RestaurantManagerCreateOut
+
+    async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantManager:
+        """
+        Retrieve a restaurant manager instance by its ID from the repository.
+
+        Args:
+            id (int): The ID of the restaurant manager to retrieve.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            RestaurantManager: The retrieved restaurant manager instance.
+        """
+
+        retrieved_instance = await uow.managers.retrieve(id, **kwargs)
+
+        if not retrieved_instance:
+            raise RestaurantManagerNotFoundWithIdError(id)
+
+        return retrieved_instance
 
     async def create_instance(self, item: RestaurantManagerCreateIn,
                               uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantManager:
