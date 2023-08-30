@@ -10,3 +10,4 @@ omit =
     */mixins.py
     */uow.py
     */generic.py
+    */grpc_files/generated/*
