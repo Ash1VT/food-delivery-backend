@@ -18,7 +18,7 @@ from schemas.category import MenuCategoryRetrieveOut, MenuCategoryCreateIn, \
 from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
 from schemas.restaurant import RestaurantRetrieveOut, RestaurantRetrieveForUserOut, \
     RestaurantRetrieveForManagerOut, RestaurantCreateIn, RestaurantCreateOut
-from schemas.manager import RestaurantManagerCreateIn, RestaurantManagerCreateOut
+from schemas.manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
 
 from .data.item import validate_menu_item, compare_menu_items, \
     generate_menu_item_create_data, generate_menu_item_create_data_nonexistent_restaurant, \
@@ -739,10 +739,12 @@ class TestRestaurantService(BaseTestRetrieveMixin[Restaurant, RestaurantService]
             assert compare_menus(menu, retrieved_restaurant.current_menu)
 
 
-class TestRestaurantManagerService(BaseTestCreateMixin[RestaurantManager, RestaurantManagerService],
+class TestRestaurantManagerService(BaseTestRetrieveMixin[RestaurantManager, RestaurantManagerService],
+                                   BaseTestCreateMixin[RestaurantManager, RestaurantManagerService],
                                    BaseTestDeleteMixin[RestaurantManagerService]):
     factory = RestaurantManagerFactory
     service_class = RestaurantManagerService
+    schema_retrieve_out = RestaurantManagerRetrieveOut
     schema_create_in = RestaurantManagerCreateIn
     schema_create_out = RestaurantManagerCreateOut
 

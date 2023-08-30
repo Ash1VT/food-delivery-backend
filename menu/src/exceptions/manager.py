@@ -1,5 +1,11 @@
 from models import RestaurantManager
-from .base import AppError
+from .base import AppError, DatabaseInstanceNotFoundError
+
+
+class RestaurantManagerNotFoundWithIdError(DatabaseInstanceNotFoundError):
+
+    def __init__(self, id: int):
+        super().__init__('id', id, RestaurantManager)
 
 
 class RestaurantManagerOwnershipError(AppError):

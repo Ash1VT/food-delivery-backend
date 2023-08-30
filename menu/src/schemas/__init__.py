@@ -9,4 +9,4 @@ from .menu import MenuRetrieveOut, \
     MenuUpdateIn, MenuUpdateOut
 from .restaurant import RestaurantRetrieveOut, RestaurantRetrieveForUserOut, RestaurantRetrieveForManagerOut, \
     RestaurantCreateIn, RestaurantCreateOut
-from .manager import RestaurantManagerCreateIn, RestaurantManagerCreateOut
+from .manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
