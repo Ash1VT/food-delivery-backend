@@ -7,6 +7,8 @@ from .utils import config_cache
 
 class Settings(BaseSettings):
     secret_key: str
+    permissions_grpc_server_host: str
+    permissions_grpc_server_port: str
 
 
 class DevelopSettings(Settings):
