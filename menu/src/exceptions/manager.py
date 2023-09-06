@@ -49,4 +49,5 @@ class RestaurantManagerNotActiveError(AppError):
 
     @property
     def message(self) -> str:
-        return f"Restaurant with id={self._restaurant_manager.restaurant_id} is not activated yet"
+        return f"Manager is not active to perform actions " \
+               f"with Restaurant with id={self._restaurant_manager.restaurant_id}"
