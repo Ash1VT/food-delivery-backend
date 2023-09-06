@@ -1,14 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-from .base import Base, CustomBase
-
-menu_categories_association = Table(
-    "menu_categories_association",
-    Base.metadata,
-    Column("menu_id", Integer, ForeignKey('menus.id'), primary_key=True),
-    Column("category_id", Integer, ForeignKey('menu_categories.id'), primary_key=True),
-)
+from .base import CustomBase
 
 
 class Menu(CustomBase):
@@ -19,9 +12,9 @@ class Menu(CustomBase):
 
     restaurant_id = Column(Integer, ForeignKey('restaurants.id', use_alter=True), nullable=False)
 
-    categories = relationship("MenuCategory", secondary="menu_categories_association", uselist=True)
+    categories = relationship("MenuCategory", back_populates='menu', uselist=True)
 
-    restaurant = relationship("Restaurant", back_populates="menus", foreign_keys=[restaurant_id], uselist=False)
+    restaurant = relationship("Restaurant", foreign_keys=[restaurant_id], uselist=False)
 
     def __str__(self):
         return self.name

@@ -16,12 +16,12 @@ class MenuCategory(CustomBase):
 
     name = Column(String, nullable=False)
 
-    restaurant_id = Column(Integer, ForeignKey('restaurants.id', use_alter=True), nullable=False)
+    menu_id = Column(Integer, ForeignKey('menus.id', use_alter=True), nullable=False)
+
+    menu = relationship("Menu", back_populates='categories', uselist=False)
 
     items = relationship("MenuItem", secondary="category_items_association", back_populates="categories",
-                         uselist=True)
-
-    restaurant = relationship("Restaurant", uselist=False)
+                         collection_class=set, uselist=True)
 
     def __str__(self):
         return self.name
