@@ -7,6 +7,5 @@ from .item import MenuItemRetrieveOut, \
 from .menu import MenuRetrieveOut, \
     MenuCreateIn, MenuCreateOut, \
     MenuUpdateIn, MenuUpdateOut
-from .restaurant import RestaurantRetrieveOut, RestaurantRetrieveForUserOut, RestaurantRetrieveForManagerOut, \
-    RestaurantCreateIn, RestaurantCreateOut
+from .restaurant import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantCreateOut
 from .manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut

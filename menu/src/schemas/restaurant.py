@@ -40,30 +40,6 @@ class RestaurantRetrieveOut(RestaurantBaseOut):
     pass
 
 
-class RestaurantRetrieveForUserOut(RestaurantRetrieveOut):
-    """
-    Schema class for output representation of a retrieved restaurant for a user.
-
-    Attributes:
-        current_menu (Optional[MenuRetrieveOut]): The retrieved current menu associated with the restaurant.
-    """
-
-    current_menu: Optional[MenuRetrieveOut]
-
-
-class RestaurantRetrieveForManagerOut(RestaurantRetrieveOut):
-    """
-    Schema class for output representation of a retrieved restaurant for a manager.
-
-    Attributes:
-        current_menu_id (Optional[int]): The ID of the current menu associated with the restaurant.
-        menus (List[MenuRetrieveOut]): A list of retrieved menus associated with the restaurant.
-    """
-
-    current_menu_id: Optional[int]
-    menus: List[MenuRetrieveOut]
-
-
 # Create
 
 class RestaurantCreateIn(RestaurantBase):
