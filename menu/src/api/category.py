@@ -38,4 +38,16 @@ async def add_item_to_category(category_id: int,
                                restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
                                uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
     menu_category_service = MenuCategoryService(restaurant_manager)
-    return await menu_category_service.add_menu_item(category_id, item_id, uow)
+    await menu_category_service.add_menu_item(category_id, item_id, uow)
+    return {}
+
+
+@router.delete('/{category_id}/items/{item_id}')
+@handle_app_errors
+async def remove_item_from_category(category_id: int,
+                                    item_id: int,
+                                    restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
+                                    uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    menu_category_service = MenuCategoryService(restaurant_manager)
+    await menu_category_service.remove_menu_item(category_id, item_id, uow)
+    return {}

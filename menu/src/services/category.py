@@ -4,7 +4,7 @@ from multimethod import multimethod
 
 from exceptions import MenuNotFoundWithIdError, MenuItemNotFoundWithIdError
 from models import RestaurantManager, MenuCategory, MenuItem, Restaurant
-from exceptions.item import MenuItemAlreadyInCategoryError
+from exceptions.item import MenuItemAlreadyInCategoryError, MenuItemNotInCategoryError
 from exceptions.category import MenuCategoryNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError
 from uow import SqlAlchemyUnitOfWork
@@ -184,7 +184,6 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
 
         return await super().list(uow, fetch_items=True, **kwargs)
 
-    @multimethod
     async def add_menu_item(self, category_id: int, item_id: int,
                             uow: SqlAlchemyUnitOfWork,
                             **kwargs):
@@ -222,17 +221,15 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
 
         category.items.add(item)
 
-    @multimethod
-    async def add_menu_item(self, category_id: int,
-                            item: MenuItem,
-                            uow: SqlAlchemyUnitOfWork,
-                            **kwargs):
+    async def remove_menu_item(self, category_id: int, item_id: int,
+                               uow: SqlAlchemyUnitOfWork,
+                               **kwargs):
         """
-        Adds a menu item to a menu category by category ID and menu item instance.
+        Removes a menu item from a menu category by their IDs.
 
         Args:
             category_id (int): ID of the menu category.
-            item (MenuItem): The menu item instance to add.
+            item_id (int): ID of the menu item.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
             **kwargs: Additional keyword arguments.
         """
@@ -240,6 +237,11 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
         check_restaurant_manager_is_active(self._restaurant_manager)
 
         # Check if restaurant manager owns Item
+
+        item = await uow.items.retrieve(item_id)
+
+        if not item:
+            raise MenuItemNotFoundWithIdError(item_id)
 
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
 
@@ -249,9 +251,43 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
 
         await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, category.menu_id, uow)
 
-        # Append
+        # Remove
 
-        if item in category.items:
-            raise MenuItemAlreadyInCategoryError(category_id)
+        if item not in category.items:
+            raise MenuItemNotInCategoryError(category_id)
 
-        category.items.add(item)
+        category.items.remove(item)
+
+    # @multimethod
+    # async def add_menu_item(self, category_id: int,
+    #                         item: MenuItem,
+    #                         uow: SqlAlchemyUnitOfWork,
+    #                         **kwargs):
+    #     """
+    #     Adds a menu item to a menu category by category ID and menu item instance.
+    #
+    #     Args:
+    #         category_id (int): ID of the menu category.
+    #         item (MenuItem): The menu item instance to add.
+    #         uow (SqlAlchemyUnitOfWork): The unit of work instance.
+    #         **kwargs: Additional keyword arguments.
+    #     """
+    #
+    #     check_restaurant_manager_is_active(self._restaurant_manager)
+    #
+    #     # Check if restaurant manager owns Item
+    #
+    #     check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
+    #
+    #     # Check if restaurant manager owns Category
+    #
+    #     category = await self.retrieve_instance(category_id, uow, fetch_items=True)
+    #
+    #     await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, category.menu_id, uow)
+    #
+    #     # Append
+    #
+    #     if item in category.items:
+    #         raise MenuItemAlreadyInCategoryError(category_id)
+    #
+    #     category.items.add(item)
