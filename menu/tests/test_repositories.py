@@ -5,7 +5,6 @@ import pytest
 
 from collections import Counter
 
-from sqlalchemy.exc import MissingGreenlet
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import MenuItem, MenuCategory, Menu, Restaurant, RestaurantManager
@@ -43,7 +42,7 @@ class BaseTestRepository(Generic[Model, Repository], ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_instance_update_data(self) -> dict:
+    async def generate_instance_update_data(self) -> dict:
         raise NotImplementedError
 
     @pytest.fixture(scope='function')
@@ -74,13 +73,13 @@ class BaseTestRepository(Generic[Model, Repository], ABC):
 
     async def test_update(self, repository: Repository):
         instance = await self.factory.create()
-        update_data = self.generate_instance_update_data()
+        update_data = await self.generate_instance_update_data()
         updated_instance = await repository.update(id=instance.id, data=update_data)
 
         assert self.validate_instance(updated_instance, update_data)
 
     async def test_update_nonexistent(self, repository: Repository):
-        update_data = self.generate_instance_update_data()
+        update_data = await self.generate_instance_update_data()
         updated_instance = await repository.update(id=0, data=update_data)
 
         assert updated_instance is None
@@ -109,8 +108,8 @@ class TestMenuItemRepository(BaseTestRepository[MenuItem, MenuItemRepository]):
     async def generate_instance_create_data(self) -> dict:
         return await generate_menu_item_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_menu_item_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_menu_item_update_data()
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, session: AsyncSession):
@@ -131,19 +130,45 @@ class TestMenuCategoryRepository(BaseTestRepository[MenuCategory, MenuCategoryRe
     async def generate_instance_create_data(self) -> dict:
         return await generate_menu_category_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_menu_category_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_menu_category_update_data()
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, session: AsyncSession):
         MenuCategoryFactory._meta.sqlalchemy_session = session
+        MenuFactory._meta.sqlalchemy_session = session
         RestaurantFactory._meta.sqlalchemy_session = session
+
+    async def test_list_menu_categories(self, repository: MenuCategoryRepository):
+        await MenuCategoryFactory.create()
+
+        menu = await MenuFactory.create()
+        menu_categories_list = await MenuCategoryFactory.create_batch(menu=menu, size=4)
+
+        menu_category_list_db = await repository.list_menu_categories(menu_id=menu.id)
+
+        assert all((self.compare_instances(menu_category, menu_category_db)
+                    for menu_category, menu_category_db in zip(menu_categories_list, menu_category_list_db)))
+
+    async def test_list_menu_categories_fetch_items(self, repository: MenuCategoryRepository):
+        await MenuCategoryFactory.create()
+
+        menu = await MenuFactory.create()
+        menu_categories_list = await MenuCategoryFactory.create_batch(menu=menu, size=4)
+
+        menu_category_list_db = await repository.list_menu_categories(menu_id=menu.id, fetch_items=True)
+
+        assert all((self.compare_instances(menu_category, menu_category_db)
+                    for menu_category, menu_category_db in zip(menu_categories_list, menu_category_list_db)))
+
+        for menu_category in menu_category_list_db:
+            _ = menu_category.items
 
     async def test_retrieve_fetch_items(self, repository: MenuCategoryRepository):
         menu_category = await MenuCategoryFactory.create()
         menu_category_db = await repository.retrieve(id=menu_category.id, fetch_items=True)
 
-        assert menu_category == menu_category_db
+        assert self.compare_instances(menu_category, menu_category_db)
 
         _ = menu_category_db.items
 
@@ -151,7 +176,8 @@ class TestMenuCategoryRepository(BaseTestRepository[MenuCategory, MenuCategoryRe
         menu_categories_list = await MenuCategoryFactory.create_batch(size=4)
         menu_category_list_db = await repository.list(fetch_items=True)
 
-        assert Counter(menu_categories_list) == Counter(menu_category_list_db)
+        assert all((self.compare_instances(menu_category, menu_category_db)
+                    for menu_category, menu_category_db in zip(menu_categories_list, menu_category_list_db)))
 
         for menu_category in menu_category_list_db:
             _ = menu_category.items
@@ -170,8 +196,8 @@ class TestMenuRepository(BaseTestRepository[Menu, MenuRepository]):
     async def generate_instance_create_data(self) -> dict:
         return await generate_menu_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_menu_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_menu_update_data()
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, session: AsyncSession):
@@ -182,7 +208,7 @@ class TestMenuRepository(BaseTestRepository[Menu, MenuRepository]):
         menu = await MenuFactory.create()
         menu_db = await repository.retrieve(id=menu.id, fetch_categories=True)
 
-        assert menu == menu_db
+        assert self.compare_instances(menu, menu_db)
 
         _ = menu_db.categories
 
@@ -190,10 +216,32 @@ class TestMenuRepository(BaseTestRepository[Menu, MenuRepository]):
         menus_list = await MenuFactory.create_batch(size=4)
         menus_list_db = await repository.list(fetch_categories=True)
 
-        assert Counter(menus_list) == Counter(menus_list_db)
+        assert all((self.compare_instances(menu, menu_db)
+                    for menu, menu_db in zip(menus_list, menus_list_db)))
 
         for menu in menus_list_db:
             _ = menu.categories
+
+    async def test_retrieve_current_menu(self, repository: MenuRepository, session: AsyncSession):
+        restaurant = await RestaurantFactory.create()
+        menu = await MenuFactory.create(restaurant=restaurant)
+
+        restaurant.current_menu_id = menu.id
+        await session.commit()
+
+        menu_db = await repository.retrieve_current_restaurant_menu(restaurant.id, fetch_categories=True)
+
+        assert self.compare_instances(menu, menu_db)
+
+    async def test_list_by_restaurant(self, repository: MenuRepository):
+        await MenuFactory.create()
+        restaurant = await RestaurantFactory.create()
+
+        menus_list = await MenuFactory.create_batch(restaurant=restaurant, size=4)
+        menus_list_db = await repository.list_restaurant_menus(restaurant_id=restaurant.id, fetch_categories=True)
+
+        assert all((self.compare_instances(menu, menu_db)
+                    for menu, menu_db in zip(menus_list, menus_list_db)))
 
 
 class TestRestaurantRepository(BaseTestRepository[Restaurant, RestaurantRepository]):
@@ -209,70 +257,12 @@ class TestRestaurantRepository(BaseTestRepository[Restaurant, RestaurantReposito
     async def generate_instance_create_data(self) -> dict:
         return await generate_restaurant_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_restaurant_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_restaurant_update_data()
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, session: AsyncSession):
         RestaurantFactory._meta.sqlalchemy_session = session
-
-    async def test_retrieve_fetch_menus(self, repository: RestaurantRepository):
-        restaurant = await RestaurantFactory.create()
-        restaurant_db = await repository.retrieve(id=restaurant.id, fetch_menus=True)
-
-        assert restaurant == restaurant_db
-
-        _ = restaurant_db.menus
-
-    async def test_retrieve_fetch_current_menu(self, repository: RestaurantRepository):
-        restaurant = await RestaurantFactory.create()
-        restaurant_db = await repository.retrieve(id=restaurant.id, fetch_current_menu=True)
-
-        assert restaurant == restaurant_db
-
-        _ = restaurant_db.current_menu
-
-        with pytest.raises(MissingGreenlet):
-            _ = restaurant_db.menus
-
-    async def test_retrieve_fetch_all(self, repository: RestaurantRepository):
-        restaurant = await RestaurantFactory.create()
-        restaurant_db = await repository.retrieve(id=restaurant.id, fetch_menus=True, fetch_current_menu=True)
-
-        assert restaurant == restaurant_db
-
-        _ = restaurant_db.menus
-        _ = restaurant_db.current_menu
-
-    async def test_list_fetch_menus(self, repository: RestaurantRepository):
-        restaurant_list = await RestaurantFactory.create_batch(size=4)
-        restaurant_list_db = await repository.list(fetch_menus=True)
-
-        assert Counter(restaurant_list) == Counter(restaurant_list_db)
-
-        for restaurant in restaurant_list_db:
-            _ = restaurant.menus
-
-    async def test_list_fetch_current_menu(self, repository: RestaurantRepository):
-        restaurant_list = await RestaurantFactory.create_batch(size=4)
-        restaurant_list_db = await repository.list(fetch_current_menu=True)
-
-        assert Counter(restaurant_list) == Counter(restaurant_list_db)
-
-        for restaurant in restaurant_list_db:
-            _ = restaurant.current_menu
-            with pytest.raises(MissingGreenlet):
-                _ = restaurant.menus
-
-    async def test_list_fetch_all(self, repository: RestaurantRepository):
-        restaurant_list = await RestaurantFactory.create_batch(size=4)
-        restaurant_list_db = await repository.list(fetch_menus=True, fetch_current_menu=True)
-
-        assert Counter(restaurant_list) == Counter(restaurant_list_db)
-
-        for restaurant in restaurant_list_db:
-            _ = restaurant.menus
-            _ = restaurant.current_menu
 
 
 class TestRestaurantManagerRepository(BaseTestRepository[RestaurantManager, RestaurantManagerRepository]):
@@ -288,8 +278,8 @@ class TestRestaurantManagerRepository(BaseTestRepository[RestaurantManager, Rest
     async def generate_instance_create_data(self) -> dict:
         return await generate_restaurant_manager_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_restaurant_manager_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_restaurant_manager_update_data()
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, session: AsyncSession):
