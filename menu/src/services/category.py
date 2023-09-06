@@ -2,16 +2,18 @@ from typing import List, Optional
 
 from multimethod import multimethod
 
+from exceptions import MenuNotFoundWithIdError, MenuItemNotFoundWithIdError
 from models import RestaurantManager, MenuCategory, MenuItem, Restaurant
+from exceptions.item import MenuItemAlreadyInCategoryError
 from exceptions.category import MenuCategoryNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError
 from uow import SqlAlchemyUnitOfWork
 
 from schemas import MenuCategoryCreateIn, MenuCategoryUpdateIn, MenuCategoryRetrieveOut, \
     MenuCategoryCreateOut, MenuCategoryUpdateOut
-from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership
+from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership_on_restaurant, \
+    check_restaurant_manager_ownership_on_menu
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
-from .item import MenuItemService
 
 
 class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
@@ -59,12 +61,12 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
             MenuCategory: The retrieved menu category instance.
         """
 
-        retrieved_instance = await uow.categories.retrieve(id, fetch_items=fetch_items, **kwargs)
+        retrieved_menu_category = await uow.categories.retrieve(id, fetch_items=fetch_items, **kwargs)
 
-        if not retrieved_instance:
+        if not retrieved_menu_category:
             raise MenuCategoryNotFoundWithIdError(id)
 
-        return retrieved_instance
+        return retrieved_menu_category
 
     async def list_instances(self, uow: SqlAlchemyUnitOfWork,
                              fetch_items: bool = False, **kwargs) -> List[MenuCategory]:
@@ -93,11 +95,13 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
             MenuCategory: The created menu category instance.
         """
 
-        if not await uow.restaurants.exists(item.restaurant_id):
-            raise RestaurantNotFoundWithIdError(item.restaurant_id)
-
         check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, item.restaurant_id)
+
+        # Check if restaurant manager owns Menu
+
+        await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, item.menu_id, uow)
+
+        # Create
 
         data = item.model_dump()
 
@@ -118,29 +122,38 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
             MenuCategory: The updated menu category instance.
         """
 
-        retrieved_instance = await self.retrieve_instance(id, uow)
-
         check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, retrieved_instance.restaurant_id)
+
+        # Check if restaurant manager owns Category
+
+        retrieved_menu_category = await self.retrieve_instance(id, uow)
+
+        await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, retrieved_menu_category.menu_id, uow)
+
+        # Update
 
         data = item.model_dump()
 
         return await uow.categories.update(id, data, **kwargs)
 
-    async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, commit: bool = True, **kwargs):
+    async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
         Delete a menu category instance by its ID from the repository.
 
         Args:
             id (int): The ID of the menu category to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
-            commit (bool, optional): Whether to commit the deletion. Defaults to True.
         """
 
-        retrieved_instance = await self.retrieve_instance(id, uow)
-
         check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, retrieved_instance.restaurant_id)
+
+        # Check if restaurant manager owns Category
+
+        retrieved_menu_category = await self.retrieve_instance(id, uow)
+
+        await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, retrieved_menu_category.menu_id, uow)
+
+        # Delete
 
         await uow.categories.delete(id, **kwargs)
 
@@ -173,7 +186,6 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
 
     @multimethod
     async def add_menu_item(self, category_id: int, item_id: int,
-                            menu_item_service: MenuItemService,
                             uow: SqlAlchemyUnitOfWork,
                             **kwargs):
         """
@@ -182,19 +194,33 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
         Args:
             category_id (int): ID of the menu category.
             item_id (int): ID of the menu item.
-            menu_item_service (MenuItemService): The menu item service instance.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
             **kwargs: Additional keyword arguments.
         """
 
-        category = await self.retrieve_instance(category_id, uow, fetch_items=True)
-        item = await menu_item_service.retrieve_instance(item_id, uow)
-
         check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, category.restaurant_id)
-        check_restaurant_manager_ownership(self._restaurant_manager, item.restaurant_id)
 
-        category.items.append(item)
+        # Check if restaurant manager owns Item
+
+        item = await uow.items.retrieve(item_id)
+
+        if not item:
+            raise MenuItemNotFoundWithIdError(item_id)
+
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
+
+        # Check if restaurant manager owns Category
+
+        category = await self.retrieve_instance(category_id, uow, fetch_items=True)
+
+        await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, category.menu_id, uow)
+
+        # Append
+
+        if item in category.items:
+            raise MenuItemAlreadyInCategoryError(category_id)
+
+        category.items.add(item)
 
     @multimethod
     async def add_menu_item(self, category_id: int,
@@ -211,10 +237,21 @@ class MenuCategoryService(RetrieveMixin[MenuCategory, MenuCategoryRetrieveOut],
             **kwargs: Additional keyword arguments.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Item
+
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
+
+        # Check if restaurant manager owns Category
+
         category = await self.retrieve_instance(category_id, uow, fetch_items=True)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, category.restaurant_id)
-        check_restaurant_manager_ownership(self._restaurant_manager, item.restaurant_id)
+        await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, category.menu_id, uow)
 
-        category.items.append(item)
+        # Append
+
+        if item in category.items:
+            raise MenuItemAlreadyInCategoryError(category_id)
+
+        category.items.add(item)

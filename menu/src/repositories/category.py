@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select
 from sqlalchemy.orm import selectinload
 
 from models import MenuCategory
@@ -12,10 +12,10 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
 
     model = MenuCategory
 
-    def __get_stmt_with_options(self,
-                                stmt: Select,
-                                fetch_items: bool = False,
-                                **kwargs) -> Select:
+    def __get_select_stmt_with_options(self,
+                                       stmt: Select,
+                                       fetch_items: bool = False,
+                                       **kwargs) -> Select:
         """Modify the SELECT statement to include additional options.
 
         Args:
@@ -51,9 +51,9 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
 
         stmt = super()._get_retrieve_stmt(id=id, **kwargs)
 
-        stmt = self.__get_stmt_with_options(stmt=stmt,
-                                            fetch_items=fetch_items,
-                                            **kwargs)
+        stmt = self.__get_select_stmt_with_options(stmt=stmt,
+                                                   fetch_items=fetch_items,
+                                                   **kwargs)
 
         return stmt
 
@@ -73,9 +73,34 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
 
         stmt = super()._get_list_stmt(**kwargs)
 
-        stmt = self.__get_stmt_with_options(stmt=stmt,
-                                            fetch_items=fetch_items,
-                                            **kwargs)
+        stmt = self.__get_select_stmt_with_options(stmt=stmt,
+                                                   fetch_items=fetch_items,
+                                                   **kwargs)
+
+        return stmt
+
+    def _get_list_menu_categories_stmt(self,
+                                       menu_id: int,
+                                       fetch_items: bool = False,
+                                       **kwargs) -> Select:
+        """Create a SELECT statement to retrieve a list of menu categories, which belong to a menu
+        with optional additional data.
+
+        Args:
+            menu_id (int): The ID of the menu.
+            fetch_items (bool, optional): Whether to fetch associated items for each menu category.
+                Default is False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Select: The SELECT statement to retrieve the list of menu categories.
+        """
+
+        stmt = select(MenuCategory).where(MenuCategory.menu_id == menu_id)
+
+        stmt = self.__get_select_stmt_with_options(stmt=stmt,
+                                                   fetch_items=fetch_items,
+                                                   **kwargs)
 
         return stmt
 
@@ -119,3 +144,28 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
 
         return await super().list(fetch_items=fetch_items,
                                   **kwargs)
+
+    async def list_menu_categories(self,
+                                   menu_id: int,
+                                   fetch_items: bool = False,
+                                   **kwargs) -> List[MenuCategory]:
+        """Retrieve a list of menu categories, which belong to a menu with optional additional data.
+
+        Args:
+            menu_id (int): The ID of the menu.
+            fetch_items (bool, optional): Whether to fetch associated items for each menu category. Default is False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[MenuCategory]: List of menu categories.
+
+        Note:
+            When `fetch_items` is True, associated items are fetched for each menu category in the list.
+        """
+
+        stmt = self._get_list_menu_categories_stmt(menu_id=menu_id,
+                                                   fetch_items=fetch_items, **kwargs)
+
+        result = await self._session.execute(stmt)
+
+        return [r[0] for r in result.fetchall()]
