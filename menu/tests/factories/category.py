@@ -7,7 +7,7 @@ from models import MenuCategory
 class MenuCategoryFactory(AsyncSQLAlchemyFactory):
     name = Faker('word')
 
-    restaurant = SubFactory('tests.factories.RestaurantFactory')
+    menu = SubFactory('tests.factories.MenuFactory')
 
     class Meta:
         model = MenuCategory

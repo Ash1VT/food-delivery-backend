@@ -14,7 +14,7 @@ async def generate_menu_item_create_data(restaurant: Restaurant = None):
     }
 
 
-def generate_menu_item_create_data_nonexistent_restaurant():
+async def generate_menu_item_create_data_nonexistent_restaurant():
     menu_item = MenuItemFactory.build()
     return {
         'name': menu_item.name,
@@ -24,7 +24,7 @@ def generate_menu_item_create_data_nonexistent_restaurant():
     }
 
 
-def generate_menu_item_update_data():
+async def generate_menu_item_update_data():
     menu_item = MenuItemFactory.build()
     return {
         'name': menu_item.name,
