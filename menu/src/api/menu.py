@@ -10,7 +10,6 @@ from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdat
 from services import MenuCategoryService, MenuService, RestaurantManagerService
 from decorators import handle_app_errors
 
-
 router = APIRouter(
     prefix='/menus'
 )
@@ -33,3 +32,13 @@ async def update_menu(menu_id: int,
                       uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
     menu_service = MenuService(restaurant_manager)
     return await menu_service.update(menu_id, menu, uow)
+
+
+@router.delete('/{menu_id}')
+@handle_app_errors
+async def delete_menu(menu_id: int,
+                      restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
+                      uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    menu_service = MenuService(restaurant_manager)
+    await menu_service.delete(menu_id, uow)
+    return {}

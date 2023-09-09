@@ -31,6 +31,16 @@ async def update_category(category_id: int,
     return await menu_category_service.update(category_id, menu_category, uow)
 
 
+@router.delete('/{category_id}')
+@handle_app_errors
+async def delete_category(category_id: int,
+                          restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
+                          uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    menu_category_service = MenuCategoryService(restaurant_manager)
+    await menu_category_service.delete(category_id, uow)
+    return {}
+
+
 @router.post('/{category_id}/items/{item_id}')
 @handle_app_errors
 async def add_item_to_category(category_id: int,
