@@ -33,8 +33,8 @@ class RestaurantManagerOwnershipError(AppError):
     @property
     def message(self) -> str:
         return f"Manager with id={self._restaurant_manager.id}" \
-               f" does not own Restaurant with id={self._restaurant_id}" \
-               f" to perform write operations connected with it"
+               f" must own Restaurant with id={self._restaurant_id}" \
+               f" to perform this operation"
 
 
 class RestaurantManagerNotActiveError(AppError):
@@ -49,4 +49,5 @@ class RestaurantManagerNotActiveError(AppError):
 
     @property
     def message(self) -> str:
-        return f"Restaurant with id={self._restaurant_manager.restaurant_id} is not activated yet"
+        return f"Manager is not active to perform actions " \
+               f"with Restaurant with id={self._restaurant_manager.restaurant_id}"

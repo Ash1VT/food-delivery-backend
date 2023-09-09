@@ -9,22 +9,23 @@ from .factories import MenuItemFactory, MenuCategoryFactory, MenuFactory, Restau
 from models import MenuItem, MenuCategory, Menu, Restaurant, RestaurantManager
 from services import MenuItemService, MenuCategoryService, MenuService, RestaurantService, RestaurantManagerService
 from uow import SqlAlchemyUnitOfWork
-from exceptions import DatabaseInstanceNotFoundError, RestaurantNotFoundWithIdError, \
-    RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, RestaurantAlreadyExistsWithIdError
+from exceptions import DatabaseInstanceNotFoundError, MenuCategoryNotFoundWithIdError, MenuItemNotFoundWithIdError, \
+    RestaurantNotFoundWithIdError, MenuItemAlreadyInCategoryError, \
+    RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, RestaurantAlreadyExistsWithIdError, \
+    CurrentMenuMissingError, MenuItemNotInCategoryError
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, \
     MenuItemUpdateIn, MenuItemUpdateOut
 from schemas.category import MenuCategoryRetrieveOut, MenuCategoryCreateIn, \
     MenuCategoryCreateOut, MenuCategoryUpdateIn, MenuCategoryUpdateOut
 from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
-from schemas.restaurant import RestaurantRetrieveOut, RestaurantRetrieveForUserOut, \
-    RestaurantRetrieveForManagerOut, RestaurantCreateIn, RestaurantCreateOut
+from schemas.restaurant import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantCreateOut
 from schemas.manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
 
 from .data.item import validate_menu_item, compare_menu_items, \
     generate_menu_item_create_data, generate_menu_item_create_data_nonexistent_restaurant, \
     generate_menu_item_update_data
 from .data.category import validate_menu_category, compare_menu_categories, \
-    generate_menu_category_create_data, generate_menu_category_create_data_nonexistent_restaurant, \
+    generate_menu_category_create_data, generate_menu_category_create_data_nonexistent_menu, \
     generate_menu_category_update_data
 from .data.menu import validate_menu, compare_menus, generate_menu_create_data, \
     generate_menu_create_data_nonexistent_restaurant, generate_menu_update_data
@@ -148,7 +149,7 @@ class BaseTestUpdateMixin(Generic[Model, Service], ABC):
         return self.service_class()
 
     @abstractmethod
-    def generate_instance_update_data(self) -> dict:
+    async def generate_instance_update_data(self) -> dict:
         raise NotImplementedError
 
     @abstractmethod
@@ -158,7 +159,7 @@ class BaseTestUpdateMixin(Generic[Model, Service], ABC):
     async def test_update_instance(self, service: Service, uow: SqlAlchemyUnitOfWork):
         instance = await self.factory.create()
 
-        update_data_dict = self.generate_instance_update_data()
+        update_data_dict = await self.generate_instance_update_data()
         update_data = self.schema_update_in(**update_data_dict)
 
         updated_instance = await service.update_instance(instance.id, update_data, uow)
@@ -166,7 +167,7 @@ class BaseTestUpdateMixin(Generic[Model, Service], ABC):
         assert self.validate_instance(updated_instance, update_data_dict)
 
     async def test_update_instance_nonexistent(self, service: Service, uow: SqlAlchemyUnitOfWork):
-        update_data_dict = self.generate_instance_update_data()
+        update_data_dict = await self.generate_instance_update_data()
         update_data = self.schema_update_in(**update_data_dict)
 
         with pytest.raises(DatabaseInstanceNotFoundError):
@@ -175,7 +176,7 @@ class BaseTestUpdateMixin(Generic[Model, Service], ABC):
     async def test_update(self, service: Service, uow: SqlAlchemyUnitOfWork):
         instance = await self.factory.create()
 
-        update_data_dict = self.generate_instance_update_data()
+        update_data_dict = await self.generate_instance_update_data()
         update_data = self.schema_update_in(**update_data_dict)
 
         updated_schema = await service.update(instance.id, update_data, uow)
@@ -229,7 +230,7 @@ class BaseTestCreateWithRestaurant(Generic[Service], ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
+    async def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
         raise NotImplementedError
 
     @abstractmethod
@@ -237,7 +238,7 @@ class BaseTestCreateWithRestaurant(Generic[Service], ABC):
         raise NotImplementedError
 
     async def test_create_instance_nonexistent_restaurant(self, service: Service, uow: SqlAlchemyUnitOfWork):
-        create_data_dict = self.generate_instance_create_data_nonexistent_restaurant()
+        create_data_dict = await self.generate_instance_create_data_nonexistent_restaurant()
         create_data = self.schema_create_in(**create_data_dict)
 
         with pytest.raises(RestaurantNotFoundWithIdError):
@@ -280,7 +281,7 @@ class BaseTestUpdateWithRestaurant(Generic[Service], ABC):
         return self.service_class()
 
     @abstractmethod
-    def generate_instance_update_data(self) -> dict:
+    async def generate_instance_update_data(self) -> dict:
         raise NotImplementedError
 
     @abstractmethod
@@ -306,7 +307,7 @@ class BaseTestUpdateWithRestaurant(Generic[Service], ABC):
         else:
             instance = await self.factory.create()
 
-        update_data_dict = self.generate_instance_update_data()
+        update_data_dict = await self.generate_instance_update_data()
         update_data = self.schema_update_in(**update_data_dict)
 
         with expectation:
@@ -384,21 +385,72 @@ class TestMenuItemService(BaseTestRetrieveMixin[MenuItem, MenuItemService],
     async def generate_instance_create_data(self, restaurant: Optional[Restaurant] = None) -> dict:
         return await generate_menu_item_create_data(restaurant=restaurant)
 
-    def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
-        return generate_menu_item_create_data_nonexistent_restaurant()
+    async def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
+        return await generate_menu_item_create_data_nonexistent_restaurant()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_menu_item_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_menu_item_update_data()
+
+    async def test_list_restaurant_items_instances(self, service: MenuItemService, uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+        await MenuItemFactory.create()
+
+        menu_item_list = await MenuItemFactory.create_batch(restaurant=restaurant, size=4)
+        retrieved_menu_item_list = await service.list_restaurant_items_instances(restaurant.id, uow)
+
+        assert all((self.compare_instances(menu_item, retrieved_instance)
+                    for menu_item, retrieved_instance in zip(menu_item_list, retrieved_menu_item_list)))
+
+    @pytest.mark.parametrize(
+        "is_manager_active, manager_owns_restaurant, expectation",
+        [
+            (False, True, pytest.raises(RestaurantManagerNotActiveError)),
+            (True, False, pytest.raises(RestaurantManagerOwnershipError)),
+            (True, True, does_not_raise())
+        ]
+    )
+    async def test_list_restaurant_items_instances_ownership(self, is_manager_active: bool,
+                                                             manager_owns_restaurant: bool,
+                                                             expectation,
+                                                             uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+
+        if manager_owns_restaurant:
+            restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active,
+                                                                       restaurant=restaurant)
+        else:
+            restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active)
+
+        service = MenuItemService(restaurant_manager=restaurant_manager)
+        await MenuItemFactory.create()
+
+        menu_item_list = await self.factory.create_batch(restaurant=restaurant, size=4)
+
+        with expectation:
+            retrieved_menu_item_list = await service.list_restaurant_items_instances(restaurant.id, uow)
+
+            assert all((self.compare_instances(menu_item, retrieved_instance)
+                        for menu_item, retrieved_instance in zip(menu_item_list, retrieved_menu_item_list)))
+
+    async def test_list_restaurant_items(self, service: MenuItemService, uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+        await MenuItemFactory.create()
+
+        await MenuItemFactory.create_batch(restaurant=restaurant, size=4)
+
+        retrieved_schema_list = await service.list_restaurant_items(restaurant.id, uow)
+        expected_schema_list = [MenuItemRetrieveOut(**retrieved_schema.model_dump()) for retrieved_schema in
+                                retrieved_schema_list]
+
+        assert all(retrieved_schema.model_dump() == expected_schema.model_dump()
+                   for retrieved_schema, expected_schema in zip(retrieved_schema_list, expected_schema_list))
 
 
 class TestMenuCategoryService(BaseTestRetrieveMixin[MenuCategory, MenuCategoryService],
                               BaseTestListMixin[MenuCategory, MenuCategoryService],
                               BaseTestCreateMixin[MenuCategory, MenuCategoryService],
                               BaseTestUpdateMixin[MenuCategory, MenuCategoryService],
-                              BaseTestDeleteMixin[MenuCategoryService],
-                              BaseTestCreateWithRestaurant[MenuItemService],
-                              BaseTestUpdateWithRestaurant[MenuItemService],
-                              BaseTestDeleteWithRestaurant[MenuItemService]):
+                              BaseTestDeleteMixin[MenuCategoryService]):
     factory = MenuCategoryFactory
     service_class = MenuCategoryService
     schema_retrieve_out = MenuCategoryRetrieveOut
@@ -411,6 +463,7 @@ class TestMenuCategoryService(BaseTestRetrieveMixin[MenuCategory, MenuCategorySe
     def setup(self, uow):
         MenuItemFactory._meta.sqlalchemy_session = uow._session
         MenuCategoryFactory._meta.sqlalchemy_session = uow._session
+        MenuFactory._meta.sqlalchemy_session = uow._session
         RestaurantFactory._meta.sqlalchemy_session = uow._session
         RestaurantManagerFactory._meta.sqlalchemy_session = uow._session
 
@@ -420,63 +473,159 @@ class TestMenuCategoryService(BaseTestRetrieveMixin[MenuCategory, MenuCategorySe
     def compare_instances(self, instance_1: MenuCategory, instance_2: MenuCategory) -> bool:
         return compare_menu_categories(instance_1, instance_2)
 
-    @multimethod
     async def generate_instance_create_data(self) -> dict:
         return await generate_menu_category_create_data()
 
-    @multimethod
-    async def generate_instance_create_data(self, restaurant: Optional[Restaurant] = None) -> dict:
-        return await generate_menu_category_create_data(restaurant=restaurant)
-
-    def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
-        return generate_menu_category_create_data_nonexistent_restaurant()
-
-    def generate_instance_update_data(self) -> dict:
-        return generate_menu_category_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_menu_category_update_data()
 
     @pytest.mark.parametrize(
-        "is_manager_active, manager_owns_category_restaurant, manager_owns_item_restaurant, use_instance, expectation",
+        "is_manager_active, manager_owns_category_restaurant, manager_owns_item_restaurant, expectation",
         [
-            (False, True, True, False, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, False, True, False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, False, False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, True, False, does_not_raise()),
-            # Same tests but with passing instance of menu item
-            (False, True, True, True, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, False, True, True, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, False, True, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, True, True, does_not_raise()),
+            (False, True, True, pytest.raises(RestaurantManagerNotActiveError)),
+            (True, False, True, pytest.raises(RestaurantManagerOwnershipError)),
+            (True, True, False, pytest.raises(RestaurantManagerOwnershipError)),
+            (True, True, True, does_not_raise()),
         ]
     )
-    async def test_add_menu_item(self, is_manager_active: bool,
-                                 manager_owns_category_restaurant: bool,
-                                 manager_owns_item_restaurant: bool,
-                                 use_instance: bool,
-                                 expectation, uow: SqlAlchemyUnitOfWork):
+    async def test_add_menu_item_ownership(self, is_manager_active: bool,
+                                           manager_owns_category_restaurant: bool,
+                                           manager_owns_item_restaurant: bool,
+                                           expectation, uow: SqlAlchemyUnitOfWork):
         restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active)
 
         category_service = MenuCategoryService(restaurant_manager=restaurant_manager)
 
         if manager_owns_category_restaurant:
-            menu_category = await MenuCategoryFactory.create(restaurant=restaurant_manager.restaurant)
+            menu = await MenuFactory.create(restaurant=restaurant_manager.restaurant)
+            category = await MenuCategoryFactory.create(menu=menu)
         else:
-            menu_category = await MenuCategoryFactory.create()
+            category = await MenuCategoryFactory.create()
 
         if manager_owns_item_restaurant:
-            menu_item = await MenuItemFactory.create(restaurant=restaurant_manager.restaurant)
+            item = await MenuItemFactory.create(restaurant=restaurant_manager.restaurant)
         else:
-            menu_item = await MenuItemFactory.create()
+            item = await MenuItemFactory.create()
 
         with expectation:
-            if use_instance:
-                await category_service.add_menu_item(menu_category.id, menu_item, uow)
-            else:
-                item_service = MenuItemService(restaurant_manager=restaurant_manager)
-                await category_service.add_menu_item(menu_category.id, menu_item.id, item_service, uow)
+            await category_service.add_menu_item(category.id, item.id, uow)
 
-            retrieved_category = await category_service.retrieve_instance(menu_category.id, uow, fetch_items=True)
-            assert any(compare_menu_items(retrieved_menu_item, menu_item)
-                       for retrieved_menu_item in retrieved_category.items)
+            retrieved_category = await category_service.retrieve_instance(category.id, uow, fetch_items=True)
+            assert any(compare_menu_items(item, menu_item)
+                       for menu_item in retrieved_category.items)
+
+    @pytest.mark.parametrize(
+        "category_exists, item_exists, expectation",
+        [
+            (False, True, pytest.raises(MenuCategoryNotFoundWithIdError)),
+            (True, False, pytest.raises(MenuItemNotFoundWithIdError)),
+        ]
+    )
+    async def test_add_menu_item_nonexistent(self, category_exists: bool,
+                                             item_exists: bool,
+                                             expectation, uow: SqlAlchemyUnitOfWork):
+        category_service = MenuCategoryService()
+        category_id = 999
+        item_id = 999
+
+        if category_exists:
+            category = await MenuCategoryFactory.create()
+            category_id = category.id
+
+        if item_exists:
+            item = await MenuItemFactory.create()
+            item_id = item.id
+
+        with expectation:
+            await category_service.add_menu_item(category_id, item_id, uow)
+
+    async def test_add_menu_item_already_added(self, uow: SqlAlchemyUnitOfWork):
+        category_service = MenuCategoryService()
+
+        category = await MenuCategoryFactory.create()
+        item = await MenuItemFactory.create()
+
+        category_id = category.id
+        item_id = item.id
+
+        category = await category_service.retrieve_instance(category_id, uow, fetch_items=True)
+        category.items.add(item)
+
+        with pytest.raises(MenuItemAlreadyInCategoryError):
+            await category_service.add_menu_item(category_id, item_id, uow)
+
+    @pytest.mark.parametrize(
+        "is_manager_active, manager_owns_category_restaurant, manager_owns_item_restaurant, expectation",
+        [
+            (False, True, True, pytest.raises(RestaurantManagerNotActiveError)),
+            (True, False, True, pytest.raises(RestaurantManagerOwnershipError)),
+            (True, True, False, pytest.raises(RestaurantManagerOwnershipError)),
+            (True, True, True, does_not_raise()),
+        ]
+    )
+    async def test_remove_menu_item_ownership(self, is_manager_active: bool,
+                                              manager_owns_category_restaurant: bool,
+                                              manager_owns_item_restaurant: bool,
+                                              expectation, uow: SqlAlchemyUnitOfWork):
+        restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active)
+
+        category_service = MenuCategoryService(restaurant_manager=restaurant_manager)
+
+        if manager_owns_category_restaurant:
+            menu = await MenuFactory.create(restaurant=restaurant_manager.restaurant)
+            category = await MenuCategoryFactory.create(menu=menu)
+        else:
+            category = await MenuCategoryFactory.create()
+
+        if manager_owns_item_restaurant:
+            item = await MenuItemFactory.create(restaurant=restaurant_manager.restaurant)
+        else:
+            item = await MenuItemFactory.create()
+
+        category = await category_service.retrieve_instance(category.id, uow, fetch_items=True)
+
+        category.items.add(item)
+
+        with expectation:
+            await category_service.remove_menu_item(category.id, item.id, uow)
+            assert item not in category.items
+
+    @pytest.mark.parametrize(
+        "category_exists, item_exists, expectation",
+        [
+            (False, True, pytest.raises(MenuCategoryNotFoundWithIdError)),
+            (True, False, pytest.raises(MenuItemNotFoundWithIdError)),
+        ]
+    )
+    async def test_remove_menu_item_nonexistent(self, category_exists: bool,
+                                           item_exists: bool,
+                                           expectation, uow: SqlAlchemyUnitOfWork):
+        category_service = MenuCategoryService()
+        category_id = 999
+        item_id = 999
+
+        if item_exists:
+            item = await MenuItemFactory.create()
+            item_id = item.id
+
+        if category_exists:
+            category = await MenuCategoryFactory.create()
+            category_id = category.id
+
+        with expectation:
+            await category_service.remove_menu_item(category_id, item_id, uow)
+
+    async def test_remove_menu_item_not_added(self, uow: SqlAlchemyUnitOfWork):
+        category_service = MenuCategoryService()
+
+        category = await MenuCategoryFactory.create()
+        item = await MenuItemFactory.create()
+
+        category_id = category.id
+        item_id = item.id
+
+        with pytest.raises(MenuItemNotInCategoryError):
+            await category_service.remove_menu_item(category_id, item_id, uow)
 
 
 class TestMenuService(BaseTestRetrieveMixin[Menu, MenuService],
@@ -516,59 +665,92 @@ class TestMenuService(BaseTestRetrieveMixin[Menu, MenuService],
     async def generate_instance_create_data(self, restaurant: Optional[Restaurant] = None) -> dict:
         return await generate_menu_create_data(restaurant=restaurant)
 
-    def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
-        return generate_menu_create_data_nonexistent_restaurant()
+    async def generate_instance_create_data_nonexistent_restaurant(self) -> dict:
+        return await generate_menu_create_data_nonexistent_restaurant()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_menu_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_menu_update_data()
+
+    async def test_retrieve_current_restaurant_menu_instance(self, service: MenuService, uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+        menu = await MenuFactory.create(restaurant=restaurant)
+
+        restaurant.current_menu_id = menu.id
+        await uow.commit()
+
+        retrieved_menu = await service.retrieve_current_restaurant_menu_instance(restaurant.id, uow)
+
+        assert restaurant.current_menu_id == retrieved_menu.id
+        assert self.compare_instances(menu, retrieved_menu)
+
+    async def test_retrieve_current_restaurant_menu_instance_nonexistent(self, service: MenuService,
+                                                                         uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+
+        with pytest.raises(CurrentMenuMissingError):
+            await service.retrieve_current_restaurant_menu_instance(restaurant.id, uow)
+
+    async def test_list_restaurant_menus_instances(self, service: MenuService, uow: SqlAlchemyUnitOfWork):
+        await MenuFactory.create()
+        restaurant = await RestaurantFactory.create()
+        menu_list = await MenuFactory.create_batch(restaurant=restaurant, size=4)
+
+        retrieved_menu_list = await service.list_restaurant_menus_instances(restaurant.id, uow)
+
+        assert all((self.compare_instances(instance, retrieved_instance)
+                    for instance, retrieved_instance in zip(menu_list, retrieved_menu_list)))
 
     @pytest.mark.parametrize(
-        "is_manager_active, manager_owns_menu_restaurant, manager_owns_category_restaurant, use_instance, expectation",
+        "is_manager_active, manager_owns_instance_restaurant, expectation",
         [
-            (False, True, True, False, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, False, True, False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, False, False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, True, False, does_not_raise()),
-            # Same tests but with passing instance of menu category
-            (False, True, True, True, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, False, True, True, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, False, True, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, True, True, does_not_raise()),
+            (False, True, pytest.raises(RestaurantManagerNotActiveError)),
+            (True, True, does_not_raise()),
+            (True, False, pytest.raises(RestaurantManagerOwnershipError))
         ]
     )
-    async def test_add_menu_category(self, is_manager_active: bool,
-                                     manager_owns_menu_restaurant: bool,
-                                     manager_owns_category_restaurant: bool,
-                                     use_instance: bool,
-                                     expectation, uow: SqlAlchemyUnitOfWork):
+    async def test_list_restaurant_menus_instances_with_restaurant_manager(self, is_manager_active: bool,
+                                                                           manager_owns_instance_restaurant: bool,
+                                                                           expectation, uow: SqlAlchemyUnitOfWork):
         restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active)
+        service = MenuService(restaurant_manager=restaurant_manager)
+        await MenuFactory.create()
 
-        menu_service = MenuService(restaurant_manager=restaurant_manager)
-
-        if manager_owns_menu_restaurant:
-            menu = await MenuFactory.create(restaurant=restaurant_manager.restaurant)
+        if manager_owns_instance_restaurant:
+            restaurant = restaurant_manager.restaurant
+            menu_list = await MenuFactory.create_batch(restaurant=restaurant, size=4)
         else:
-            menu = await MenuFactory.create()
-
-        if manager_owns_category_restaurant:
-            menu_category = await MenuCategoryFactory.create(restaurant=restaurant_manager.restaurant)
-        else:
-            menu_category = await MenuCategoryFactory.create()
+            restaurant = await RestaurantFactory.create()
+            menu_list = await MenuFactory.create_batch(restaurant=restaurant, size=4)
 
         with expectation:
-            if use_instance:
-                await menu_service.add_menu_category(menu.id, menu_category, uow)
-            else:
-                category_service = MenuCategoryService(restaurant_manager=restaurant_manager)
-                await menu_service.add_menu_category(menu.id, menu_category.id, category_service, uow)
+            retrieved_menu_list = await service.list_restaurant_menus_instances(restaurant.id, uow)
+            assert all((self.compare_instances(instance, retrieved_instance)
+                        for instance, retrieved_instance in zip(menu_list, retrieved_menu_list)))
 
-            retrieved_menu = await menu_service.retrieve_instance(menu.id, uow, fetch_categories=True)
-            assert any(compare_menu_categories(retrieved_category, menu_category)
-                       for retrieved_category in retrieved_menu.categories)
+    async def test_retrieve_current_restaurant_menu(self, service: MenuService, uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+        menu = await MenuFactory.create()
+        restaurant.current_menu_id = menu.id
+        await uow.commit()
+
+        retrieved_schema = await service.retrieve_current_restaurant_menu(restaurant.id, uow)
+        expected_schema = MenuRetrieveOut(**retrieved_schema.model_dump())
+
+        assert retrieved_schema.model_dump() == expected_schema.model_dump()
+
+    async def test_list_restaurant_menus(self, service: MenuService, uow: SqlAlchemyUnitOfWork):
+        restaurant = await RestaurantFactory.create()
+        await MenuFactory.create_batch(restaurant=restaurant, size=4)
+
+        retrieved_schema_list = await service.list_restaurant_menus(restaurant.id, uow)
+        expected_schema_list = [MenuRetrieveOut(**retrieved_schema.model_dump()) for retrieved_schema in
+                                retrieved_schema_list]
+
+        assert all(retrieved_schema.model_dump() == expected_schema.model_dump()
+                   for retrieved_schema, expected_schema in zip(retrieved_schema_list, expected_schema_list))
 
 
 class TestRestaurantService(BaseTestRetrieveMixin[Restaurant, RestaurantService],
-                            BaseTestListMixin[Restaurant, RestaurantService],
                             BaseTestCreateMixin[Restaurant, RestaurantService],
                             BaseTestDeleteMixin[RestaurantService]):
     factory = RestaurantFactory
@@ -592,9 +774,6 @@ class TestRestaurantService(BaseTestRetrieveMixin[Restaurant, RestaurantService]
     async def generate_instance_create_data(self) -> dict:
         return await generate_restaurant_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_restaurant_update_data()
-
     async def test_create_instance_already_exists(self, service: RestaurantService, uow: SqlAlchemyUnitOfWork):
         create_data_dict = await generate_restaurant_create_data()
         create_data = self.schema_create_in(**create_data_dict)
@@ -606,92 +785,6 @@ class TestRestaurantService(BaseTestRetrieveMixin[Restaurant, RestaurantService]
 
     async def test_delete_instance_nonexistent(self, service: RestaurantService, uow: SqlAlchemyUnitOfWork):
         await service.delete_instance(0, uow)
-
-    async def test_retrieve(self, service: RestaurantService, uow: SqlAlchemyUnitOfWork):
-        instance = await self.factory.create()
-
-        retrieved_schema = await service.retrieve(instance.id, uow)
-        expected_schema = RestaurantRetrieveForUserOut(**retrieved_schema.model_dump())
-
-        assert retrieved_schema.model_dump() == expected_schema.model_dump()
-
-    async def test_list(self, service: RestaurantService, uow: SqlAlchemyUnitOfWork):
-        await self.factory.create_batch(size=4)
-
-        retrieved_schema_list = await service.list(uow)
-        expected_schema_list = [RestaurantRetrieveForUserOut(**retrieved_schema.model_dump()) for retrieved_schema in
-                                retrieved_schema_list]
-
-        assert all(retrieved_schema.model_dump() == expected_schema.model_dump()
-                   for retrieved_schema, expected_schema in zip(retrieved_schema_list, expected_schema_list))
-
-    @pytest.mark.parametrize(
-        "manager_owns_restaurant, expected_schema_class",
-        [
-            (True, RestaurantRetrieveForManagerOut),
-            (False, RestaurantRetrieveForUserOut)
-        ]
-    )
-    async def test_retrieve_with_restaurant_manager(self, manager_owns_restaurant: bool,
-                                                    expected_schema_class, uow: SqlAlchemyUnitOfWork):
-        instance = await self.factory.create()
-
-        if manager_owns_restaurant:
-            restaurant_manager = await RestaurantManagerFactory.create(restaurant=instance)
-        else:
-            restaurant_manager = await RestaurantManagerFactory.create()
-
-        service = RestaurantService(restaurant_manager=restaurant_manager)
-
-        retrieved_schema = await service.retrieve(instance.id, uow)
-        expected_schema = expected_schema_class(**retrieved_schema.model_dump())
-
-        assert retrieved_schema.model_dump() == expected_schema.model_dump()
-
-    @pytest.mark.parametrize(
-        "is_manager_active, manager_owns_restaurant, manager_owns_menu_restaurant, use_instance, expectation",
-        [
-            (False, True, True, False, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, False, True, False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, False, False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, True, False, does_not_raise()),
-            # Same tests but with passing instance of menu
-            (False, True, True, True, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, False, True, True, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, False, True, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, True, True, True, does_not_raise()),
-        ]
-    )
-    async def test_add_menu(self, is_manager_active: bool,
-                            manager_owns_restaurant: bool,
-                            manager_owns_menu_restaurant: bool,
-                            use_instance: bool,
-                            expectation, uow: SqlAlchemyUnitOfWork):
-        restaurant = await RestaurantFactory.create()
-
-        if manager_owns_restaurant:
-            restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active,
-                                                                       restaurant=restaurant)
-        else:
-            restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active)
-
-        if manager_owns_menu_restaurant:
-            menu = await MenuFactory.create(restaurant=restaurant)
-        else:
-            menu = await MenuFactory.create()
-
-        restaurant_service = RestaurantService(restaurant_manager=restaurant_manager)
-
-        with expectation:
-            if use_instance:
-                await restaurant_service.add_menu(restaurant.id, menu, uow)
-            else:
-                menu_service = MenuService(restaurant_manager=restaurant_manager)
-                await restaurant_service.add_menu(restaurant.id, menu.id, menu_service, uow)
-
-            retrieved_restaurant = await restaurant_service.retrieve_instance(restaurant.id, uow, fetch_menus=True)
-            assert any(compare_menus(retrieved_menu, menu)
-                       for retrieved_menu in retrieved_restaurant.menus)
 
     @pytest.mark.parametrize(
         "is_manager_active, manager_owns_restaurant, manager_owns_menu_restaurant, use_instance, expectation",
@@ -731,12 +824,15 @@ class TestRestaurantService(BaseTestRetrieveMixin[Restaurant, RestaurantService]
             if use_instance:
                 await restaurant_service.set_current_menu(restaurant.id, menu, uow)
             else:
-                menu_service = MenuService(restaurant_manager=restaurant_manager)
-                await restaurant_service.set_current_menu(restaurant.id, menu.id, menu_service, uow)
+                await restaurant_service.set_current_menu(restaurant.id, menu.id, uow)
 
-            retrieved_restaurant = await restaurant_service.retrieve_instance(restaurant.id, uow,
-                                                                              fetch_current_menu=True)
-            assert compare_menus(menu, retrieved_restaurant.current_menu)
+            retrieved_restaurant = await restaurant_service.retrieve_instance(restaurant.id, uow)
+
+            menu_service = MenuService()
+
+            current_menu = await menu_service.retrieve_instance(retrieved_restaurant.current_menu_id, uow)
+
+            assert compare_menus(menu, current_menu)
 
 
 class TestRestaurantManagerService(BaseTestRetrieveMixin[RestaurantManager, RestaurantManagerService],
@@ -762,8 +858,8 @@ class TestRestaurantManagerService(BaseTestRetrieveMixin[RestaurantManager, Rest
     async def generate_instance_create_data(self) -> dict:
         return await generate_restaurant_manager_create_data()
 
-    def generate_instance_update_data(self) -> dict:
-        return generate_restaurant_manager_update_data()
+    async def generate_instance_update_data(self) -> dict:
+        return await generate_restaurant_manager_update_data()
 
     async def test_delete_instance(self, service: RestaurantManagerService, uow: SqlAlchemyUnitOfWork):
         instance = await self.factory.create()

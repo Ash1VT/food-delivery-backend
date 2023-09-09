@@ -24,11 +24,11 @@ class MenuCategoryOutBase(MenuCategoryBase, ABC):
 
     Attributes:
         id (int): The ID of the menu category.
-        restaurant_id (int): The ID of the restaurant associated with the menu category.
+        menu_id (int): The ID of the menu to which belongs menu category.
     """
 
     id: int = Field(ge=0)
-    restaurant_id: int = Field(ge=0)
+    menu_id: int = Field(ge=0)
 
     model_config = {
         "from_attributes": True
@@ -55,10 +55,10 @@ class MenuCategoryCreateIn(MenuCategoryBase):
     Schema class for input data when creating a menu category.
 
     Attributes:
-        restaurant_id (int): The ID of the restaurant where the menu category is being created.
+        menu_id (int): The ID of the menu to which belongs menu category.
     """
 
-    restaurant_id: int = Field(ge=0)
+    menu_id: int = Field(ge=0)
 
 
 class MenuCategoryCreateOut(MenuCategoryOutBase):

@@ -13,7 +13,7 @@ async def generate_menu_create_data(restaurant: Restaurant = None):
     }
 
 
-def generate_menu_create_data_nonexistent_restaurant():
+async def generate_menu_create_data_nonexistent_restaurant():
     menu = MenuFactory.build()
     return {
         'name': menu.name,
@@ -22,7 +22,7 @@ def generate_menu_create_data_nonexistent_restaurant():
     }
 
 
-def generate_menu_update_data():
+async def generate_menu_update_data():
     menu = MenuFactory.build()
     return {
         'name': menu.name,

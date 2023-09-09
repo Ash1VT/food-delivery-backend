@@ -6,7 +6,6 @@ class MenuItemAdmin(ModelView, model=MenuItem):
     column_list = [MenuItem.id,
                    MenuItem.name,
                    MenuItem.description,
-                   MenuItem.price,
-                   MenuItem.categories]
+                   MenuItem.price]
 
     icon = "fa-solid fa-bacon"

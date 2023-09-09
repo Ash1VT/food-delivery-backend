@@ -3,12 +3,12 @@ from typing import Optional, List
 from multimethod import multimethod
 
 from models import RestaurantManager, Menu, MenuCategory
-from exceptions import MenuNotFoundWithIdError, RestaurantNotFoundWithIdError
+from exceptions import MenuNotFoundWithIdError, RestaurantNotFoundWithIdError, CurrentMenuMissingError
 from schemas import MenuRetrieveOut, \
     MenuCreateIn, MenuCreateOut, \
     MenuUpdateIn, MenuUpdateOut
 from uow import SqlAlchemyUnitOfWork
-from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership
+from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership_on_restaurant
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
 from .category import MenuCategoryService
 
@@ -91,17 +91,20 @@ class MenuService(RetrieveMixin[Menu, MenuRetrieveOut],
             Menu: The created menu instance.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Restaurant
+
         if not await uow.restaurants.exists(item.restaurant_id):
             raise RestaurantNotFoundWithIdError(item.restaurant_id)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, item.restaurant_id)
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
+
+        # Create
 
         data = item.model_dump()
 
-        created_instance = await uow.menus.create(data, **kwargs)
-
-        return created_instance
+        return await uow.menus.create(data, **kwargs)
 
     async def update_instance(self, id: int, item: MenuUpdateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> Menu:
         """
@@ -116,10 +119,15 @@ class MenuService(RetrieveMixin[Menu, MenuRetrieveOut],
             Menu: The updated menu instance.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Menu
+
         retrieved_instance = await self.retrieve_instance(id, uow)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, retrieved_instance.restaurant_id)
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, retrieved_instance.restaurant_id)
+
+        # Update
 
         data = item.model_dump()
 
@@ -134,12 +142,65 @@ class MenuService(RetrieveMixin[Menu, MenuRetrieveOut],
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Menu
+
         retrieved_instance = await self.retrieve_instance(id, uow)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, retrieved_instance.restaurant_id)
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, retrieved_instance.restaurant_id)
+
+        # Delete
 
         await uow.menus.delete(id, **kwargs)
+
+    async def retrieve_current_restaurant_menu_instance(self, restaurant_id: int, uow: SqlAlchemyUnitOfWork,
+                                                        fetch_categories: bool = False, **kwargs) -> Menu:
+        """
+        Retrieve a current menu instance by restaurant's ID from the repository.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+            fetch_categories (bool): Whether to fetch associated categories.
+
+        Returns:
+            Menu: The retrieved current menu instance.
+        """
+
+        retrieved_current_menu = await uow.menus.retrieve_current_restaurant_menu(restaurant_id,
+                                                                                  fetch_categories=fetch_categories,
+                                                                                  **kwargs)
+
+        if not retrieved_current_menu:
+            raise CurrentMenuMissingError(restaurant_id)
+
+        return retrieved_current_menu
+
+    async def list_restaurant_menus_instances(self, restaurant_id: int,
+                                              uow: SqlAlchemyUnitOfWork,
+                                              fetch_categories: bool = False, **kwargs) -> List[Menu]:
+        """
+        List all menu instances which belong to restaurant from the repository.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+            fetch_categories (bool): Whether to fetch associated categories.
+
+        Returns:
+            List[Menu]: List of menu instances.
+        """
+
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Restaurant
+
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
+
+        # List
+
+        return await uow.menus.list_restaurant_menus(restaurant_id, fetch_categories=fetch_categories, **kwargs)
 
     async def retrieve(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuRetrieveOut:
         """
@@ -168,49 +229,37 @@ class MenuService(RetrieveMixin[Menu, MenuRetrieveOut],
 
         return await super().list(uow, fetch_categories=True, **kwargs)
 
-    @multimethod
-    async def add_menu_category(self, menu_id: int, category_id: int,
-                                menu_category_service: MenuCategoryService,
-                                uow: SqlAlchemyUnitOfWork,
-                                **kwargs):
+    async def retrieve_current_restaurant_menu(self, restaurant_id: int,
+                                               uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuRetrieveOut:
         """
-        Adds a menu category to a menu by their IDs.
+        Retrieve a current menu schema restaurant's ID with associated categories.
 
         Args:
-            menu_id (int): ID of the menu.
-            category_id (int): ID of the menu category.
-            menu_category_service (MenuCategoryService): The menu category service instance.
+            restaurant_id (int): The ID of the restaurant.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
-            **kwargs: Additional keyword arguments.
+
+        Returns:
+            MenuRetrieveOut: The retrieved current menu schema with associated categories.
         """
 
-        menu = await self.retrieve_instance(menu_id, uow, fetch_categories=True)
-        category = await menu_category_service.retrieve_instance(category_id, uow)
+        retrieved_instance = await self.retrieve_current_restaurant_menu_instance(restaurant_id, uow,
+                                                                                  fetch_categories=True, **kwargs)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, menu.restaurant_id)
-        check_restaurant_manager_ownership(self._restaurant_manager, category.restaurant_id)
+        return self.get_retrieve_schema(retrieved_instance)
 
-        menu.categories.append(category)
-
-    @multimethod
-    async def add_menu_category(self, menu_id: int, category: MenuCategory,
-                                uow: SqlAlchemyUnitOfWork,
-                                **kwargs):
+    async def list_restaurant_menus(self, restaurant_id: int,
+                                    uow: SqlAlchemyUnitOfWork, **kwargs) -> List[MenuRetrieveOut]:
         """
-        Adds a menu category to a menu by menu ID and menu category instance.
+        List all menu schemas which belong to restaurant with associated categories.
 
         Args:
-            menu_id (int): ID of the menu.
-            category (MenuCategory): The menu category instance.
+            restaurant_id (int): The ID of the restaurant.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
-            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[MenuRetrieveOut]: List of menu schemas with associated categories.
         """
 
-        menu = await self.retrieve_instance(menu_id, uow, fetch_categories=True)
+        instance_list = await self.list_restaurant_menus_instances(restaurant_id, uow, fetch_categories=True, **kwargs)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, menu.restaurant_id)
-        check_restaurant_manager_ownership(self._restaurant_manager, category.restaurant_id)
-
-        menu.categories.append(category)
+        return self.get_list_schema(instance_list)

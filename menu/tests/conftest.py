@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from fastapi.testclient import TestClient
 
 from db.session import get_async_session
-from main import app
+from setup import app
 from models import Base
 from config import get_settings
 from uow import SqlAlchemyUnitOfWork

@@ -6,7 +6,7 @@ from schemas import MenuItemRetrieveOut, \
     MenuItemCreateIn, MenuItemCreateOut, \
     MenuItemUpdateIn, MenuItemUpdateOut
 from uow import SqlAlchemyUnitOfWork
-from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership
+from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership_on_restaurant
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
 
 
@@ -84,11 +84,16 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
             MenuItem: The created menu item instance.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Restaurant
+
         if not await uow.restaurants.exists(item.restaurant_id):
             raise RestaurantNotFoundWithIdError(item.restaurant_id)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, item.restaurant_id)
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
+
+        # Create
 
         data = item.model_dump()
 
@@ -107,10 +112,15 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
             MenuItem: The updated menu item instance.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Item
+
         retrieved_instance = await self.retrieve_instance(id, uow)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, retrieved_instance.restaurant_id)
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, retrieved_instance.restaurant_id)
+
+        # Update
 
         data = item.model_dump()
 
@@ -125,9 +135,55 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
         """
 
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Item
+
         retrieved_instance = await self.retrieve_instance(id, uow)
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
-        check_restaurant_manager_ownership(self._restaurant_manager, retrieved_instance.restaurant_id)
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, retrieved_instance.restaurant_id)
+
+        # Delete
 
         await uow.items.delete(id, **kwargs)
+
+    async def list_restaurant_items_instances(self, restaurant_id: int,
+                                              uow: SqlAlchemyUnitOfWork,
+                                              **kwargs) -> List[MenuItem]:
+        """
+        List all menu items instances which belong to restaurant from the repository.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[MenuItem]: List of menu item instances.
+        """
+
+        check_restaurant_manager_is_active(self._restaurant_manager)
+
+        # Check if restaurant manager owns Restaurant
+
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
+
+        # List
+
+        return await uow.items.list_restaurant_items(restaurant_id, **kwargs)
+
+    async def list_restaurant_items(self, restaurant_id: int,
+                                    uow: SqlAlchemyUnitOfWork, **kwargs) -> List[MenuItemRetrieveOut]:
+        """
+        List all menu item schemas which belong to restaurant.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[MenuItemRetrieveOut]: List of menu item schemas.
+        """
+
+        instance_list = await self.list_restaurant_items_instances(restaurant_id, uow, **kwargs)
+
+        return self.get_list_schema(instance_list)

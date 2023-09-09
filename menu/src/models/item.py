@@ -11,10 +11,7 @@ class MenuItem(CustomBase):
     description = Column(String)
     price = Column(Integer, nullable=False)
 
-    restaurant_id = Column(Integer, ForeignKey('restaurants.id', use_alter=True), nullable=False)
-
-    categories = relationship("MenuCategory", secondary="category_items_association", back_populates="items",
-                              uselist=True)
+    restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), nullable=False)
 
     restaurant = relationship("Restaurant", uselist=False)
 

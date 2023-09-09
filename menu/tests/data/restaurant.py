@@ -9,7 +9,7 @@ async def generate_restaurant_create_data():
     }
 
 
-def generate_restaurant_update_data():
+async def generate_restaurant_update_data():
     restaurant = RestaurantFactory.build()
     return {
         'id': restaurant.id

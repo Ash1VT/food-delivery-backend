@@ -11,7 +11,7 @@ async def generate_restaurant_manager_create_data():
     }
 
 
-def generate_restaurant_manager_update_data():
+async def generate_restaurant_manager_update_data():
     restaurant_manager = RestaurantManagerFactory.build()
     return {
         'id': restaurant_manager.id,
