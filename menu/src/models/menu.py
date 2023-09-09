@@ -10,9 +10,9 @@ class Menu(CustomBase):
     name = Column(String, nullable=False)
     description = Column(String)
 
-    restaurant_id = Column(Integer, ForeignKey('restaurants.id', use_alter=True), nullable=False)
+    restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), nullable=False)
 
-    categories = relationship("MenuCategory", back_populates='menu', uselist=True)
+    categories = relationship("MenuCategory", back_populates='menu', uselist=True, cascade="all, delete")
 
     restaurant = relationship("Restaurant", foreign_keys=[restaurant_id], uselist=False)
 

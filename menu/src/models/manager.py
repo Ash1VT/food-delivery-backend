@@ -11,6 +11,6 @@ class RestaurantManager(CustomBase):
 
     is_active = Column(Boolean, default=False)
 
-    restaurant_id = Column(Integer, ForeignKey('restaurants.id', use_alter=True), unique=True, nullable=False)
+    restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), unique=True, nullable=False)
 
     restaurant = relationship("Restaurant", uselist=False)
