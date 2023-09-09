@@ -1,6 +1,7 @@
 import grpc
 from fastapi import Cookie, HTTPException, Depends
 
+from decorators import handle_app_errors
 from models import RestaurantManager
 from db.session import async_session_maker
 from uow import SqlAlchemyUnitOfWork
@@ -22,6 +23,7 @@ async def get_uow_with_commit() -> SqlAlchemyUnitOfWork:
         yield uow
 
 
+@handle_app_errors
 async def get_restaurant_manager(access_token: str = Cookie(),
                                  uow: SqlAlchemyUnitOfWork = Depends(get_uow)) -> RestaurantManager:
     try:
