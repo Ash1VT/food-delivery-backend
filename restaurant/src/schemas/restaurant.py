@@ -1,21 +1,9 @@
 from abc import ABC
 from typing import Optional, Set
-from datetime import time
 from pydantic import BaseModel, Field
+from .hours import WorkingHoursRetrieveOut
 
-__all__ = ['WorkingHours', 'RestaurantRetrieveOut', 'RestaurantCreateIn', 'RestaurantCreateOut']
-
-
-# Working hours
-
-class WorkingHours(BaseModel):
-    day_of_week: str = Field(min_length=1, max_length=20)
-    opening_time: time
-    closing_time: time
-
-    model_config = {
-        "from_attributes": True
-    }
+__all__ = ["RestaurantRetrieveOut", "RestaurantCreateIn", "RestaurantCreateOut"]
 
 
 # Base
@@ -50,7 +38,7 @@ class RestaurantRetrieveOut(RestaurantBaseOut):
     Schema class for output representation of a retrieved restaurant.
     """
 
-    working_hours: Set[WorkingHours]
+    working_hours: Set[WorkingHoursRetrieveOut]
 
 
 # Create
