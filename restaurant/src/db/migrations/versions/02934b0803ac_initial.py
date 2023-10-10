@@ -61,4 +61,5 @@ def downgrade() -> None:
     op.drop_table('restaurant_managers')
     op.drop_table('restaurants')
     op.drop_table('moderators')
+    op.execute("DROP TYPE dayofweek")
     # ### end Alembic commands ###

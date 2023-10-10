@@ -2,7 +2,7 @@ from abc import ABC
 
 from pydantic import BaseModel, Field
 
-__all__ = ['RestaurantManagerRetrieveOut', 'RestaurantManagerCreateIn', 'RestaurantManagerCreateOut']
+__all__ = ["RestaurantManagerRetrieveOut", "RestaurantManagerCreateIn", "RestaurantManagerCreateOut"]
 
 
 # Base

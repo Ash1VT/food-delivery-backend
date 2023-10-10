@@ -1,6 +1,7 @@
 # IMPORTANT FOR ALEMBIC'S DETECTION OF TABLES #
 # IMPORT ALL MODELS HERE #
-from .base import Base, CustomBase
-from .manager import RestaurantManager
-from .moderator import Moderator
-from .restaurant import WorkingHours, Restaurant
+from .base import *
+from .manager import *
+from .moderator import *
+from .hours import *
+from .restaurant import *
