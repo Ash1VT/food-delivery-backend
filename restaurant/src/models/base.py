@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer
 from sqlalchemy.orm import declarative_base
 
+__all__ = ["Base", "CustomBase"]
+
+
 Base = declarative_base()
 
 

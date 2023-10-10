@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 
 from .base import CustomBase
 
+__all__ = ["RestaurantManager"]
+
 
 class RestaurantManager(CustomBase):
     __tablename__ = 'restaurant_managers'
