@@ -1,7 +1,15 @@
 from typing import Optional
-from models import RestaurantManager
-from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, MenuNotFoundWithIdError
+from models import RestaurantManager, Restaurant, Moderator
+from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, RestaurantNotActiveError, \
+    ModeratorNotActiveError
 from uow import SqlAlchemyUnitOfWork
+
+__all__ = [
+    "check_restaurant_manager_is_active",
+    "check_moderator_is_active",
+    "check_restaurant_manager_ownership_on_restaurant",
+    "check_restaurant_is_active"
+]
 
 
 def check_restaurant_manager_is_active(restaurant_manager: Optional[RestaurantManager]):
@@ -20,6 +28,11 @@ def check_restaurant_manager_is_active(restaurant_manager: Optional[RestaurantMa
 
     if restaurant_manager and not restaurant_manager.is_active:
         raise RestaurantManagerNotActiveError(restaurant_manager)
+
+
+def check_moderator_is_active(moderator: Optional[Moderator]):
+    if moderator and not moderator.is_active:
+        raise ModeratorNotActiveError(moderator)
 
 
 def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: Optional[RestaurantManager],
@@ -41,3 +54,8 @@ def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: Optiona
 
     if restaurant_manager and restaurant_id != restaurant_manager.restaurant_id:
         raise RestaurantManagerOwnershipError(restaurant_manager, restaurant_id)
+
+
+def check_restaurant_is_active(restaurant: Optional[Restaurant]):
+    if restaurant and not restaurant.is_active:
+        raise RestaurantNotActiveError(restaurant)
