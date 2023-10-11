@@ -2,7 +2,12 @@ from abc import ABC
 
 from pydantic import BaseModel, Field
 
-__all__ = ["RestaurantManagerRetrieveOut", "RestaurantManagerCreateIn", "RestaurantManagerCreateOut"]
+__all__ = ["RestaurantManagerRetrieveOut",
+           "RestaurantManagerCreateIn",
+           "RestaurantManagerCreateOut",
+           "RestaurantManagerUpdateIn",
+           "RestaurantManagerUpdateOut"
+           ]
 
 
 # Base
@@ -18,12 +23,10 @@ class RestaurantManagerBase(BaseModel, ABC):
 class RestaurantManagerBaseOut(RestaurantManagerBase, ABC):
     """
     Base schema class for output representation of a restaurant manager.
-
-    Attributes:
-        id (int): The ID of the restaurant manager.
     """
 
     id: int = Field(ge=0)
+    is_active: bool
 
     model_config = {
         "from_attributes": True
@@ -37,7 +40,6 @@ class RestaurantManagerRetrieveOut(RestaurantManagerBaseOut):
     Schema class for output representation of a retrieved restaurant manager.
     """
 
-    is_active: bool
     restaurant_id: int = Field(ge=0)
 
 
@@ -46,10 +48,6 @@ class RestaurantManagerRetrieveOut(RestaurantManagerBaseOut):
 class RestaurantManagerCreateIn(RestaurantManagerBase):
     """
     Schema class for input data when creating a restaurant manager.
-
-    Attributes:
-        id (int): The ID of the restaurant manager.
-        restaurant_id (int): The ID of the restaurant associated with the manager.
     """
 
     id: int = Field(ge=0)
@@ -59,6 +57,24 @@ class RestaurantManagerCreateIn(RestaurantManagerBase):
 class RestaurantManagerCreateOut(RestaurantManagerBaseOut):
     """
     Schema class for output representation after creating a restaurant manager.
+    """
+
+    pass
+
+
+# Update
+
+class RestaurantManagerUpdateIn(RestaurantManagerBase):
+    """
+    Schema class for input data when updating a restaurant manager.
+    """
+
+    is_active: bool
+
+
+class RestaurantManagerUpdateOut(RestaurantManagerBaseOut):
+    """
+    Schema class for output representation after updating a restaurant manager.
     """
 
     pass
