@@ -40,7 +40,7 @@ class RestaurantManagerRetrieveOut(RestaurantManagerBaseOut):
     Schema class for output representation of a retrieved restaurant manager.
     """
 
-    restaurant_id: int = Field(ge=0)
+    pass
 
 
 # Create
@@ -51,7 +51,6 @@ class RestaurantManagerCreateIn(RestaurantManagerBase):
     """
 
     id: int = Field(ge=0)
-    restaurant_id: int = Field(ge=0)
 
 
 class RestaurantManagerCreateOut(RestaurantManagerBaseOut):
