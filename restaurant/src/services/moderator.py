@@ -6,6 +6,10 @@ from exceptions import ModeratorNotFoundWithIdError, ModeratorAlreadyExistsWithI
 
 from .mixins import RetrieveMixin, CreateMixin, DeleteMixin, UpdateMixin
 
+__all__ = [
+    "ModeratorService",
+]
+
 
 class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
                        CreateMixin[Moderator, ModeratorCreateIn, ModeratorCreateOut],
@@ -35,6 +39,9 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
 
         Returns:
             Moderator: The retrieved moderator instance.
+
+        Raises:
+            ModeratorNotFoundWithIdError: If the moderator with the given ID is not found.
         """
 
         retrieved_instance = await uow.moderators.retrieve(id, **kwargs)
@@ -54,6 +61,9 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
 
         Returns:
             Moderator: The created moderator instance.
+
+        Raises:
+            ModeratorAlreadyExistsWithIdError: If the moderator with the given ID already exists.
         """
 
         if await uow.moderators.exists(item.id):
@@ -76,6 +86,9 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
 
         Returns:
             Moderator: The updated moderator instance.
+
+        Raises:
+            ModeratorNotFoundWithIdError: If the moderator with the given ID is not found.
         """
 
         if not await uow.moderators.exists(id):
@@ -92,6 +105,9 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
         Args:
             id (int): The ID of the moderator to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            ModeratorNotFoundWithIdError: If the moderator with the given ID is not found.
         """
 
         if not await uow.moderators.exists(id):

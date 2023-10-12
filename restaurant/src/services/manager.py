@@ -6,6 +6,10 @@ from exceptions import RestaurantManagerNotFoundWithIdError, RestaurantManagerAl
 
 from .mixins import RetrieveMixin, CreateMixin, DeleteMixin, UpdateMixin
 
+__all__ = [
+    "RestaurantManagerService",
+]
+
 
 class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManagerRetrieveOut],
                                CreateMixin[RestaurantManager, RestaurantManagerCreateIn, RestaurantManagerCreateOut],
@@ -14,11 +18,12 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
     """
     Service class for managing restaurant managers.
 
-    This class provides methods for creating and deleting restaurant manager instances.
+    This class provides methods for retrieving, creating, updating, deleting restaurant manager instances.
 
     Attributes:
         schema_retrieve_out (RestaurantManagerRetrieveOut): The schema for output representation of retrieved instances.
         schema_create_out (RestaurantManagerCreateOut): The schema for output representation of created instances.
+        schema_update_out (RestaurantManagerUpdateOut): The schema for output representation of updated instances.
     """
 
     schema_retrieve_out = RestaurantManagerRetrieveOut
@@ -35,6 +40,9 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         Returns:
             RestaurantManager: The retrieved restaurant manager instance.
+
+        Raises:
+            RestaurantManagerNotFoundWithIdError: If the restaurant manager with the given ID is not found.
         """
 
         retrieved_instance = await uow.managers.retrieve(id, **kwargs)
@@ -55,6 +63,9 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         Returns:
             RestaurantManager: The created restaurant manager instance.
+
+        Raises:
+            RestaurantManagerAlreadyExistsWithIdError: If the restaurant manager with the given ID already exists.
         """
 
         if await uow.managers.exists(item.id):
@@ -77,6 +88,9 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         Returns:
             RestaurantManager: The updated restaurant manager instance.
+
+        Raises:
+            RestaurantManagerNotFoundWithIdError: If the restaurant manager with the given ID is not found.
         """
 
         if not await uow.managers.exists(id):
@@ -93,6 +107,9 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
         Args:
             id (int): The ID of the restaurant manager to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            RestaurantManagerNotFoundWithIdError: If the restaurant manager with the given ID is not found.
         """
 
         if not await uow.managers.exists(id):
