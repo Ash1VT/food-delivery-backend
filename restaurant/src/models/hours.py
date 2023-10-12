@@ -1,5 +1,7 @@
 import enum
 from sqlalchemy import Column, Time, Integer, ForeignKey, Enum
+from sqlalchemy.orm import relationship
+
 from .base import CustomBase
 
 __all__ = ["DayOfWeek", "WorkingHours"]
@@ -24,3 +26,5 @@ class WorkingHours(CustomBase):
     closing_time = Column(Time, nullable=False)
 
     restaurant_id = Column(Integer, ForeignKey('restaurants.id'), nullable=False)
+
+    restaurant = relationship("Restaurant", back_populates="working_hours", uselist=False)

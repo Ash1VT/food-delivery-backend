@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select
 from sqlalchemy.orm import selectinload
 
 from models import Restaurant
@@ -83,6 +83,15 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
         return stmt
 
+    def _get_list_active_restaurants_stmt(self, fetch_working_hours: bool = False, **kwargs):
+        stmt = select(Restaurant).where(Restaurant.is_active)
+
+        stmt = self.__get_select_stmt_with_options(stmt=stmt,
+                                                   fetch_working_hours=fetch_working_hours,
+                                                   **kwargs)
+
+        return stmt
+
     async def retrieve(self,
                        id: int,
                        fetch_working_hours: bool = False,
@@ -125,3 +134,9 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
         return await super().list(fetch_working_hours=fetch_working_hours,
                                   **kwargs)
+
+    async def list_active_restaurants(self, fetch_working_hours: bool = False, **kwargs):
+        stmt = self._get_list_active_restaurants_stmt(fetch_working_hours=fetch_working_hours, **kwargs)
+        result = await self._session.execute(stmt)
+
+        return [r[0] for r in result.fetchall()]

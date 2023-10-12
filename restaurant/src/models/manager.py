@@ -9,8 +9,9 @@ __all__ = ["RestaurantManager"]
 class RestaurantManager(CustomBase):
     __tablename__ = 'restaurant_managers'
 
-    is_active = Column(Boolean, default=False)
+    id = Column(Integer, primary_key=True, autoincrement=False)
+    is_active = Column(Boolean, nullable=False, default=False)
 
-    restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), unique=True, nullable=False)
+    restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), unique=True)
 
     restaurant = relationship("Restaurant", uselist=False)

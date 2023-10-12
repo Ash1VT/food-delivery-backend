@@ -3,7 +3,15 @@ from typing import Optional, Set
 from pydantic import BaseModel, Field
 from .hours import WorkingHoursRetrieveOut
 
-__all__ = ["RestaurantRetrieveOut", "RestaurantCreateIn", "RestaurantCreateOut"]
+__all__ = [
+    "RestaurantBase",
+    "RestaurantBaseOut",
+    "RestaurantRetrieveOut",
+    "RestaurantCreateIn",
+    "RestaurantCreateOut",
+    "RestaurantUpdateIn",
+    "RestaurantUpdateOut",
+]
 
 
 # Base
@@ -54,6 +62,23 @@ class RestaurantCreateIn(RestaurantBase):
 class RestaurantCreateOut(RestaurantBaseOut):
     """
     Schema class for output representation after creating a restaurant.
+    """
+
+    pass
+
+
+# Update
+class RestaurantUpdateIn(RestaurantBase):
+    """
+    Schema class for input data when updating a restaurant.
+    """
+
+    pass
+
+
+class RestaurantUpdateOut(RestaurantBaseOut):
+    """
+    Schema class for output representation after updating a restaurant.
     """
 
     pass

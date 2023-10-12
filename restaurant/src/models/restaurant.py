@@ -15,6 +15,6 @@ class Restaurant(CustomBase):
     phone = Column(String, nullable=False)
     email = Column(String, nullable=False)
 
-    is_active = Column(Boolean, nullable=False, default=False)
+    is_active = Column(Boolean, nullable=False, default=True)
 
-    working_hours = relationship("WorkingHours", collection_class=set, uselist=True)
+    working_hours = relationship("WorkingHours", back_populates="restaurant", collection_class=set, uselist=True)
