@@ -7,6 +7,7 @@ __all__ = [
     'AppError',
     'DatabaseInstanceNotFoundError',
     'DatabaseInstanceAlreadyExistsError',
+    'PermissionDeniedError',
 ]
 
 
@@ -94,3 +95,14 @@ class DatabaseInstanceAlreadyExistsError(AppError):
     @property
     def message(self) -> str:
         return f"{self._model_class.__name__} with {self._field_name}={self._field_value} already exists"
+
+
+class PermissionDeniedError(AppError):
+    @property
+    def status_code(self) -> int:
+        return 403
+
+    @property
+    def message(self) -> str:
+        return f"User does not have permission to perform this action"
+
