@@ -10,6 +10,8 @@ __all__ = [
     "SqlAlchemyUnitOfWork",
 ]
 
+from repositories.application import RestaurantApplicationRepository
+
 
 class GenericUnitOfWork(ABC):
     """
@@ -62,6 +64,7 @@ class SqlAlchemyUnitOfWork(GenericUnitOfWork):
     """
 
     restaurants: RestaurantRepository
+    restaurant_applications: RestaurantApplicationRepository
     managers: RestaurantManagerRepository
     working_hours: WorkingHoursRepository
     moderators: ModeratorRepository
@@ -72,6 +75,7 @@ class SqlAlchemyUnitOfWork(GenericUnitOfWork):
 
     def _init_repositories(self, session: AsyncSession):
         self.restaurants = RestaurantRepository(session)
+        self.restaurant_applications = RestaurantApplicationRepository(session)
         self.managers = RestaurantManagerRepository(session)
         self.working_hours = WorkingHoursRepository(session)
         self.moderators = ModeratorRepository(session)
