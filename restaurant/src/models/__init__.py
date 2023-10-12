@@ -5,3 +5,4 @@ from .manager import *
 from .moderator import *
 from .hours import *
 from .restaurant import *
+from .application import *

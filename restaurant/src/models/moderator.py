@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Boolean
+from sqlalchemy import Column, Boolean, Integer
 
 from .base import CustomBase
 
@@ -8,4 +8,5 @@ __all__ = ["Moderator"]
 class Moderator(CustomBase):
     __tablename__ = 'moderators'
 
-    is_active = Column(Boolean, default=False)
+    id = Column(Integer, primary_key=True, autoincrement=False)
+    is_active = Column(Boolean, nullable=False, default=False)
