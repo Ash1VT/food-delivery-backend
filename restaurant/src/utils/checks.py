@@ -1,18 +1,14 @@
-from typing import Optional
-from models import RestaurantManager, Restaurant, Moderator
-from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, RestaurantNotActiveError, \
-    ModeratorNotActiveError
-from uow import SqlAlchemyUnitOfWork
+from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, ModeratorNotActiveError
+from models import RestaurantManager, Moderator
 
 __all__ = [
     "check_restaurant_manager_is_active",
     "check_moderator_is_active",
     "check_restaurant_manager_ownership_on_restaurant",
-    "check_restaurant_is_active"
 ]
 
 
-def check_restaurant_manager_is_active(restaurant_manager: Optional[RestaurantManager]):
+def check_restaurant_manager_is_active(restaurant_manager: RestaurantManager):
     """
     Check if a restaurant manager is active.
 
@@ -20,42 +16,50 @@ def check_restaurant_manager_is_active(restaurant_manager: Optional[RestaurantMa
     is not active, a RestaurantManagerNotActive exception is raised.
 
     Args:
-        restaurant_manager (Optional[RestaurantManager]): The restaurant manager instance.
+        restaurant_manager (RestaurantManager): The restaurant manager instance.
 
     Raises:
         RestaurantManagerNotActive: If the restaurant manager is not active.
     """
 
-    if restaurant_manager and not restaurant_manager.is_active:
+    if not restaurant_manager.is_active:
         raise RestaurantManagerNotActiveError(restaurant_manager)
 
 
-def check_moderator_is_active(moderator: Optional[Moderator]):
-    if moderator and not moderator.is_active:
+def check_moderator_is_active(moderator: Moderator):
+    """
+    Check if the given moderator is active.
+
+    This function checks whether the given moderator is active. If the moderator is not active,
+    a ModeratorNotActive exception is raised.
+
+    Args:
+        moderator (Moderator): The moderator to check.
+
+    Raises:
+        ModeratorNotActiveError: If the moderator is not active.
+    """
+
+    if not moderator.is_active:
         raise ModeratorNotActiveError(moderator)
 
 
-def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: Optional[RestaurantManager],
+def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: RestaurantManager,
                                                      restaurant_id: int):
     """
     Check restaurant manager ownership on restaurant.
 
     This function checks whether the given restaurant manager has ownership of the specified restaurant.
-    If the manager is not the owner or if the manager is None, a RestaurantManagerOwnershipError exception
-    is raised.
+    If the manager is not the owner, a RestaurantManagerOwnershipError exception is raised.
 
     Args:
-        restaurant_manager (Optional[RestaurantManager]): The restaurant manager instance.
+        restaurant_manager (RestaurantManager): The restaurant manager instance.
         restaurant_id (int): The ID of the restaurant.
 
     Raises:
         RestaurantManagerOwnershipError: If the restaurant manager does not have ownership.
     """
 
-    if restaurant_manager and restaurant_id != restaurant_manager.restaurant_id:
+    if restaurant_id != restaurant_manager.restaurant_id:
         raise RestaurantManagerOwnershipError(restaurant_manager, restaurant_id)
 
-
-def check_restaurant_is_active(restaurant: Optional[Restaurant]):
-    if restaurant and not restaurant.is_active:
-        raise RestaurantNotActiveError(restaurant)
