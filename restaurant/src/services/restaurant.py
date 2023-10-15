@@ -209,6 +209,10 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         # Delete
         await uow.restaurants.delete(id, **kwargs)
 
+    async def list_active_restaurants(self, uow: SqlAlchemyUnitOfWork, **kwargs) -> List[RestaurantRetrieveOut]:
+        instance_list = await self.list_active_restaurant_instances(uow, **kwargs)
+        return super().get_list_schema(instance_list)
+
     async def activate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
         Activates a restaurant by setting its `is_active` attribute to True.
