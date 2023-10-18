@@ -52,3 +52,60 @@ class RolesServicer(pb2_grpc.RolesServicer):
                 return
 
         return pb2.GetUserRoleResponse(user_id=user.id, role=role)
+<<<<<<< HEAD
+=======
+
+    # def CheckEmailVerifiedPermission(self, request, context):
+    #     access_token = request.access_token
+    #     user = self._get_user(access_token=access_token,
+    #                           context=context)
+    #
+    #     has_permission = user.is_email_verified if user else False
+    #
+    #     return pb2.CheckPermissionResponse(has_permission=has_permission,
+    #                                        user_id=user.id)
+    #
+    # def CheckCustomerPermission(self, request, context):
+    #     access_token = request.access_token
+    #
+    #     user = self._get_user(access_token=access_token,
+    #                           context=context)
+    #
+    #     has_permission = (user.is_email_verified and user.role == UserRole.CUSTOMER) if user else False
+    #
+    #     return pb2.CheckPermissionResponse(has_permission=has_permission,
+    #                                        user_id=user.id)
+    #
+    # def CheckCourierPermission(self, request, context):
+    #     access_token = request.access_token
+    #
+    #     user = self._get_user(access_token=access_token,
+    #                           context=context)
+    #
+    #     has_permission = (user.is_email_verified and user.role == UserRole.COURIER) if user else False
+    #
+    #     return pb2.CheckPermissionResponse(has_permission=has_permission,
+    #                                        user_id=user.id)
+    #
+    # def CheckRestaurantManagerPermission(self, request, context):
+    #     access_token = request.access_token
+    #
+    #     user = self._get_user(access_token=access_token,
+    #                           context=context)
+    #
+    #     has_permission = (user.is_email_verified and user.role == UserRole.RESTAURANT_MANAGER) if user else False
+    #
+    #     return pb2.CheckPermissionResponse(has_permission=has_permission,
+    #                                        user_id=user.id)
+    #
+    # def CheckModeratorPermission(self, request, context):
+    #     access_token = request.access_token
+    #
+    #     user = self._get_user(access_token=access_token,
+    #                           context=context)
+    #
+    #     has_permission = (user.is_email_verified and user.role == UserRole.MODERATOR) if user else False
+    #
+    #     return pb2.CheckPermissionResponse(has_permission=has_permission,
+    #                                        user_id=user.id)
+>>>>>>> 537e36c (replaced with one grpc request)
