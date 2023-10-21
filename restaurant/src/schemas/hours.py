@@ -1,11 +1,16 @@
 from abc import ABC
 from datetime import time
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
-from models.hours import DayOfWeek
+from models import DayOfWeek
 
-__all__ = ["WorkingHoursRetrieveOut", "WorkingHoursCreateIn", "WorkingHoursCreateOut",
-           "WorkingHoursUpdateIn", "WorkingHoursUpdateOut"]
+__all__ = [
+    "WorkingHoursRetrieveOut",
+    "WorkingHoursCreateIn",
+    "WorkingHoursCreateOut",
+    "WorkingHoursUpdateIn",
+    "WorkingHoursUpdateOut"
+]
 
 
 # Base
@@ -18,6 +23,16 @@ class WorkingHoursBase(BaseModel, ABC):
     opening_time: time
     closing_time: time
 
+    @field_validator('opening_time', 'closing_time')
+    @classmethod
+    def check_time(cls, time_value: time):
+        if time_value is not None:
+            if time_value.second != 0:
+                raise ValueError("Time must not include seconds")
+            if time_value.microsecond != 0:
+                raise ValueError("Time must not include microseconds")
+        return time_value
+
 
 class WorkingHoursBaseOut(WorkingHoursBase, ABC):
     """
@@ -28,8 +43,7 @@ class WorkingHoursBaseOut(WorkingHoursBase, ABC):
     day_of_week: DayOfWeek
 
     model_config = {
-        "from_attributes": True,
-        "use_enum_values": True
+        "from_attributes": True
     }
 
 
