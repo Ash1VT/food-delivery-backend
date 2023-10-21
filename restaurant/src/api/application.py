@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, Cookie, HTTPException
+from typing import Optional
 
-from dependencies import get_restaurant_manager, get_moderator, get_uow
-from grpc_files import grpc_permissions_client
-from models import RestaurantManager, Moderator
-from services import RestaurantApplicationService, RestaurantService
+from fastapi import APIRouter, Depends, Query
+
+from decorators import handle_app_errors
+from dependencies import get_uow, get_uow_with_commit, get_application_service
+from models import ApplicationType
+from services import RestaurantApplicationService
 from uow import SqlAlchemyUnitOfWork
 
 router = APIRouter(
@@ -12,26 +14,30 @@ router = APIRouter(
 
 
 @router.get('/')
-async def get_restaurant_applications(access_token: str = Cookie(),
+@handle_app_errors
+async def get_restaurant_applications(application_type: Optional[ApplicationType] = Query(default=None, alias="type"),
+                                      service: RestaurantApplicationService = Depends(get_application_service),
                                       uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
-    response = grpc_permissions_client.check_restaurant_manager_permission(access_token)
-    response_2 = grpc_permissions_client.check_moderator_permission(access_token)
-    if response.has_permission:
-        manager = await uow.managers.retrieve(response.user_id)
-        service = RestaurantService(restaurant_manager=manager)
-    elif response_2.has_permission:
-        moderator = await uow.moderators.retrieve(response_2.user_id)
-        service = RestaurantService(moderator=moderator)
-    else:
-        raise HTTPException(status_code=403, detail="User hasn't got restaurant manager or moderator permissions")
-
-    return await service.list_instances(uow)
+    if application_type is ApplicationType.create:
+        return await service.list_create_applications(uow)
+    if application_type is ApplicationType.update:
+        return await service.list_update_applications(uow)
+    return await service.list(uow)
 
 
+@router.post('/{application_id}/confirm')
+@handle_app_errors
+async def confirm_application(application_id: int,
+                              service: RestaurantApplicationService = Depends(get_application_service),
+                              uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    await service.confirm_application(id=application_id, uow=uow)
+    return {}
 
-async def confirm_application():
-    pass
 
-
-async def decline_application():
-    pass
+@router.delete('/{application_id}/decline')
+@handle_app_errors
+async def decline_application(application_id: int,
+                              service: RestaurantApplicationService = Depends(get_application_service),
+                              uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    await service.decline_application(id=application_id, uow=uow)
+    return {}
