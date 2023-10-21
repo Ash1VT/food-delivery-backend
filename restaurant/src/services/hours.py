@@ -1,7 +1,10 @@
 from typing import Optional
 
-from exceptions import WorkingHoursNotFoundWithIdError, PermissionDeniedError
+from exceptions import WorkingHoursNotFoundWithIdError, WorkingHoursAlreadyExistsWithDayError, \
+    WorkingHoursTimeConflictError, \
+    PermissionDeniedError, RestaurantNotFoundWithIdError
 from models import WorkingHours, RestaurantManager
+from roles import RestaurantManagerRole
 from schemas import WorkingHoursUpdateIn, WorkingHoursCreateIn, WorkingHoursCreateOut, WorkingHoursUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership_on_restaurant
@@ -48,19 +51,36 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
             WorkingHours: The created working hours instance.
 
         Raises:
-            WorkingHoursNotFoundWithIdError: If the working hours with the given ID is not found.
             PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant with the given ID is not found.
+            WorkingHoursAlreadyExistsWithDayError: If a working hours instance with the given day of week
+                already exists for the given restaurant.
+            WorkingHoursTimeConflictError: If the closing time is before the opening time.
         """
 
         # Permission checks
         if self._restaurant_manager:
             check_restaurant_manager_is_active(self._restaurant_manager)
-            check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
         else:
-            raise PermissionDeniedError()
+            raise PermissionDeniedError(RestaurantManagerRole)
 
+        # Check restaurant for existence
+        if not await uow.restaurants.exists(item.restaurant_id):
+            raise RestaurantNotFoundWithIdError(item.restaurant_id)
+
+        # Check if restaurant manager owns a restaurant
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, item.restaurant_id)
+
+        # Check if working hours with such day not already exists for restaurant
+        if await uow.working_hours.exists_with_restaurant(item.restaurant_id, item.day_of_week):
+            raise WorkingHoursAlreadyExistsWithDayError(item.day_of_week)
+
+        # Check that opening time is before closing time
+        if item.opening_time >= item.closing_time:
+            raise WorkingHoursTimeConflictError(item.opening_time, item.closing_time)
+
+        # Create
         data = item.model_dump()
-
         return await uow.working_hours.create(data, **kwargs)
 
     async def update_instance(self, id: int,
@@ -78,25 +98,33 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
             WorkingHours: The updated working hours instance.
 
         Raises:
-            WorkingHoursNotFoundWithIdError: If the working hours with the given ID is not found.
             PermissionDeniedError: If the user is not a restaurant manager.
+            WorkingHoursNotFoundWithIdError: If the working hours with the given ID is not found.
+            WorkingHoursTimeConflictError: If the closing time is before the opening time.
         """
 
+        # Permission checks
+        if self._restaurant_manager:
+            check_restaurant_manager_is_active(self._restaurant_manager)
+        else:
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check working hours for existence
         retrieved_working_hours = await uow.working_hours.retrieve(id, **kwargs)
 
         if not retrieved_working_hours:
             raise WorkingHoursNotFoundWithIdError(id)
 
-        # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-            check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager,
-                                                             retrieved_working_hours.restaurant_id)
-        else:
-            raise PermissionDeniedError()
+        # Check if restaurant manager owns a restaurant
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager,
+                                                         retrieved_working_hours.restaurant_id)
 
+        # Check that opening time is before closing time
+        if item.opening_time >= item.closing_time:
+            raise WorkingHoursTimeConflictError(item.opening_time, item.closing_time)
+
+        # Update
         data = item.model_dump()
-
         return await uow.working_hours.update(id, data, **kwargs)
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
@@ -108,21 +136,25 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
 
         Raises:
-            WorkingHoursNotFoundWithIdError: If the working hours with the given ID is not found.
             PermissionDeniedError: If the user is not a restaurant manager.
+            WorkingHoursNotFoundWithIdError: If the working hours with the given ID is not found.
         """
 
+        # Permission checks
+        if self._restaurant_manager:
+            check_restaurant_manager_is_active(self._restaurant_manager)
+        else:
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check working hours for existence
         retrieved_working_hours = await uow.working_hours.retrieve(id, **kwargs)
 
         if not retrieved_working_hours:
             raise WorkingHoursNotFoundWithIdError(id)
 
-        # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-            check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager,
-                                                             retrieved_working_hours.restaurant_id)
-        else:
-            raise PermissionDeniedError()
+        # Check if restaurant manager owns a restaurant
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager,
+                                                         retrieved_working_hours.restaurant_id)
 
+        # Delete
         await uow.working_hours.delete(id, **kwargs)
