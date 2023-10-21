@@ -2,7 +2,8 @@ from typing import Optional, List
 
 from exceptions import PermissionDeniedError, RestaurantApplicationNotFoundWithIdError, \
     RestaurantManagerNotFoundWithIdError
-from models import RestaurantApplication, Moderator
+from models import RestaurantApplication, Moderator, ApplicationType
+from roles import ModeratorRole
 from schemas import RestaurantApplicationRetrieveOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_moderator_is_active
@@ -49,20 +50,20 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             RestaurantApplication: The retrieved instance of RestaurantApplication.
 
         Raises:
-            RestaurantApplicationNotFoundWithIdError: If no RestaurantApplication is found with the provided ID.
             PermissionDeniedError: If the user is not a moderator.
+            RestaurantApplicationNotFoundWithIdError: If no RestaurantApplication is found with the provided ID.
         """
-
-        retrieved_instance = await uow.restaurant_applications.retrieve(id, **kwargs)
-
-        if not retrieved_instance:
-            raise RestaurantApplicationNotFoundWithIdError(id)
 
         # Permission checks
         if self._moderator:
             check_moderator_is_active(self._moderator)
         else:
-            raise PermissionDeniedError()
+            raise PermissionDeniedError(ModeratorRole)
+
+        retrieved_instance = await uow.restaurant_applications.retrieve(id, **kwargs)
+
+        if not retrieved_instance:
+            raise RestaurantApplicationNotFoundWithIdError(id)
 
         return retrieved_instance
 
@@ -84,9 +85,85 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         if self._moderator:
             check_moderator_is_active(self._moderator)
         else:
-            raise PermissionDeniedError()
+            raise PermissionDeniedError(ModeratorRole)
 
         return await uow.restaurant_applications.list(**kwargs)
+
+    async def list_create_application_instances(self, uow: SqlAlchemyUnitOfWork,
+                                                **kwargs) -> List[RestaurantApplication]:
+        """
+        List all create restaurant applications from the database.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[RestaurantApplication]: A list of create restaurant applications.
+
+        Raises:
+            PermissionDeniedError: If the user is not a moderator.
+        """
+
+        # Permission checks
+        if self._moderator:
+            check_moderator_is_active(self._moderator)
+        else:
+            raise PermissionDeniedError(ModeratorRole)
+
+        return await uow.restaurant_applications.list_create_applications(**kwargs)
+
+    async def list_update_application_instances(self, uow: SqlAlchemyUnitOfWork,
+                                                **kwargs) -> List[RestaurantApplication]:
+        """
+        List all update restaurant applications from the database.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[RestaurantApplication]: A list of update restaurant applications.
+
+        Raises:
+            PermissionDeniedError: If the user is not a moderator.
+        """
+
+        # Permission checks
+        if self._moderator:
+            check_moderator_is_active(self._moderator)
+        else:
+            raise PermissionDeniedError(ModeratorRole)
+
+        return await uow.restaurant_applications.list_update_applications(**kwargs)
+
+    async def list_create_applications(self, uow: SqlAlchemyUnitOfWork,
+                                       **kwargs) -> List[RestaurantApplicationRetrieveOut]:
+        """
+        List all create restaurant applications.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[RestaurantApplicationRetrieveOut]: A list of create restaurant applications.
+        """
+
+        instance_list = await self.list_create_application_instances(uow, **kwargs)
+        return super().get_list_schema(instance_list)
+
+    async def list_update_applications(self, uow: SqlAlchemyUnitOfWork,
+                                       **kwargs) -> List[RestaurantApplicationRetrieveOut]:
+        """
+        List all update restaurant applications.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[RestaurantApplicationRetrieveOut]: A list of update restaurant applications.
+        """
+
+        instance_list = await self.list_update_application_instances(uow, **kwargs)
+        return super().get_list_schema(instance_list)
 
     async def confirm_application(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -97,17 +174,23 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
 
         Raises:
-            PermissionDeniedError: If the user is not a moderator.
             RestaurantManagerNotFoundWithIdError: If the restaurant manager is not found.
         """
 
-        restaurant_application = await self.retrieve(id, uow, **kwargs)
+        # # Permission checks
+        # if self._moderator:
+        #     check_moderator_is_active(self._moderator)
+        # else:
+        #     raise PermissionDeniedError(ModeratorRole)
+        #
+        # restaurant_application_instance = await uow.restaurant_applications.retrieve(id, **kwargs)
+        #
+        # if not restaurant_application_instance:
+        #     raise RestaurantApplicationNotFoundWithIdError(id)
+        #
+        # restaurant_application = super().get_retrieve_schema(restaurant_application_instance)
 
-        # Permission checks
-        if self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
-            raise PermissionDeniedError()
+        restaurant_application = await super().retrieve(id, uow, **kwargs)
 
         # Get restaurant data and restaurant manager
         data = restaurant_application.model_dump()
@@ -117,10 +200,17 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         if not restaurant_manager:
             raise RestaurantManagerNotFoundWithIdError(restaurant_manager_id)
 
-        # Create restaurant, delete an application and set restaurant manager to restaurant
-        restaurant = await uow.restaurants.create(data)
+        # Create or update restaurant, delete an application and set restaurant manager to restaurant if created
+        application_type = data.pop('type')
+        del data['id']
+
+        if application_type == ApplicationType.create:
+            restaurant = await uow.restaurants.create(data)
+            restaurant_manager.restaurant_id = restaurant.id
+        elif application_type == ApplicationType.update:
+            await uow.restaurants.update(restaurant_manager.restaurant_id, data)
+
         await uow.restaurant_applications.delete(id)
-        restaurant_manager.restaurant_id = restaurant.id
 
     async def decline_application(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -131,17 +221,17 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
 
         Raises:
-            RestaurantApplicationNotFoundWithIdError: If the restaurant application with the given ID does not exist.
             PermissionDeniedError: If the user is not the moderator.
+            RestaurantApplicationNotFoundWithIdError: If the restaurant application with the given ID does not exist.
         """
-
-        if not await uow.restaurant_applications.exists(id):
-            raise RestaurantApplicationNotFoundWithIdError(id)
 
         # Permission checks
         if self._moderator:
             check_moderator_is_active(self._moderator)
         else:
-            raise PermissionDeniedError()
+            raise PermissionDeniedError(ModeratorRole)
+
+        if not await uow.restaurant_applications.exists(id):
+            raise RestaurantApplicationNotFoundWithIdError(id)
 
         await uow.restaurant_applications.delete(id, **kwargs)

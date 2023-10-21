@@ -9,20 +9,49 @@ __all__ = [
 
 
 class ModeratorNotFoundWithIdError(DatabaseInstanceNotFoundError):
-
+    """
+    Exception class for errors when moderator is not found with id.
+    """
     def __init__(self, id: int):
+        """
+        Initialize the ModeratorNotFoundWithIdError exception.
+
+        Args:
+            id (int): The ID of the moderator.
+        """
+
         super().__init__('id', id, Moderator)
 
 
 class ModeratorAlreadyExistsWithIdError(DatabaseInstanceAlreadyExistsError):
+    """
+    Exception class for errors when moderator already exists with id.
+    """
 
     def __init__(self, id: int):
+        """
+        Initialize the ModeratorAlreadyExistsWithIdError exception.
+
+        Args:
+            id (int): The ID of the moderator.
+        """
+
         super().__init__('id', id, Moderator)
 
 
 class ModeratorNotActiveError(AppError):
+    """
+    Exception class for errors when moderator is not active.
+    """
 
     def __init__(self, moderator: Moderator):
+        """
+        Initialize the ModeratorNotActiveError exception.
+
+        Args:
+            moderator (Moderator): The moderator object associated with the error.
+        """
+
         self._moderator = moderator
         super().__init__()
 

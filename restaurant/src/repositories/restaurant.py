@@ -6,11 +6,15 @@ from sqlalchemy.orm import selectinload
 from models import Restaurant
 from .generic import SQLAlchemyRepository
 
-__all__ = ["RestaurantRepository"]
+__all__ = [
+    "RestaurantRepository",
+]
 
 
 class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
-    """Repository for Restaurant model operations."""
+    """
+    Repository for Restaurant model operations.
+    """
 
     model = Restaurant
 
@@ -83,7 +87,19 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
         return stmt
 
-    def _get_list_active_restaurants_stmt(self, fetch_working_hours: bool = False, **kwargs):
+    def _get_list_active_restaurants_stmt(self, fetch_working_hours: bool = False, **kwargs) -> Select:
+        """
+        Create a SELECT statement to retrieve a list of active restaurants, with optional additional data.
+
+        Args:
+            fetch_working_hours (bool, optional): Whether to fetch associated working hours for restaurant.
+                Default is False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Select: The SELECT statement to retrieve the list of active Restaurants.
+        """
+
         stmt = select(Restaurant).where(Restaurant.is_active)
 
         stmt = self.__get_select_stmt_with_options(stmt=stmt,
@@ -135,8 +151,19 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
         return await super().list(fetch_working_hours=fetch_working_hours,
                                   **kwargs)
 
-    async def list_active_restaurants(self, fetch_working_hours: bool = False, **kwargs):
+    async def list_active_restaurants(self, fetch_working_hours: bool = False, **kwargs) -> List[Restaurant]:
+        """
+        Retrieve a list of active Restaurants, with optional additional data.
+
+        Args:
+            fetch_working_hours (bool, optional): Whether to fetch associated working hours for restaurant.
+                Default is False.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[Restaurant]: List of active Restaurants.
+        """
+
         stmt = self._get_list_active_restaurants_stmt(fetch_working_hours=fetch_working_hours, **kwargs)
         result = await self._session.execute(stmt)
-
         return [r[0] for r in result.fetchall()]

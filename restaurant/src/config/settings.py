@@ -1,7 +1,7 @@
 import os
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from utils.config import config_cache
+from .cache import config_cache
 from .directories import ENV_DIRECTORY
 
 

@@ -25,7 +25,7 @@ class RestaurantApplication(CustomBase):
     phone = Column(String, nullable=False)
     email = Column(String, nullable=False)
 
-    application_type = Column(Enum(ApplicationType), nullable=False)
+    type = Column(Enum(ApplicationType), nullable=False)
 
     restaurant_manager_id = Column(Integer, ForeignKey('restaurant_managers.id', name='fk_restaurant_manager_id'),
                                    unique=True, nullable=False)

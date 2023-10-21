@@ -10,7 +10,7 @@ class RestaurantManager(CustomBase):
     __tablename__ = 'restaurant_managers'
 
     id = Column(Integer, primary_key=True, autoincrement=False)
-    is_active = Column(Boolean, nullable=False, default=False)
+    is_active = Column(Boolean, nullable=False, default=True)
 
     restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), unique=True)
 
