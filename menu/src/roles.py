@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 from grpc_files.generated.roles_pb2 import UserRole as GrpcUserRole
 
+__all__ = [
+    "UserRole",
+    "RestaurantManagerRole",
+]
+
 
 class UserRole(ABC):
     """
