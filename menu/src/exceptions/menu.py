@@ -1,6 +1,11 @@
 from models import Menu
 from .base import AppError, DatabaseInstanceNotFoundError
 
+__all__ = [
+    'MenuNotFoundWithIdError',
+    'CurrentMenuMissingError',
+]
+
 
 class MenuNotFoundWithIdError(DatabaseInstanceNotFoundError):
 

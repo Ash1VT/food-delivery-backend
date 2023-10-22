@@ -1,6 +1,12 @@
 from models import MenuItem
 from .base import AppError, DatabaseInstanceNotFoundError
 
+__all__ = [
+    'MenuItemNotFoundWithIdError',
+    'MenuItemAlreadyInCategoryError',
+    'MenuItemNotInCategoryError',
+]
+
 
 class MenuItemNotFoundWithIdError(DatabaseInstanceNotFoundError):
 
