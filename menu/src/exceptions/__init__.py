@@ -4,3 +4,4 @@ from .item import *
 from .menu import *
 from .restaurant import *
 from .manager import *
+from .permissions import *

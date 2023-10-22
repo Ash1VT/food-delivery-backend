@@ -1,22 +1,25 @@
 from models import Restaurant
-from .base import DatabaseInstanceNotFoundError, DatabaseInstanceAlreadyExistsError, AppError
+from .base import DatabaseInstanceNotFoundError, AppError
 
 __all__ = [
     'RestaurantNotFoundWithIdError',
-    'RestaurantAlreadyExistsWithIdError',
     'RestaurantNotActiveError',
 ]
 
 
 class RestaurantNotFoundWithIdError(DatabaseInstanceNotFoundError):
+    """
+    Exception class for restaurant that was not found in the database by id.
+    """
 
     def __init__(self, id: int):
-        super().__init__('id', id, Restaurant)
+        """
+        Initialize the RestaurantNotFoundWithIdError exception.
 
+        Args:
+            id (int): The ID of the restaurant.
+        """
 
-class RestaurantAlreadyExistsWithIdError(DatabaseInstanceAlreadyExistsError):
-
-    def __init__(self, id: int):
         super().__init__('id', id, Restaurant)
 
 
