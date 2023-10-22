@@ -27,4 +27,15 @@ grpc_http_status_mapping = {
 
 
 def grpc_status_to_http(grpc_status_code: StatusCode) -> int:
-    return grpc_http_status_mapping.get(grpc_status_code, 500)  # Default to 500 if not found
+    """
+    Convert gRPC status code to HTTP status code.
+
+    Args:
+        grpc_status_code (StatusCode): The gRPC status code.
+
+    Returns:
+        int: The HTTP status code.
+    """
+
+    # Default to 500 if not found
+    return grpc_http_status_mapping.get(grpc_status_code, 500)
