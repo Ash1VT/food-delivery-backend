@@ -1,8 +1,16 @@
 from abc import ABC
-from typing import Optional, List
 
 from pydantic import BaseModel, Field
-from .menu import MenuRetrieveOut
+
+__all__ = [
+    "RestaurantBase",
+    "RestaurantBaseOut",
+    "RestaurantRetrieveOut",
+    "RestaurantCreateIn",
+    "RestaurantCreateOut",
+    "RestaurantUpdateIn",
+    "RestaurantUpdateOut",
+]
 
 
 # Base
@@ -18,9 +26,6 @@ class RestaurantBase(BaseModel, ABC):
 class RestaurantBaseOut(RestaurantBase, ABC):
     """
     Base schema class for output representation of a restaurant.
-
-    Attributes:
-        id (int): The ID of the restaurant.
     """
 
     id: int = Field(ge=0)
@@ -45,17 +50,33 @@ class RestaurantRetrieveOut(RestaurantBaseOut):
 class RestaurantCreateIn(RestaurantBase):
     """
     Schema class for input data when creating a restaurant.
-
-    Additional Attributes:
-        id (int): The ID of the restaurant.
     """
 
     id: int = Field(ge=0)
+    is_active: bool
 
 
 class RestaurantCreateOut(RestaurantBaseOut):
     """
     Schema class for output representation after creating a restaurant.
+    """
+
+    pass
+
+
+# Update
+
+class RestaurantUpdateIn(RestaurantBase):
+    """
+    Schema class for input data when updating a restaurant.
+    """
+
+    is_active: bool
+
+
+class RestaurantUpdateOut(RestaurantBaseOut):
+    """
+    Schema class for output representation after updating a restaurant.
     """
 
     pass

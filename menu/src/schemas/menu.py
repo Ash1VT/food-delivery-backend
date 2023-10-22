@@ -4,16 +4,23 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from .category import MenuCategoryRetrieveOut
 
+__all__ = [
+    "MenuBase",
+    "MenuBaseOut",
+    "MenuCategoryRetrieveOut",
+    "MenuRetrieveOut",
+    "MenuCreateIn",
+    "MenuCreateOut",
+    "MenuUpdateIn",
+    "MenuUpdateOut",
+]
+
 
 # Base
 
 class MenuBase(BaseModel, ABC):
     """
     Base schema class for a menu, containing common attributes.
-
-    Attributes:
-        name (str): The name of the menu. Must be between 1 and 100 characters.
-        description (Optional[str]): An optional description for the menu, between 1 and 1000 characters.
     """
 
     name: str = Field(min_length=1, max_length=100)
@@ -23,10 +30,6 @@ class MenuBase(BaseModel, ABC):
 class MenuBaseOut(MenuBase, ABC):
     """
     Base schema class for output representation of a menu.
-
-    Attributes:
-        id (int): The ID of the menu.
-        restaurant_id (int): The ID of the restaurant associated with the menu.
     """
 
     id: int = Field(ge=0)
@@ -42,9 +45,6 @@ class MenuBaseOut(MenuBase, ABC):
 class MenuRetrieveOut(MenuBaseOut):
     """
     Schema class for output representation of a retrieved menu.
-
-    Attributes:
-        categories (List[MenuCategoryRetrieveOut]): A list of retrieved menu categories associated with the menu.
     """
 
     categories: List[MenuCategoryRetrieveOut]
@@ -55,9 +55,6 @@ class MenuRetrieveOut(MenuBaseOut):
 class MenuCreateIn(MenuBase):
     """
     Schema class for input data when creating a menu.
-
-    Attributes:
-        restaurant_id (int): The ID of the restaurant where the menu is being created.
     """
 
     restaurant_id: int = Field(ge=0)

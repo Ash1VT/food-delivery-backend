@@ -3,17 +3,22 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+__all__ = [
+    "MenuItemBase",
+    "MenuItemBaseOut",
+    "MenuItemRetrieveOut",
+    "MenuItemCreateIn",
+    "MenuItemCreateOut",
+    "MenuItemUpdateIn",
+    "MenuItemUpdateOut",
+]
+
 
 # Base
 
 class MenuItemBase(BaseModel, ABC):
     """
     Base schema class for a menu item, containing common attributes.
-
-    Attributes:
-        name (str): The name of the menu item. Must be between 1 and 100 characters.
-        description (Optional[str]): An optional description for the menu item, between 1 and 1000 characters.
-        price (float): The price of the menu item. Must be greater than 0.
     """
 
     name: str = Field(min_length=1, max_length=100)
@@ -24,10 +29,6 @@ class MenuItemBase(BaseModel, ABC):
 class MenuItemBaseOut(MenuItemBase, ABC):
     """
     Base schema class for output representation of a menu item.
-
-    Attributes:
-        id (int): The ID of the menu item.
-        restaurant_id (int): The ID of the restaurant associated with the menu item.
     """
 
     id: int = Field(ge=0)
@@ -53,9 +54,6 @@ class MenuItemRetrieveOut(MenuItemBaseOut):
 class MenuItemCreateIn(MenuItemBase):
     """
     Schema class for input data when creating a menu item.
-
-    Attributes:
-        restaurant_id (int): The ID of the restaurant where the menu item is being created.
     """
 
     restaurant_id: int = Field(ge=0)
