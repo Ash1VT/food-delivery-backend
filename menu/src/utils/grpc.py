@@ -1,6 +1,10 @@
 from grpc import StatusCode
 
 
+__all__ = [
+    'grpc_status_to_http',
+]
+
 grpc_http_status_mapping = {
     StatusCode.OK: 200,
     StatusCode.CANCELLED: 499,
