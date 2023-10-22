@@ -6,6 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import CustomBase
 
+__all__ = [
+    'GenericRepository',
+    'SQLAlchemyRepository',
+]
+
 Model = TypeVar("Model", bound=CustomBase)
 
 
@@ -18,7 +23,8 @@ class GenericRepository(Generic[Model], ABC):
 
     @abstractmethod
     async def retrieve(self, id: int, *args, **kwargs) -> Optional[Model]:
-        """Retrieve a record by its ID.
+        """
+        Retrieve a record by its ID.
 
         Args:
             id (int): The ID of the record to retrieve.
@@ -33,7 +39,8 @@ class GenericRepository(Generic[Model], ABC):
 
     @abstractmethod
     async def list(self, *args, **kwargs) -> List[Model]:
-        """Retrieve a list of records or None if not found.
+        """
+        Retrieve a list of records or None if not found.
 
         Args:
             *args: Additional positional arguments.
@@ -47,7 +54,8 @@ class GenericRepository(Generic[Model], ABC):
 
     @abstractmethod
     async def create(self, data: dict, *args, **kwargs) -> Model:
-        """Create a new record and return it.
+        """
+        Create a new record and return it.
 
         Args:
             data (dict): A dictionary containing the data for the new record.
@@ -62,7 +70,8 @@ class GenericRepository(Generic[Model], ABC):
 
     @abstractmethod
     async def update(self, id: int, data: dict, *args, **kwargs) -> Optional[Model]:
-        """Update an existing record by its ID and return updated record.
+        """
+        Update an existing record by its ID and return updated record.
 
         Args:
             id (int): The ID of the record to update.
@@ -78,7 +87,8 @@ class GenericRepository(Generic[Model], ABC):
 
     @abstractmethod
     async def delete(self, id: int, *args, **kwargs):
-        """Delete a record by its ID and returns it.
+        """
+        Delete a record by its ID and returns it.
 
         Args:
             id (int): The ID of the record to delete.
@@ -94,12 +104,15 @@ class GenericRepository(Generic[Model], ABC):
 
 
 class SQLAlchemyRepository(GenericRepository[Model], ABC):
-    """An abstract base class for repository operations using SQLAlchemy."""
+    """
+    An abstract base class for repository operations using SQLAlchemy.
+    """
 
     model: Model = None
 
     def __init__(self, session: AsyncSession):
-        """Initialize a new SQLAlchemyRepository instance.
+        """
+        Initialize a new SQLAlchemyRepository instance.
 
         Args:
             session (AsyncSession): An asynchronous SQLAlchemy session.
@@ -108,7 +121,8 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         self._session = session
 
     def _get_retrieve_stmt(self, id: int, **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a record by its ID.
+        """
+        Create a SELECT statement to retrieve a record by its ID.
 
         Args:
             id (int): The ID of the record to retrieve.
@@ -121,7 +135,8 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         return select(self.model).where(self.model.id == id)
 
     def _get_list_stmt(self, **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a list of records.
+        """
+        Create a SELECT statement to retrieve a list of records.
 
         Args:
             **kwargs: Additional keyword arguments.
@@ -133,7 +148,8 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         return select(self.model)
 
     def _get_create_stmt(self, data: dict, **kwargs) -> Insert:
-        """Create an INSERT statement to add a new record.
+        """
+        Create an INSERT statement to add a new record.
 
         Args:
             data (dict): A dictionary containing the data for the new record.
@@ -146,7 +162,8 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         return insert(self.model).values(**data).returning(self.model)
 
     def _get_update_stmt(self, id: int, data: dict, **kwargs) -> Update:
-        """Create an UPDATE statement to modify an existing record by its ID.
+        """
+        Create an UPDATE statement to modify an existing record by its ID.
 
         Args:
             id (int): The ID of the record to update.
@@ -160,7 +177,8 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         return update(self.model).where(self.model.id == id).values(**data).returning(self.model)
 
     def _get_delete_stmt(self, id: int, **kwargs) -> Delete:
-        """Create a DELETE statement to remove a record by its ID.
+        """
+        Create a DELETE statement to remove a record by its ID.
 
         Args:
             id (int): The ID of the record to delete.

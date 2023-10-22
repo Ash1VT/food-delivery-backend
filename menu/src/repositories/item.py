@@ -5,16 +5,23 @@ from sqlalchemy import Select, select
 from models import MenuItem
 from .generic import SQLAlchemyRepository
 
+__all__ = [
+    'MenuItemRepository',
+]
+
 
 class MenuItemRepository(SQLAlchemyRepository[MenuItem]):
-    """Repository for MenuItem model operations."""
+    """
+    Repository for MenuItem model operations.
+    """
 
     model = MenuItem
 
     def _get_list_restaurant_items_stmt(self,
                                         restaurant_id: int,
                                         **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a list of menu items, which belong to restaurant
+        """
+        Create a SELECT statement to retrieve a list of menu items, which belong to restaurant
         with optional additional data.
 
         Args:
@@ -32,7 +39,8 @@ class MenuItemRepository(SQLAlchemyRepository[MenuItem]):
     async def list_restaurant_items(self,
                                     restaurant_id: int,
                                     **kwargs) -> List[MenuItem]:
-        """Retrieve a list of menu items, which belong to restaurant with optional additional data.
+        """
+        Retrieve a list of menu items, which belong to restaurant with optional additional data.
 
         Args:
             restaurant_id (int): The ID of the restaurant.

@@ -6,9 +6,15 @@ from sqlalchemy.orm import selectinload
 from models import MenuCategory
 from .generic import SQLAlchemyRepository
 
+__all__ = [
+    'MenuCategoryRepository',
+]
+
 
 class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
-    """Repository for MenuCategory model operations."""
+    """
+    Repository for MenuCategory model operations.
+    """
 
     model = MenuCategory
 
@@ -16,7 +22,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
                                        stmt: Select,
                                        fetch_items: bool = False,
                                        **kwargs) -> Select:
-        """Modify the SELECT statement to include additional options.
+        """
+        Modify the SELECT statement to include additional options.
 
         Args:
             stmt (Select): The base SELECT statement.
@@ -37,7 +44,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
                            id: int,
                            fetch_items: bool = False,
                            **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a menu category by its ID, with optional additional data.
+        """
+        Create a SELECT statement to retrieve a menu category by its ID, with optional additional data.
 
         Args:
             id (int): The ID of the menu category to retrieve.
@@ -60,7 +68,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
     def _get_list_stmt(self,
                        fetch_items: bool = False,
                        **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a list of menu categories, with optional additional data.
+        """
+        Create a SELECT statement to retrieve a list of menu categories, with optional additional data.
 
         Args:
             fetch_items (bool, optional): Whether to fetch associated items for each menu category.
@@ -83,7 +92,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
                                        menu_id: int,
                                        fetch_items: bool = False,
                                        **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a list of menu categories, which belong to a menu
+        """
+        Create a SELECT statement to retrieve a list of menu categories, which belong to a menu
         with optional additional data.
 
         Args:
@@ -108,7 +118,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
                        id: int,
                        fetch_items: bool = False,
                        **kwargs) -> Optional[MenuCategory]:
-        """Retrieve a menu category by its ID, with optional additional data.
+        """
+        Retrieve a menu category by its ID, with optional additional data.
 
         Args:
             id (int): The ID of the menu category to retrieve.
@@ -129,7 +140,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
     async def list(self,
                    fetch_items: bool = False,
                    **kwargs) -> List[MenuCategory]:
-        """Retrieve a list of menu categories, with optional additional data.
+        """
+        Retrieve a list of menu categories, with optional additional data.
 
         Args:
             fetch_items (bool, optional): Whether to fetch associated items for each menu category. Default is False.
@@ -149,7 +161,8 @@ class MenuCategoryRepository(SQLAlchemyRepository[MenuCategory]):
                                    menu_id: int,
                                    fetch_items: bool = False,
                                    **kwargs) -> List[MenuCategory]:
-        """Retrieve a list of menu categories, which belong to a menu with optional additional data.
+        """
+        Retrieve a list of menu categories, which belong to a menu with optional additional data.
 
         Args:
             menu_id (int): The ID of the menu.
