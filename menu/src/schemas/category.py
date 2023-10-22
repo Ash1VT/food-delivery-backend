@@ -4,15 +4,22 @@ from typing import List
 from pydantic import BaseModel, Field
 from .item import MenuItemRetrieveOut
 
+__all__ = [
+    "MenuCategoryBase",
+    "MenuCategoryOutBase",
+    "MenuCategoryRetrieveOut",
+    "MenuCategoryCreateIn",
+    "MenuCategoryCreateOut",
+    "MenuCategoryUpdateIn",
+    "MenuCategoryUpdateOut",
+]
+
 
 # Base
 
 class MenuCategoryBase(BaseModel, ABC):
     """
     Base schema class for a menu category, containing common attributes.
-
-    Attributes:
-        name (str): The name of the menu category. Must be between 1 and 100 characters.
     """
 
     name: str = Field(min_length=1, max_length=100)
@@ -21,10 +28,6 @@ class MenuCategoryBase(BaseModel, ABC):
 class MenuCategoryOutBase(MenuCategoryBase, ABC):
     """
     Base schema class for output representation of a menu category.
-
-    Attributes:
-        id (int): The ID of the menu category.
-        menu_id (int): The ID of the menu to which belongs menu category.
     """
 
     id: int = Field(ge=0)
@@ -40,9 +43,6 @@ class MenuCategoryOutBase(MenuCategoryBase, ABC):
 class MenuCategoryRetrieveOut(MenuCategoryOutBase):
     """
     Schema class for output representation of a retrieved menu category, building upon MenuCategoryOutBase.
-
-    Attributes:
-        items (List[MenuItemRetrieveOut]): A list of retrieved menu items associated with the category.
     """
 
     items: List[MenuItemRetrieveOut]
@@ -53,9 +53,6 @@ class MenuCategoryRetrieveOut(MenuCategoryOutBase):
 class MenuCategoryCreateIn(MenuCategoryBase):
     """
     Schema class for input data when creating a menu category.
-
-    Attributes:
-        menu_id (int): The ID of the menu to which belongs menu category.
     """
 
     menu_id: int = Field(ge=0)

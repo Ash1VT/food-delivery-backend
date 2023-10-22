@@ -14,8 +14,7 @@ async def generate_restaurant_manager_create_data():
 async def generate_restaurant_manager_update_data():
     restaurant_manager = RestaurantManagerFactory.build()
     return {
-        'id': restaurant_manager.id,
-        'is_active': restaurant_manager.is_active
+        'id': restaurant_manager.id
     }
 
 
@@ -26,5 +25,4 @@ def validate_restaurant_manager(restaurant_manager: RestaurantManager, restauran
 def compare_restaurant_managers(restaurant_manager_1: RestaurantManager,
                                 restaurant_manager_2: RestaurantManager) -> bool:
     return restaurant_manager_1.id == restaurant_manager_2.id and \
-        restaurant_manager_1.is_active == restaurant_manager_2.is_active and \
         restaurant_manager_1.restaurant_id == restaurant_manager_2.restaurant_id

@@ -1,6 +1,11 @@
 from contextlib import asynccontextmanager
 from uow import GenericUnitOfWork
 
+__all__ = [
+    'uow_transaction',
+    'uow_transaction_with_commit',
+]
+
 
 @asynccontextmanager
 async def uow_transaction(uow: GenericUnitOfWork):

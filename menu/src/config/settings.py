@@ -2,13 +2,13 @@ import os
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from .directories import ENV_DIRECTORY
-from .utils import config_cache
+from .cache import config_cache
 
 
 class Settings(BaseSettings):
     secret_key: str
-    permissions_grpc_server_host: str
-    permissions_grpc_server_port: str
+    roles_grpc_server_host: str
+    roles_grpc_server_port: str
 
 
 class DevelopSettings(Settings):

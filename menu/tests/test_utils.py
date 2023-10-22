@@ -2,11 +2,11 @@ import pytest
 from grpc import StatusCode
 from contextlib import nullcontext as does_not_raise
 
-from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, MenuNotFoundWithIdError
+from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, MenuNotFoundWithIdError, \
+    RestaurantManagerEmailNotVerifiedError
 from uow import SqlAlchemyUnitOfWork
 from utils.grpc import grpc_status_to_http
-from utils.checks import check_restaurant_manager_is_active, check_restaurant_manager_ownership_on_restaurant, \
-    check_restaurant_manager_ownership_on_menu
+from utils.checks import check_restaurant_manager_ownership_on_restaurant
 from .factories import MenuFactory, RestaurantFactory, RestaurantManagerFactory
 
 
@@ -46,21 +46,6 @@ class TestChecksUtils:
         RestaurantManagerFactory._meta.sqlalchemy_session = session
 
     @pytest.mark.parametrize(
-        "is_manager_active, expectation",
-        [
-            (False, pytest.raises(RestaurantManagerNotActiveError)),
-            (True, does_not_raise())
-        ]
-    )
-    async def test_check_restaurant_manager_is_active(self, is_manager_active: bool, expectation):
-        restaurant_manager = await RestaurantManagerFactory.create(is_active=is_manager_active)
-        with expectation:
-            check_restaurant_manager_is_active(restaurant_manager)
-
-    def test_check_restaurant_manager_is_active_no_manager(self):
-        check_restaurant_manager_is_active(None)
-
-    @pytest.mark.parametrize(
         "manager_owns_restaurant, expectation",
         [
             (False, pytest.raises(RestaurantManagerOwnershipError)),
@@ -77,35 +62,3 @@ class TestChecksUtils:
 
         with expectation:
             check_restaurant_manager_ownership_on_restaurant(restaurant_manager, restaurant.id)
-
-    def test_check_restaurant_manager_ownership_on_restaurant_no_manager(self):
-        check_restaurant_manager_ownership_on_restaurant(None, 2)
-
-    @pytest.mark.parametrize(
-        "manager_owns_menu, expectation",
-        [
-            (False, pytest.raises(RestaurantManagerOwnershipError)),
-            (True, does_not_raise())
-        ]
-    )
-    async def test_check_restaurant_manager_ownership_on_menu(self, manager_owns_menu: bool,
-                                                              expectation, uow: SqlAlchemyUnitOfWork):
-        restaurant = await RestaurantFactory.create()
-        restaurant_manager = await RestaurantManagerFactory.create(restaurant=restaurant)
-
-        if manager_owns_menu:
-            menu = await MenuFactory.create(restaurant=restaurant)
-        else:
-            menu = await MenuFactory.create()
-
-        with expectation:
-            await check_restaurant_manager_ownership_on_menu(restaurant_manager, menu.id, uow)
-
-    async def test_check_restaurant_manager_ownership_on_menu_nonexistent(self, uow: SqlAlchemyUnitOfWork):
-        restaurant_manager = await RestaurantManagerFactory.create()
-        with pytest.raises(MenuNotFoundWithIdError):
-            await check_restaurant_manager_ownership_on_menu(restaurant_manager, 2, uow)
-
-    async def test_check_restaurant_manager_ownership_on_menu_no_manager(self, uow: SqlAlchemyUnitOfWork):
-        menu = await MenuFactory.create()
-        await check_restaurant_manager_ownership_on_menu(None, menu.id, uow)

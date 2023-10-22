@@ -4,6 +4,10 @@ from fastapi import HTTPException
 
 from exceptions import AppError
 
+__all__ = [
+    'handle_app_errors',
+]
+
 
 def handle_app_errors(controller_func):
     @wraps(controller_func)

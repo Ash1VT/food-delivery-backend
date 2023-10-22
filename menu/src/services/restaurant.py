@@ -1,32 +1,36 @@
-from typing import Optional, List
+from typing import Optional
 
-from multimethod import multimethod
-
-from exceptions import RestaurantAlreadyExistsWithIdError, RestaurantNotFoundWithIdError, MenuNotFoundWithIdError
-from models import Restaurant, RestaurantManager, Menu
-from schemas import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantCreateOut
-from utils import check_restaurant_manager_ownership_on_restaurant, check_restaurant_manager_is_active, \
-    check_restaurant_manager_ownership_on_menu
+from exceptions.restaurant import RestaurantNotFoundWithIdError
+from exceptions.menu import MenuNotFoundWithIdError
+from exceptions.permissions import PermissionDeniedError
+from models import Restaurant, RestaurantManager
+from roles import RestaurantManagerRole
+from schemas.restaurant import RestaurantCreateIn, RestaurantCreateOut, RestaurantUpdateIn, RestaurantUpdateOut
 from uow import SqlAlchemyUnitOfWork
-from .mixins import RetrieveMixin, ListMixin, CreateMixin, DeleteMixin
+from utils import check_restaurant_manager_ownership_on_restaurant
+from .mixins import CreateMixin, DeleteMixin, UpdateMixin
+
+__all__ = [
+    'RestaurantService',
+]
 
 
-class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
-                        CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCreateOut],
+class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCreateOut],
+                        UpdateMixin[Restaurant, RestaurantUpdateIn, RestaurantUpdateOut],
                         DeleteMixin[Restaurant]):
     """
     Service class for managing restaurants.
 
-    This class provides methods for retrieving, listing, creating, updating, and deleting restaurant instances.
-    It also supports adding menus and setting the current menu of a restaurant.
+    This class provides methods for creating, updating, and deleting restaurant instances.
+    It also supports setting the current menu of a restaurant.
 
     Attributes:
-        schema_retrieve_out (RestaurantRetrieveOut): The schema for output representation of retrieved instances.
         schema_create_out (RestaurantCreateOut): The schema for output representation of created instances.
+        schema_update_out (RestaurantUpdateOut): The schema for output representation of updated instances.
     """
 
-    schema_retrieve_out = RestaurantRetrieveOut
     schema_create_out = RestaurantCreateOut
+    schema_update_out = RestaurantUpdateOut
 
     def __init__(self, restaurant_manager: Optional[RestaurantManager] = None):
         """
@@ -37,25 +41,6 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         """
 
         self._restaurant_manager = restaurant_manager
-
-    async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> Restaurant:
-        """
-        Retrieve a restaurant instance by its ID from the repository.
-
-        Args:
-            id (int): The ID of the restaurant to retrieve.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-
-        Returns:
-            Restaurant: The retrieved restaurant instance.
-        """
-
-        retrieved_instance = await uow.restaurants.retrieve(id, **kwargs)
-
-        if not retrieved_instance:
-            raise RestaurantNotFoundWithIdError(id)
-
-        return retrieved_instance
 
     async def create_instance(self, item: RestaurantCreateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> Restaurant:
         """
@@ -69,12 +54,26 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
             Restaurant: The created restaurant instance.
         """
 
-        if await uow.restaurants.exists(item.id):
-            raise RestaurantAlreadyExistsWithIdError(item.id)
+        data = item.model_dump()
+        return await uow.restaurants.create(data, **kwargs)
+
+    async def update_instance(self, id: int, item: RestaurantUpdateIn, uow: SqlAlchemyUnitOfWork,
+                              **kwargs) -> Restaurant:
+        """
+        Update a restaurant instance by its ID in the repository.
+
+        Args:
+            id (int): The ID of the restaurant to update.
+            item (RestaurantUpdateIn): The data to update the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            Restaurant: The updated restaurant instance.
+
+        """
 
         data = item.model_dump()
-
-        return await uow.restaurants.create(data, **kwargs)
+        return await uow.restaurants.update(id, data, **kwargs)
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -87,7 +86,6 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         await uow.restaurants.delete(id, **kwargs)
 
-    @multimethod
     async def set_current_menu(self, restaurant_id: int, menu_id: int,
                                uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -97,51 +95,27 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
             restaurant_id (int): ID of the restaurant.
             menu_id (int): ID of the menu.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
-            **kwargs: Additional keyword arguments.
         """
 
-        check_restaurant_manager_is_active(self._restaurant_manager)
+        # Permissions checks
+        if not self._restaurant_manager:
+            raise PermissionDeniedError(RestaurantManagerRole)
 
-        # Check if restaurant manager owns Restaurant
+        # Check if restaurant exists
+        if not await uow.restaurants.exists(restaurant_id, **kwargs):
+            raise RestaurantNotFoundWithIdError(restaurant_id)
 
-        restaurant = await self.retrieve_instance(restaurant_id, uow)
-
+        # Check if restaurant manager owns restaurant
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
 
-        # Check if restaurant manager owns Menu
+        # Get restaurant of a menu (if restaurant not found, menu does not exist)
+        restaurant = await uow.restaurants.retrieve_by_menu(menu_id, **kwargs)
 
-        await check_restaurant_manager_ownership_on_menu(self._restaurant_manager, menu_id, uow)
+        if not restaurant:
+            raise MenuNotFoundWithIdError(menu_id)
+
+        # Check if restaurant manager owns restaurant of a menu
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant.id)
 
         # Set current menu
-
         restaurant.current_menu_id = menu_id
-
-    @multimethod
-    async def set_current_menu(self, restaurant_id: int,
-                               menu: Menu,
-                               uow: SqlAlchemyUnitOfWork, **kwargs):
-        """
-        Sets a menu as a current menu of a restaurant by restaurant ID and menu instance.
-
-        Args:
-            restaurant_id (int): ID of the restaurant.
-            menu (Menu): The menu instance.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-            **kwargs: Additional keyword arguments.
-        """
-
-        check_restaurant_manager_is_active(self._restaurant_manager)
-
-        # Check if restaurant manager owns Restaurant
-
-        restaurant = await self.retrieve_instance(restaurant_id, uow)
-
-        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
-
-        # Check if restaurant manager owns Menu
-
-        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, menu.restaurant_id)
-
-        # Set current menu
-
-        restaurant.current_menu_id = menu.id

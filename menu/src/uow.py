@@ -6,6 +6,11 @@ from repositories import MenuItemRepository, MenuCategoryRepository, MenuReposit
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+__all__ = [
+    'GenericUnitOfWork',
+    'SqlAlchemyUnitOfWork',
+]
+
 
 class GenericUnitOfWork(ABC):
     """
@@ -101,14 +106,3 @@ class SqlAlchemyUnitOfWork(GenericUnitOfWork):
         """
 
         await self._session.rollback()
-    #
-    # @property
-    # def session(self) -> AsyncSession:
-    #     """
-    #     Get the session.
-    #
-    #     Returns:
-    #         AsyncSession: The session.
-    #     """
-    #
-    #     return self._session

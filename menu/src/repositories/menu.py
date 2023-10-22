@@ -6,9 +6,15 @@ from sqlalchemy.orm import selectinload
 from models import Menu, MenuCategory, Restaurant
 from .generic import SQLAlchemyRepository
 
+__all__ = [
+    'MenuRepository',
+]
+
 
 class MenuRepository(SQLAlchemyRepository[Menu]):
-    """Repository for Menu model operations."""
+    """
+    Repository for Menu model operations.
+    """
 
     model = Menu
 
@@ -16,7 +22,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                                        stmt: Select,
                                        fetch_categories: bool = False,
                                        **kwargs) -> Select:
-        """Modify the SELECT statement to include additional options.
+        """
+        Modify the SELECT statement to include additional options.
 
         Args:
             stmt (Select): The base SELECT statement.
@@ -40,7 +47,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                            id: int,
                            fetch_categories: bool = False,
                            **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a menu by its ID, with optional additional data.
+        """
+        Create a SELECT statement to retrieve a menu by its ID, with optional additional data.
 
         Args:
             id (int): The ID of the menu to retrieve.
@@ -63,7 +71,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
     def _get_list_stmt(self,
                        fetch_categories: bool = False,
                        **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a list of menus, with optional additional data.
+        """
+        Create a SELECT statement to retrieve a list of menus, with optional additional data.
 
         Args:
             fetch_categories (bool, optional): Whether to fetch associated categories for each menu.
@@ -86,7 +95,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                                                    restaurant_id: int,
                                                    fetch_categories: bool = False,
                                                    **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a current menu of restaurant by its ID,
+        """
+        Create a SELECT statement to retrieve a current menu of restaurant by its ID,
         with optional additional data.
 
         Args:
@@ -112,7 +122,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                                         restaurant_id: int,
                                         fetch_categories: bool = False,
                                         **kwargs) -> Select:
-        """Create a SELECT statement to retrieve a list of menus, which belong to restaurant
+        """
+        Create a SELECT statement to retrieve a list of menus, which belong to restaurant
         with optional additional data.
 
         Args:
@@ -137,7 +148,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                        id: int,
                        fetch_categories: bool = False,
                        **kwargs) -> Optional[Menu]:
-        """Retrieve a menu by its ID, with optional additional data.
+        """
+        Retrieve a menu by its ID, with optional additional data.
 
         Args:
             id (int): The ID of the menu to retrieve.
@@ -158,7 +170,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
     async def list(self,
                    fetch_categories: bool = False,
                    **kwargs) -> List[Menu]:
-        """Retrieve a list of menus, with optional additional data.
+        """
+        Retrieve a list of menus, with optional additional data.
 
         Args:
             fetch_categories (bool, optional): Whether to fetch associated categories for each menu.
@@ -180,7 +193,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                                                restaurant_id: int,
                                                fetch_categories: bool = False,
                                                **kwargs) -> Optional[Menu]:
-        """Retrieve a current menu of restaurant by its ID, with optional additional data.
+        """
+        Retrieve a current menu of restaurant by its ID, with optional additional data.
 
         Args:
             restaurant_id (int): The ID of the restaurant.
@@ -206,7 +220,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
                                     restaurant_id: int,
                                     fetch_categories: bool = False,
                                     **kwargs) -> List[Menu]:
-        """Retrieve a list of menus, which belong to restaurant with optional additional data.
+        """
+        Retrieve a list of menus, which belong to restaurant with optional additional data.
 
         Args:
             restaurant_id (int): The ID of the restaurant.

@@ -1,28 +1,12 @@
-from typing import Optional
+from exceptions import RestaurantManagerOwnershipError
 from models import RestaurantManager
-from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, MenuNotFoundWithIdError
-from uow import SqlAlchemyUnitOfWork
+
+__all__ = [
+    'check_restaurant_manager_ownership_on_restaurant',
+]
 
 
-def check_restaurant_manager_is_active(restaurant_manager: Optional[RestaurantManager]):
-    """
-    Check if a restaurant manager is active.
-
-    This function checks whether the given restaurant manager is active. If the manager
-    is not active, a RestaurantManagerNotActive exception is raised.
-
-    Args:
-        restaurant_manager (Optional[RestaurantManager]): The restaurant manager instance.
-
-    Raises:
-        RestaurantManagerNotActive: If the restaurant manager is not active.
-    """
-
-    if restaurant_manager and not restaurant_manager.is_active:
-        raise RestaurantManagerNotActiveError(restaurant_manager)
-
-
-def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: Optional[RestaurantManager],
+def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: RestaurantManager,
                                                      restaurant_id: int):
     """
     Check restaurant manager ownership on restaurant.
@@ -32,23 +16,12 @@ def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: Optiona
     is raised.
 
     Args:
-        restaurant_manager (Optional[RestaurantManager]): The restaurant manager instance.
+        restaurant_manager (RestaurantManager): The restaurant manager instance.
         restaurant_id (int): The ID of the restaurant.
 
     Raises:
         RestaurantManagerOwnershipError: If the restaurant manager does not have ownership.
     """
 
-    if restaurant_manager and restaurant_id != restaurant_manager.restaurant_id:
+    if restaurant_id != restaurant_manager.restaurant_id:
         raise RestaurantManagerOwnershipError(restaurant_manager, restaurant_id)
-
-
-async def check_restaurant_manager_ownership_on_menu(restaurant_manager: Optional[RestaurantManager],
-                                                     menu_id: int,
-                                                     uow: SqlAlchemyUnitOfWork):
-    menu = await uow.menus.retrieve(menu_id)
-
-    if not menu:
-        raise MenuNotFoundWithIdError(menu_id)
-
-    check_restaurant_manager_ownership_on_restaurant(restaurant_manager, menu.restaurant_id)

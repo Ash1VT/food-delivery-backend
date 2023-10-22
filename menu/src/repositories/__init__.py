@@ -1,6 +1,6 @@
-from .generic import GenericRepository, SQLAlchemyRepository
-from .item import MenuItemRepository
-from .category import MenuCategoryRepository
-from .menu import MenuRepository
-from .restaurant import RestaurantRepository
-from .manager import RestaurantManagerRepository
+from .generic import *
+from .item import *
+from .category import *
+from .menu import *
+from .restaurant import *
+from .manager import *
