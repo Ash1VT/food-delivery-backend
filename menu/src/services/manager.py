@@ -1,9 +1,13 @@
 from models import RestaurantManager
-from schemas import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
+from schemas.manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
 from uow import SqlAlchemyUnitOfWork
-from exceptions import RestaurantManagerNotFoundWithIdError
+from exceptions.manager import RestaurantManagerNotFoundWithIdError
 
 from .mixins import RetrieveMixin, CreateMixin, DeleteMixin
+
+__all__ = [
+    'RestaurantManagerService'
+]
 
 
 class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManagerRetrieveOut],
@@ -12,7 +16,7 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
     """
     Service class for managing restaurant managers.
 
-    This class provides methods for creating and deleting restaurant manager instances.
+    This class provides methods for retrieving, creating and deleting restaurant manager instances.
 
     Attributes:
         schema_retrieve_out (RestaurantManagerRetrieveOut): The schema for output representation of retrieved instances.
