@@ -16,7 +16,18 @@ __all__ = [
 
 
 async def get_menu_item_service(access_token: Optional[str] = Cookie(default=None),
-                                uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
+                                uow: SqlAlchemyUnitOfWork = Depends(get_uow)) -> MenuItemService:
+    """
+    Dependency for retrieving the menu item service.
+
+    Args:
+        access_token (Optional[str]): The access token for authentication. Defaults to None.
+        uow (SqlAlchemyUnitOfWork): The unit of work for accessing the database.
+
+    Returns:
+        MenuItemService: An instance of the MenuItemService class.
+    """
+
     user = await authenticate(access_token, uow)
     if isinstance(user, RestaurantManager):
         return MenuItemService(restaurant_manager=user)
@@ -24,7 +35,18 @@ async def get_menu_item_service(access_token: Optional[str] = Cookie(default=Non
 
 
 async def get_menu_category_service(access_token: Optional[str] = Cookie(default=None),
-                                    uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
+                                    uow: SqlAlchemyUnitOfWork = Depends(get_uow)) -> MenuCategoryService:
+    """
+    Dependency for retrieving the menu category service.
+
+    Args:
+        access_token (Optional[str]): The access token for authentication. Defaults to None.
+        uow (SqlAlchemyUnitOfWork): The unit of work for accessing the database.
+
+    Returns:
+        MenuCategoryService: An instance of the MenuCategoryService class.
+    """
+
     user = await authenticate(access_token, uow)
     if isinstance(user, RestaurantManager):
         return MenuCategoryService(restaurant_manager=user)
@@ -32,7 +54,18 @@ async def get_menu_category_service(access_token: Optional[str] = Cookie(default
 
 
 async def get_menu_service(access_token: Optional[str] = Cookie(default=None),
-                           uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
+                           uow: SqlAlchemyUnitOfWork = Depends(get_uow)) -> MenuService:
+    """
+    Dependency for retrieving the menu service.
+
+    Args:
+        access_token (Optional[str]): The access token for authentication. Defaults to None.
+        uow (SqlAlchemyUnitOfWork): The unit of work for accessing the database.
+
+    Returns:
+        MenuService: An instance of the MenuService class.
+    """
+
     user = await authenticate(access_token, uow)
     if isinstance(user, RestaurantManager):
         return MenuService(restaurant_manager=user)
