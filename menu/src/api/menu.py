@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from models import RestaurantManager
 from schemas import RestaurantManagerCreateIn
 from uow import SqlAlchemyUnitOfWork
-from dependencies import get_uow, get_uow_with_commit, get_restaurant_manager
+from dependencies import get_uow, get_uow_with_commit, get_menu_service
 from schemas.category import MenuCategoryRetrieveOut
 from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
 from services import MenuCategoryService, MenuService, RestaurantManagerService
@@ -18,9 +18,8 @@ router = APIRouter(
 @router.post('/', response_model=MenuCreateOut)
 @handle_app_errors
 async def create_menu(menu: MenuCreateIn,
-                      restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
+                      menu_service: MenuService = Depends(get_menu_service),
                       uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
-    menu_service = MenuService(restaurant_manager)
     return await menu_service.create(menu, uow)
 
 
@@ -28,17 +27,15 @@ async def create_menu(menu: MenuCreateIn,
 @handle_app_errors
 async def update_menu(menu_id: int,
                       menu: MenuUpdateIn,
-                      restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
+                      menu_service: MenuService = Depends(get_menu_service),
                       uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
-    menu_service = MenuService(restaurant_manager)
     return await menu_service.update(menu_id, menu, uow)
 
 
 @router.delete('/{menu_id}')
 @handle_app_errors
 async def delete_menu(menu_id: int,
-                      restaurant_manager: RestaurantManager = Depends(get_restaurant_manager),
+                      menu_service: MenuService = Depends(get_menu_service),
                       uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
-    menu_service = MenuService(restaurant_manager)
     await menu_service.delete(menu_id, uow)
     return {}
