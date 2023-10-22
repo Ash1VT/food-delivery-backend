@@ -1,13 +1,10 @@
-from typing import List
-
 from fastapi import APIRouter, Depends
-from models import RestaurantManager
-from schemas import RestaurantManagerCreateIn, RestaurantCreateIn
-from uow import SqlAlchemyUnitOfWork
-from dependencies import get_uow, get_uow_with_commit, get_menu_item_service
-from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, MenuItemUpdateIn, MenuItemUpdateOut
-from services import MenuItemService
+
 from decorators import handle_app_errors
+from dependencies import get_uow_with_commit, get_menu_item_service
+from schemas.item import MenuItemCreateIn, MenuItemCreateOut, MenuItemUpdateIn, MenuItemUpdateOut
+from services import MenuItemService
+from uow import SqlAlchemyUnitOfWork
 
 router = APIRouter(
     prefix='/items'

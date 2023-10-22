@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends
 
+from decorators import handle_app_errors
 from dependencies import get_uow_with_commit, get_menu_category_service
-from models import RestaurantManager
 from schemas.category import MenuCategoryCreateIn, MenuCategoryCreateOut, MenuCategoryUpdateIn, MenuCategoryUpdateOut
 from services import MenuCategoryService
 from uow import SqlAlchemyUnitOfWork
-from decorators import handle_app_errors
 
 router = APIRouter(
     prefix='/categories'
