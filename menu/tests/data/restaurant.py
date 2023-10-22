@@ -5,14 +5,16 @@ from ..factories import RestaurantFactory
 async def generate_restaurant_create_data():
     restaurant = RestaurantFactory.build()
     return {
-        'id': restaurant.id
+        'id': restaurant.id,
+        'is_active': restaurant.is_active
     }
 
 
 async def generate_restaurant_update_data():
     restaurant = RestaurantFactory.build()
     return {
-        'id': restaurant.id
+        'id': restaurant.id,
+        'is_active': restaurant.is_active
     }
 
 

@@ -1,8 +1,10 @@
+from typing import Optional
+
 from models import MenuItem, Restaurant
 from ..factories import MenuItemFactory, RestaurantFactory
 
 
-async def generate_menu_item_create_data(restaurant: Restaurant = None):
+async def generate_menu_item_create_data(restaurant: Optional[Restaurant] = None):
     if not restaurant:
         restaurant = await RestaurantFactory.create()
     menu_item = MenuItemFactory.build()

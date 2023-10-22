@@ -1,13 +1,13 @@
 from typing import Optional
 
-from models import MenuCategory, Menu
+from models import MenuCategory, Menu, Restaurant
 from ..factories import RestaurantFactory, MenuCategoryFactory, MenuFactory
 
 
-async def generate_menu_category_create_data(menu: Optional[Menu] = None):
-    if not menu:
-        menu = await MenuFactory.create()
-
+async def generate_menu_category_create_data(restaurant: Optional[Restaurant] = None):
+    if not restaurant:
+        restaurant = await RestaurantFactory.create()
+    menu = await MenuFactory.create(restaurant=restaurant)
     menu_category = MenuCategoryFactory.build()
 
     return {
