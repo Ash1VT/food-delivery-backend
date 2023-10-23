@@ -7,7 +7,7 @@ from models import WorkingHours, RestaurantManager
 from roles import RestaurantManagerRole
 from schemas import WorkingHoursUpdateIn, WorkingHoursCreateIn, WorkingHoursCreateOut, WorkingHoursUpdateOut
 from uow import SqlAlchemyUnitOfWork
-from utils import check_restaurant_manager_is_active, check_restaurant_manager_ownership_on_restaurant
+from utils import check_restaurant_manager_ownership_on_restaurant
 from .mixins import CreateMixin, UpdateMixin, DeleteMixin
 
 
@@ -59,9 +59,7 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        else:
+        if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
@@ -104,9 +102,7 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        else:
+        if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check working hours for existence
@@ -141,9 +137,7 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        else:
+        if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check working hours for existence

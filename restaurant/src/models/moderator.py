@@ -9,4 +9,3 @@ class Moderator(CustomBase):
     __tablename__ = 'moderators'
 
     id = Column(Integer, primary_key=True, autoincrement=False)
-    is_active = Column(Boolean, nullable=False, default=True)

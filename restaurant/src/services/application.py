@@ -6,7 +6,6 @@ from models import RestaurantApplication, Moderator, ApplicationType
 from roles import ModeratorRole
 from schemas import RestaurantApplicationRetrieveOut
 from uow import SqlAlchemyUnitOfWork
-from utils import check_moderator_is_active
 from .mixins import RetrieveMixin, ListMixin
 
 __all__ = [
@@ -55,9 +54,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         """
 
         # Permission checks
-        if self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._moderator:
             raise PermissionDeniedError(ModeratorRole)
 
         retrieved_instance = await uow.restaurant_applications.retrieve(id, **kwargs)
@@ -82,9 +79,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         """
 
         # Permission checks
-        if self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._moderator:
             raise PermissionDeniedError(ModeratorRole)
 
         return await uow.restaurant_applications.list(**kwargs)
@@ -105,9 +100,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         """
 
         # Permission checks
-        if self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._moderator:
             raise PermissionDeniedError(ModeratorRole)
 
         return await uow.restaurant_applications.list_create_applications(**kwargs)
@@ -128,9 +121,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         """
 
         # Permission checks
-        if self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._moderator:
             raise PermissionDeniedError(ModeratorRole)
 
         return await uow.restaurant_applications.list_update_applications(**kwargs)
@@ -226,9 +217,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         """
 
         # Permission checks
-        if self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._moderator:
             raise PermissionDeniedError(ModeratorRole)
 
         if not await uow.restaurant_applications.exists(id):

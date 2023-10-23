@@ -10,8 +10,7 @@ from schemas.restaurant import RestaurantRetrieveOut, RestaurantCreateIn, Restau
 from schemas.application import RestaurantApplicationCreateOut
 from models import Restaurant, Moderator, RestaurantManager, RestaurantApplication, ApplicationType
 from uow import SqlAlchemyUnitOfWork
-from utils import check_restaurant_manager_is_active, \
-    check_moderator_is_active, check_restaurant_manager_ownership_on_restaurant
+from utils import check_restaurant_manager_ownership_on_restaurant
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
 
 __all__ = [
@@ -80,12 +79,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks if not active
         if not retrieved_instance.is_active:
-            if self._restaurant_manager:
-                check_restaurant_manager_is_active(self._restaurant_manager)
-                check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, id)
-            elif self._moderator:
-                check_moderator_is_active(self._moderator)
-            else:
+            if not self._restaurant_manager and not self._moderator:
                 raise RestaurantNotActiveError(retrieved_instance.id)
 
         return retrieved_instance
@@ -103,7 +97,6 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if self._moderator:
-            check_moderator_is_active(self._moderator)
             return await uow.restaurants.list(fetch_working_hours=True, **kwargs)
 
         return await uow.restaurants.list_active_restaurants(fetch_working_hours=True, **kwargs)
@@ -128,9 +121,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        else:
+        if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check if restaurant manager already has a restaurant
@@ -168,9 +159,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        else:
+        if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check for existence
@@ -204,11 +193,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        elif self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._restaurant_manager and not self._moderator:
             raise PermissionDeniedError(RestaurantManagerRole, ModeratorRole)
 
         # Check for existence
@@ -237,11 +222,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        elif self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._restaurant_manager and not self._moderator:
             raise PermissionDeniedError(RestaurantManagerRole, ModeratorRole)
 
         retrieved_restaurant = await uow.restaurants.retrieve(id, **kwargs)
@@ -274,11 +255,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         """
 
         # Permission checks
-        if self._restaurant_manager:
-            check_restaurant_manager_is_active(self._restaurant_manager)
-        elif self._moderator:
-            check_moderator_is_active(self._moderator)
-        else:
+        if not self._restaurant_manager and not self._moderator:
             raise PermissionDeniedError(RestaurantManagerRole, ModeratorRole)
 
         retrieved_restaurant = await uow.restaurants.retrieve(id, **kwargs)
