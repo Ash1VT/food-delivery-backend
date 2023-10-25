@@ -80,9 +80,9 @@ class TestPermissionsServicer:
     @pytest.mark.parametrize(
         "access_token_name, expected_abort_status, expected_abort_message",
         [
-            ("invalid_access_token", grpc.StatusCode.UNAUTHENTICATED, "Invalid access token"),
-            (None, grpc.StatusCode.UNAUTHENTICATED, "Missing access token"),
-            ("nonexistent_access_token", grpc.StatusCode.UNAUTHENTICATED, "Invalid access token"),
+            ("invalid_access_token", grpc.StatusCode.INVALID_ARGUMENT, "Invalid access token"),
+            (None, grpc.StatusCode.INVALID_ARGUMENT, "Missing access token"),
+            ("nonexistent_access_token", grpc.StatusCode.INVALID_ARGUMENT, "Invalid access token"),
             ("access_token_for_unverified_customer", grpc.StatusCode.UNAUTHENTICATED, "User has got unverified email")
         ]
     )
