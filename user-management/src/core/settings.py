@@ -15,7 +15,7 @@ class Base(Configuration):
 
     # Web app url
 
-    WEB_APP_URL = f"{env('WEB_APP_PROTOCOL')}//{env('WEB_APP_HOST')}:{env('WEB_APP_PORT')}"
+    WEB_APP_URL = f"{env('WEB_APP_PROTOCOL')}://{env('WEB_APP_HOST')}:{env('WEB_APP_PORT')}"
 
     # Application definition
 
