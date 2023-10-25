@@ -59,7 +59,7 @@ def generate_email_verification_url(user: User) -> str:
         str: The verification URL as a string.
     """
     try:
-        host = settings.APP_HOST
+        host = settings.WEB_APP_URL
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         verification_token = email_verification_token_generator.make_token(user)
         verification_url = f"{host}{reverse('verify_user_email', args=[uid, verification_token])}"

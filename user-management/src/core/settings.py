@@ -13,9 +13,9 @@ class Base(Configuration):
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = env('SECRET_KEY')
 
-    # App host
+    # Web app url
 
-    APP_HOST = env('APP_HOST')
+    WEB_APP_URL = f"{env('WEB_APP_PROTOCOL')}//{env('WEB_APP_HOST')}:{env('WEB_APP_PORT')}"
 
     # Application definition
 
