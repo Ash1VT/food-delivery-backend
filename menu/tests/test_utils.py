@@ -2,9 +2,7 @@ import pytest
 from grpc import StatusCode
 from contextlib import nullcontext as does_not_raise
 
-from exceptions import RestaurantManagerNotActiveError, RestaurantManagerOwnershipError, MenuNotFoundWithIdError, \
-    RestaurantManagerEmailNotVerifiedError
-from uow import SqlAlchemyUnitOfWork
+from exceptions import RestaurantManagerOwnershipError
 from utils.grpc import grpc_status_to_http
 from utils.checks import check_restaurant_manager_ownership_on_restaurant
 from .factories import MenuFactory, RestaurantFactory, RestaurantManagerFactory

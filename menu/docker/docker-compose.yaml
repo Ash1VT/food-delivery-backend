@@ -1,0 +1,38 @@
+version: '3.6'
+name: 'menu'
+
+services:
+    db:
+        image: postgres:15.4-alpine
+        container_name: menu-postgres
+        ports:
+          - "5433:5432"
+        volumes:
+          - ~/apps/postgres/menu:/var/lib/postgresql/data
+        environment:
+          - PGPORT=5433
+          - POSTGRES_USER=${PG_USER}
+          - POSTGRES_PASSWORD=${PG_PASSWORD}
+          - POSTGRES_DB=menu
+        expose:
+          - "5433"
+    app:
+        build:
+          context: ../
+          dockerfile: ./docker/app/Dockerfile
+        container_name: menu-app
+        ports:
+          - "8001:8001"
+        environment:
+          - CONFIGURATION=Develop
+          - WEB_APP_HOST=0.0.0.0
+          - WEB_APP_PORT=8001
+          - ROLES_GRPC_SERVER_HOST=localhost
+          - ROLES_GRPC_SERVER_PORT=50051
+          - PG_HOST=db
+          - PG_PORT=5433
+          - PG_DATABASE=menu
+          - PG_USER=${PG_USER}
+          - PG_PASSWORD=${PG_PASSWORD}
+        depends_on:
+          - db
