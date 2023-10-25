@@ -16,6 +16,8 @@ services:
           - POSTGRES_DB=restaurant
         expose:
           - "5434"
+        networks:
+          - restaurant_network
     app:
         build:
           context: ../
@@ -27,7 +29,7 @@ services:
           - CONFIGURATION=Develop
           - WEB_APP_HOST=0.0.0.0
           - WEB_APP_PORT=8002
-          - ROLES_GRPC_SERVER_HOST=localhost
+          - ROLES_GRPC_SERVER_HOST=user-app
           - ROLES_GRPC_SERVER_PORT=50051
           - PG_HOST=db
           - PG_PORT=5434
@@ -36,3 +38,12 @@ services:
           - PG_PASSWORD=${PG_PASSWORD}
         depends_on:
           - db
+        networks:
+          - restaurant_network
+          - user_grpc_network
+
+
+networks:
+  restaurant_network:
+  user_grpc_network:
+    external: true
