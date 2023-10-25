@@ -35,7 +35,6 @@ class TestUserManager:
         with expectation:
             user = user_manager.create_superuser(
                 email=email,
-                password=password,
-                role=UserRole.MODERATOR)
+                password=password)
             user_db = User.objects.get(id=user.id)
             assert user == user_db

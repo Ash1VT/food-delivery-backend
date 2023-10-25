@@ -40,8 +40,7 @@ def refresh_token_cookie_name():
 @pytest.fixture
 def superuser(django_user_model, superuser_valid_auth_data):
     return django_user_model.objects.create_superuser(
-        **superuser_valid_auth_data,
-        role=UserRole.MODERATOR
+        **superuser_valid_auth_data
     )
 
 
