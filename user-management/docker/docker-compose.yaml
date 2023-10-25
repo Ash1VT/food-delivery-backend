@@ -43,3 +43,10 @@ services:
           - EMAIL_USE_SSL=True
         depends_on:
           - db
+        expose:
+          - "50051"
+        networks:
+          - grpc_network
+
+networks:
+  grpc_network:
