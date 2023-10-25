@@ -2,7 +2,7 @@ import pytest
 
 from django_grpc_testtools.context import FakeServicerContext
 from rest_framework_simplejwt.tokens import AccessToken
-from grpc_files.permissions_servicer import PermissionsServicer
+from grpc_files.roles_servicer import RolesServicer
 from users.models import User
 from users.tests.utils import create_verified_customer, create_verified_courier, create_verified_restaurant_manager, \
     create_verified_moderator, create_unverified_customer
@@ -18,8 +18,8 @@ def context():
 # Servicer fixtures #
 
 @pytest.fixture
-def permissions_servicer():
-    return PermissionsServicer()
+def roles_servicer():
+    return RolesServicer()
 
 
 # User fixtures #

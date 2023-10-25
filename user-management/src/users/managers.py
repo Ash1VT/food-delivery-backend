@@ -1,7 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils import timezone
 
-# from .roles import UserRole
+from .roles import UserRole
 
 
 class UserManager(BaseUserManager):
@@ -30,5 +30,5 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password, role, **extra_fields):
         return self._create_user(email, password, role, True, False, False, False, **extra_fields)
 
-    def create_superuser(self, email, password, role, **extra_fields):
-        return self._create_user(email, password, role, True, True, True, True, **extra_fields)
+    def create_superuser(self, email, password, **extra_fields):
+        return self._create_user(email, password, UserRole.MODERATOR, True, True, True, True, **extra_fields)

@@ -3,13 +3,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from phonenumber_field import modelfields
 from .managers import UserManager
-
-
-class UserRole(models.TextChoices):
-    CUSTOMER = 'CU', 'Customer'
-    COURIER = 'CO', 'Courier'
-    RESTAURANT_MANAGER = 'RM', 'Restaurant Manager'
-    MODERATOR = 'MO', 'Moderator'
+from .roles import UserRole
 
 
 class User(AbstractBaseUser, PermissionsMixin):
