@@ -18,7 +18,7 @@ services:
           - "5433"
         networks:
           - menu_network
-    menu-app:
+    app:
         build:
           context: ../
           dockerfile: ./docker/app/Dockerfile
