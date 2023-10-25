@@ -16,7 +16,9 @@ services:
           - POSTGRES_DB=menu
         expose:
           - "5433"
-    app:
+        networks:
+          - menu_network
+    menu-app:
         build:
           context: ../
           dockerfile: ./docker/app/Dockerfile
@@ -27,7 +29,7 @@ services:
           - CONFIGURATION=Develop
           - WEB_APP_HOST=0.0.0.0
           - WEB_APP_PORT=8001
-          - ROLES_GRPC_SERVER_HOST=localhost
+          - ROLES_GRPC_SERVER_HOST=user-app
           - ROLES_GRPC_SERVER_PORT=50051
           - PG_HOST=db
           - PG_PORT=5433
@@ -36,3 +38,11 @@ services:
           - PG_PASSWORD=${PG_PASSWORD}
         depends_on:
           - db
+        networks:
+          - menu_network
+          - user_grpc_network
+
+networks:
+  menu_network:
+  user_grpc_network:
+    external: true
