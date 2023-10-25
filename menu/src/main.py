@@ -2,6 +2,9 @@ import os
 
 import uvicorn
 
+from config import get_settings
+
 if __name__ == "__main__":
     os.environ.setdefault('CONFIGURATION', 'Develop')
-    uvicorn.run(app="setup.app:app", port=8001, reload=True)
+    settings = get_settings()
+    uvicorn.run(app="setup.app:app", host=settings.web_app_host, port=settings.web_app_port, reload=settings.reload)
