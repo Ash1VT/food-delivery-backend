@@ -1,3 +1,5 @@
+import logging
+
 from kafka import KafkaProducer
 
 from .events import ProducerEvent
@@ -5,6 +7,9 @@ from .events import ProducerEvent
 __all__ = [
     'KafkaPublisher'
 ]
+
+
+logger = logging.getLogger(__name__)
 
 
 class KafkaPublisher:
@@ -31,4 +36,5 @@ class KafkaPublisher:
         """
 
         for topic in event.get_topics():
-            self._producer.send(topic, key=event.get_event_name(), value=event.data)
+            fs = self._producer.send(topic, key=event.get_event_name(), value=event.data)
+            logger.info(f"Published event {event.get_event_name()} to topic: {topic}")

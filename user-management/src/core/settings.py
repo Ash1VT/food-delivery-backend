@@ -230,6 +230,10 @@ class Base(Configuration):
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
+            'kafka_files': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+            },
         },
     }
 
