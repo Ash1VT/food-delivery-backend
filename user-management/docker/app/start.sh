@@ -5,7 +5,7 @@ while ! nc -z "$PG_HOST" "$PG_PORT";
   echo "Waiting for $PG_HOST:$PG_PORT...";
 done;
 
-sleep 5
+sleep 10
 
 python src/manage.py migrate
 python src/manage.py grpcserver --port "$GRPC_SERVER_PORT" &
