@@ -2,6 +2,8 @@ import logging
 
 from .models import User, UserRole, UserProfile, CustomerProfile, CourierProfile
 from .utils import send_verification_email
+from kafka_files.producer import publisher
+from kafka_files.producer.events import RestaurantManagerCreatedEvent, ModeratorCreatedEvent
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +96,9 @@ class UserService:
         logger.info(f"Created restaurant manager: {user}")
 
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+
+        publisher.publish(RestaurantManagerCreatedEvent(data=user))
+
         return user
 
     @classmethod
@@ -103,4 +108,7 @@ class UserService:
         logger.info(f"Created moderator: {user}")
 
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+
+        publisher.publish(ModeratorCreatedEvent(data=user))
+
         return user
