@@ -33,6 +33,7 @@ class Base(Configuration):
 
         'users',
         'tokens',
+        'kafka_files',
     ]
 
     # Middlewares
@@ -155,6 +156,19 @@ class Base(Configuration):
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
     EMAIL_PORT = env('EMAIL_PORT')
     EMAIL_USE_SSL = env('EMAIL_USE_SSL')
+
+    # Kafka
+
+    KAFKA_BOOTSTRAP_SERVER_HOST = env('KAFKA_BOOTSTRAP_SERVER_HOST')
+    KAFKA_BOOTSTRAP_SERVER_PORT = env('KAFKA_BOOTSTRAP_SERVER_PORT')
+    KAFKA_SASL_MECHANISM = 'PLAIN'
+    KAFKA_BROKER_USER = env('KAFKA_BROKER_USER')
+    KAFKA_BROKER_PASSWORD = env('KAFKA_BROKER_PASSWORD')
+
+    KAFKA_PRODUCER_EVENTS_TOPICS = {
+        'RestaurantManagerCreatedEvent': ['user_restaurant', 'user_menu'],
+        'ModeratorCreatedEvent': ['user_restaurant']
+    }
 
     # Auth user model
 
