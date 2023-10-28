@@ -7,7 +7,7 @@ from users.models import User
 
 
 @pytest.mark.django_db
-class TestPermissionsServicer:
+class TestRolesServicer:
 
     # @pytest.mark.parametrize(
     #     "access_token_name, user_name, has_permission",
