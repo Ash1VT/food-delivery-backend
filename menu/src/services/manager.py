@@ -1,7 +1,7 @@
 from models import RestaurantManager
 from schemas.manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
 from uow import SqlAlchemyUnitOfWork
-from exceptions.manager import RestaurantManagerNotFoundWithIdError
+from exceptions.manager import RestaurantManagerNotFoundWithIdError, RestaurantManagerAlreadyExistsWithIdError
 
 from .mixins import RetrieveMixin, CreateMixin, DeleteMixin
 
@@ -36,6 +36,9 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         Returns:
             RestaurantManager: The retrieved restaurant manager instance.
+
+        Raises:
+            RestaurantManagerNotFoundWithIdError: If the restaurant manager is not found.
         """
 
         retrieved_instance = await uow.managers.retrieve(id, **kwargs)
@@ -56,10 +59,17 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         Returns:
             RestaurantManager: The created restaurant manager instance.
+
+        Raises:
+            RestaurantManagerAlreadyExistsWithIdError: If the restaurant manager already exists with the given ID.
         """
 
-        data = item.model_dump()
+        # Check if restaurant manager already exists
+        if await uow.managers.exists(item.id):
+            raise RestaurantManagerAlreadyExistsWithIdError(item.id)
 
+        # Create
+        data = item.model_dump()
         return await uow.managers.create(data, **kwargs)
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
@@ -69,6 +79,14 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
         Args:
             id (int): The ID of the restaurant manager to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            RestaurantManagerNotFoundWithIdError: If the restaurant manager is not found.
         """
 
+        # Check restaurant manager for existence
+        if not await uow.managers.exists(id):
+            raise RestaurantManagerNotFoundWithIdError(id)
+
+        # Delete
         await uow.managers.delete(id, **kwargs)

@@ -53,6 +53,10 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         Returns:
             MenuCategory: The created menu category instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuNotFoundWithIdError: If the menu is not found.
         """
 
         # Permissions checks
@@ -86,6 +90,10 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         Returns:
             MenuCategory: The updated menu category instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuCategoryNotFoundWithIdError: If the menu category is not found.
         """
 
         # Permissions checks
@@ -113,6 +121,10 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         Args:
             id (int): The ID of the menu category to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuCategoryNotFoundWithIdError: If the menu category is not found.
         """
 
         # Permissions checks
@@ -142,6 +154,12 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
             category_id (int): ID of the menu category.
             item_id (int): ID of the menu item.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuItemNotFoundWithIdError: If the menu item is not found.
+            MenuCategoryNotFoundWithIdError: If the menu category is not found.
+            MenuItemAlreadyInCategoryError: If the menu item is already in the menu category.
         """
 
         # Permissions checks
@@ -186,6 +204,12 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
             category_id (int): ID of the menu category.
             item_id (int): ID of the menu item.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuItemNotFoundWithIdError: If the menu item is not found.
+            MenuCategoryNotFoundWithIdError: If the menu category is not found.
+            MenuItemNotInCategoryError: If the menu item is not in the menu category.
         """
 
         # Permissions checks
