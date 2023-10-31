@@ -29,6 +29,7 @@ class RestaurantBaseOut(RestaurantBase, ABC):
     """
 
     id: int = Field(ge=0)
+    is_active: bool
 
     model_config = {
         "from_attributes": True
@@ -53,7 +54,6 @@ class RestaurantCreateIn(RestaurantBase):
     """
 
     id: int = Field(ge=0)
-    is_active: bool
 
 
 class RestaurantCreateOut(RestaurantBaseOut):
