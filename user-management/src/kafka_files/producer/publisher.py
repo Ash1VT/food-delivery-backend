@@ -36,5 +36,5 @@ class KafkaPublisher:
         """
 
         for topic in event.get_topics():
-            fs = self._producer.send(topic, key=event.get_event_name(), value=event.data)
+            self._producer.send(topic, key=event.get_event_name(), value=event.data)
             logger.info(f"Published event {event.get_event_name()} to topic: {topic}")

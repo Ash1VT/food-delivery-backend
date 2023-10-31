@@ -21,7 +21,7 @@ class ProducerEvent(ABC):
         serializer_class: Serializer class for the event data.
     """
 
-    _topics: Set[str] = set()
+    _topics: Set[str]
     serializer_class = None
 
     def __init__(self, data: Any):
@@ -84,6 +84,7 @@ class RestaurantManagerCreatedEvent(ProducerEvent):
     Event when RestaurantManager is created.
     """
 
+    _topics = set()
     serializer_class = RestaurantManagerCreatedSerializer
 
 
@@ -92,4 +93,5 @@ class ModeratorCreatedEvent(ProducerEvent):
     Event when Moderator is created.
     """
 
+    _topics = set()
     serializer_class = ModeratorCreatedSerializer
