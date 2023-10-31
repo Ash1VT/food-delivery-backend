@@ -11,7 +11,7 @@ from uow import SqlAlchemyUnitOfWork
 from exceptions import MenuCategoryNotFoundWithIdError, MenuItemNotFoundWithIdError, \
     RestaurantNotFoundWithIdError, MenuItemAlreadyInCategoryError, \
     RestaurantManagerOwnershipError, CurrentMenuMissingError, MenuItemNotInCategoryError, PermissionDeniedError, \
-    MenuNotFoundWithIdError, RestaurantNotActiveError
+    MenuNotFoundWithIdError, RestaurantNotActiveError, RestaurantManagerNotFoundWithIdError
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, \
     MenuItemUpdateIn, MenuItemUpdateOut
 from schemas.category import MenuCategoryRetrieveOut, MenuCategoryCreateIn, \
@@ -594,7 +594,8 @@ class TestRestaurantService(BaseTestCreateMixin[Restaurant, RestaurantService],
         return await generate_restaurant_create_data()
 
     async def test_delete_instance_nonexistent(self, service: RestaurantService, uow: SqlAlchemyUnitOfWork):
-        await service.delete_instance(0, uow)
+        with pytest.raises(RestaurantNotFoundWithIdError):
+            await service.delete_instance(0, uow)
 
     async def test_set_current_menu_without_restaurant_manager(self, uow: SqlAlchemyUnitOfWork):
         restaurant = await RestaurantFactory.create()
@@ -689,4 +690,5 @@ class TestRestaurantManagerService(BaseTestRetrieveMixin[RestaurantManager, Rest
         await service.delete_instance(instance.id, uow)
 
     async def test_delete_instance_nonexistent(self, service: RestaurantManagerService, uow: SqlAlchemyUnitOfWork):
-        await service.delete_instance(0, uow)
+        with pytest.raises(RestaurantManagerNotFoundWithIdError):
+            await service.delete_instance(0, uow)

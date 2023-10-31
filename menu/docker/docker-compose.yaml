@@ -36,13 +36,20 @@ services:
           - PG_DATABASE=menu
           - PG_USER=${PG_USER}
           - PG_PASSWORD=${PG_PASSWORD}
+          - KAFKA_BOOTSTRAP_SERVER_HOST=kafka
+          - KAFKA_BOOTSTRAP_SERVER_PORT=9092
+          - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
+          - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
         depends_on:
           - db
         networks:
           - menu_network
           - user_grpc_network
+          - kafka_kafka_network
 
 networks:
-  menu_network:
   user_grpc_network:
     external: true
+  kafka_kafka_network:
+    external: true
+  menu_network:

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from exceptions.restaurant import RestaurantNotFoundWithIdError
+from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantAlreadyExistsWithIdError
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
 from models import Restaurant, RestaurantManager
@@ -52,8 +52,16 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         Returns:
             Restaurant: The created restaurant instance.
+
+        Raises:
+            RestaurantAlreadyExistsWithIdError: If the restaurant already exists with the given ID.
         """
 
+        # Check if restaurant already exists
+        if await uow.restaurants.exists(item.id):
+            raise RestaurantAlreadyExistsWithIdError(item.id)
+
+        # Create
         data = item.model_dump()
         return await uow.restaurants.create(data, **kwargs)
 
@@ -70,8 +78,15 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
         Returns:
             Restaurant: The updated restaurant instance.
 
+        Raises:
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
+        # Check restaurant for existence
+        if not await uow.restaurants.exists(id):
+            raise RestaurantNotFoundWithIdError(id)
+
+        # Update
         data = item.model_dump()
         return await uow.restaurants.update(id, data, **kwargs)
 
@@ -82,8 +97,16 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
         Args:
             id (int): The ID of the restaurant to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
+        # Check restaurant for existence
+        if not await uow.restaurants.exists(id):
+            raise RestaurantNotFoundWithIdError(id)
+
+        # Delete
         await uow.restaurants.delete(id, **kwargs)
 
     async def set_current_menu(self, restaurant_id: int, menu_id: int,
@@ -95,6 +118,11 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
             restaurant_id (int): ID of the restaurant.
             menu_id (int): ID of the menu.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
+            MenuNotFoundWithIdError: If the menu is not found.
         """
 
         # Permissions checks
@@ -119,3 +147,41 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Set current menu
         restaurant.current_menu_id = menu_id
+
+    async def activate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+        """
+        Activates a restaurant by its ID.
+
+        Args:
+            id (int): The ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
+        """
+
+        restaurant = uow.restaurants.retrieve(id, **kwargs)
+
+        if not restaurant:
+            raise RestaurantNotFoundWithIdError(id)
+
+        restaurant.is_active = True
+
+    async def deactivate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+        """
+        Deactivates a restaurant by its ID.
+
+        Args:
+            id (int): The ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
+        """
+
+        restaurant = uow.restaurants.retrieve(id, **kwargs)
+
+        if not restaurant:
+            raise RestaurantNotFoundWithIdError(id)
+
+        restaurant.is_active = False

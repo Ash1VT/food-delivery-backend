@@ -52,6 +52,10 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         Returns:
             MenuItem: The created menu item instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
         # Permissions checks
@@ -80,6 +84,10 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         Returns:
             MenuItem: The updated menu item instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuItemNotFoundWithIdError: If the menu item is not found.
         """
 
         # Permissions checks
@@ -106,6 +114,10 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
         Args:
             id (int): The ID of the menu item to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuItemNotFoundWithIdError: If the menu item is not found.
         """
 
         # Permissions checks
@@ -136,11 +148,19 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         Returns:
             List[MenuItem]: List of menu item instances.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
         # Permissions checks
         if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check restaurant for existence
+        if not await uow.restaurants.exists(restaurant_id):
+            raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Check if restaurant manager owns Restaurant
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)

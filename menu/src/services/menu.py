@@ -52,6 +52,10 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         Returns:
             Menu: The created menu instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
         # Permissions checks
@@ -80,6 +84,10 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         Returns:
             Menu: The updated menu instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuNotFoundWithIdError: If the menu is not found.
         """
 
         # Permissions checks
@@ -106,6 +114,10 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         Args:
             id (int): The ID of the menu to delete.
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuNotFoundWithIdError: If the menu is not found.
         """
 
         # Permissions checks
@@ -135,6 +147,11 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         Returns:
             Menu: The retrieved current menu instance.
+
+        Raises:
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
+            RestaurantNotActiveError: If the restaurant is not active.
+            CurrentMenuMissingError: If there is no current menu
         """
 
         # Get restaurant
@@ -172,11 +189,19 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         Returns:
             List[Menu]: List of menu instances.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
         # Permissions checks
         if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check restaurant for existence
+        if not await uow.restaurants.exists(restaurant_id):
+            raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Check if restaurant manager owns restaurant
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)

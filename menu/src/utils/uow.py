@@ -1,10 +1,17 @@
 from contextlib import asynccontextmanager
-from uow import GenericUnitOfWork
+
+from db import async_session_maker
+from uow import GenericUnitOfWork, SqlAlchemyUnitOfWork
 
 __all__ = [
+    'get_sqlalchemy_uow',
     'uow_transaction',
     'uow_transaction_with_commit',
 ]
+
+
+def get_sqlalchemy_uow():
+    return SqlAlchemyUnitOfWork(async_session_maker)
 
 
 @asynccontextmanager
