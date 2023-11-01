@@ -11,6 +11,13 @@ __all__ = [
 
 
 def get_sqlalchemy_uow():
+    """
+    Gets SqlAlchemyUnitOfWork instance.
+
+    Returns:
+        SqlAlchemyOfWork: The instance.
+    """
+
     return SqlAlchemyUnitOfWork(async_session_maker)
 
 
