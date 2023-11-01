@@ -1,6 +1,5 @@
-from db import async_session_maker
 from uow import SqlAlchemyUnitOfWork
-from utils import uow_transaction, uow_transaction_with_commit
+from utils import get_sqlalchemy_uow, uow_transaction, uow_transaction_with_commit
 
 __all__ = [
     "get_uow",
@@ -16,7 +15,7 @@ async def get_uow() -> SqlAlchemyUnitOfWork:
         SqlAlchemyUnitOfWork: An instance of the SqlAlchemyUnitOfWork class.
     """
 
-    uow = SqlAlchemyUnitOfWork(async_session_maker)
+    uow = get_sqlalchemy_uow()
     async with uow_transaction(uow) as uow:
         yield uow
 
@@ -28,6 +27,7 @@ async def get_uow_with_commit() -> SqlAlchemyUnitOfWork:
     Yields:
         SqlAlchemyUnitOfWork: An instance of the SqlAlchemyUnitOfWork class.
     """
-    uow = SqlAlchemyUnitOfWork(async_session_maker)
+
+    uow = get_sqlalchemy_uow()
     async with uow_transaction_with_commit(uow) as uow:
         yield uow
