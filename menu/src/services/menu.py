@@ -1,8 +1,9 @@
 from typing import Optional, List
 
 from models import RestaurantManager, Menu
-from exceptions.menu import MenuNotFoundWithIdError, CurrentMenuMissingError
-from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantNotActiveError
+from exceptions.menu import MenuNotFoundWithIdError
+from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantNotActiveError, \
+    RestaurantMissingCurrentMenuError
 from exceptions.permissions import PermissionDeniedError
 from roles import RestaurantManagerRole
 from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
@@ -173,7 +174,7 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
                                                                         **kwargs)
 
         if not current_menu:
-            raise CurrentMenuMissingError(restaurant_id)
+            raise RestaurantMissingCurrentMenuError(restaurant_id)
 
         return current_menu
 

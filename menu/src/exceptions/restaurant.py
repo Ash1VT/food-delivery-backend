@@ -5,6 +5,7 @@ __all__ = [
     'RestaurantNotFoundWithIdError',
     'RestaurantAlreadyExistsWithIdError',
     'RestaurantNotActiveError',
+    'RestaurantMissingCurrentMenuError'
 ]
 
 
@@ -64,3 +65,28 @@ class RestaurantNotActiveError(AppError):
     @property
     def message(self) -> str:
         return f"Restaurant with id={self._restaurant_id} is not active"
+
+
+class RestaurantMissingCurrentMenuError(AppError):
+    """
+    Exception class for when current menu is missing.
+    """
+
+    def __init__(self, restaurant_id: int):
+        """
+        Initialize the CurrentMenuMissingError exception.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+        """
+
+        self._restaurant_id = restaurant_id
+        super().__init__()
+
+    @property
+    def status_code(self) -> int:
+        return 404
+
+    @property
+    def message(self) -> str:
+        return f"Restaurant with id={self._restaurant_id} hasn't got current menu"

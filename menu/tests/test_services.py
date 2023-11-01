@@ -10,7 +10,7 @@ from services import MenuItemService, MenuCategoryService, MenuService, Restaura
 from uow import SqlAlchemyUnitOfWork
 from exceptions import MenuCategoryNotFoundWithIdError, MenuItemNotFoundWithIdError, \
     RestaurantNotFoundWithIdError, MenuItemAlreadyInCategoryError, \
-    RestaurantManagerOwnershipError, CurrentMenuMissingError, MenuItemNotInCategoryError, PermissionDeniedError, \
+    RestaurantManagerOwnershipError, RestaurantMissingCurrentMenuError, MenuItemNotInCategoryError, PermissionDeniedError, \
     MenuNotFoundWithIdError, RestaurantNotActiveError, RestaurantManagerNotFoundWithIdError
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, \
     MenuItemUpdateIn, MenuItemUpdateOut
@@ -490,7 +490,7 @@ class TestMenuService(BaseTestCreateWithRestaurant[MenuItemService],
         restaurant_manager = await RestaurantManagerFactory.create(restaurant=restaurant)
         service = MenuService(restaurant_manager=restaurant_manager)
 
-        with pytest.raises(CurrentMenuMissingError):
+        with pytest.raises(RestaurantMissingCurrentMenuError):
             await service.retrieve_current_restaurant_menu_instance(restaurant.id, uow)
 
     async def test_list_restaurant_menus_instances(self, uow: SqlAlchemyUnitOfWork):
