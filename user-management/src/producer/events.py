@@ -3,8 +3,6 @@ from typing import List, Set, Any, Dict, Type, Iterable
 
 from rest_framework.serializers import Serializer
 
-from .serializers import RestaurantManagerCreatedSerializer, ModeratorCreatedSerializer
-
 __all__ = [
     'ProducerEvent',
     'RestaurantManagerCreatedEvent',
