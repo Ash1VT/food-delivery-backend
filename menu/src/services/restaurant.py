@@ -1,6 +1,7 @@
 from typing import Optional
 
 from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantAlreadyExistsWithIdError
+from exceptions.manager import RestaurantManagerNotFoundWithIdError
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
 from models import Restaurant, RestaurantManager
@@ -61,9 +62,19 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
         if await uow.restaurants.exists(item.id):
             raise RestaurantAlreadyExistsWithIdError(item.id)
 
+        # Check restaurant manager for existence
+        restaurant_manager = await uow.managers.retrieve(item.restaurant_manager_id)
+
+        if not restaurant_manager:
+            raise RestaurantManagerNotFoundWithIdError(item.restaurant_manager_id)
+
         # Create
         data = item.model_dump()
-        return await uow.restaurants.create(data, **kwargs)
+        del data['restaurant_manager_id']
+
+        restaurant_instance = await uow.restaurants.create(data, **kwargs)
+        restaurant_manager.restaurant_id = restaurant_instance.id
+        return restaurant_instance
 
     async def update_instance(self, id: int, item: RestaurantUpdateIn, uow: SqlAlchemyUnitOfWork,
                               **kwargs) -> Restaurant:
