@@ -591,7 +591,10 @@ class TestRestaurantService(BaseTestCreateMixin[Restaurant, RestaurantService],
         return compare_restaurants(instance_1, instance_2)
 
     async def generate_instance_create_data(self) -> dict:
-        return await generate_restaurant_create_data()
+        restaurant_manager = await RestaurantManagerFactory.create()
+        data = await generate_restaurant_create_data()
+        data.update(restaurant_manager_id=restaurant_manager.id)
+        return data
 
     async def test_delete_instance_nonexistent(self, service: RestaurantService, uow: SqlAlchemyUnitOfWork):
         with pytest.raises(RestaurantNotFoundWithIdError):
