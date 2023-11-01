@@ -1,4 +1,5 @@
 from config import get_settings
+from utils import import_string
 from .events import *
 from .creator import *
 from .publisher import *
@@ -24,8 +25,11 @@ producer = producer_sasl_creator.create()
 
 # Init topics for producer events
 for producer_event in producer_events:
-    producer_topics = settings.kafka_producer_events_topics[producer_event.get_event_name()]
-    producer_event.extend_topics(producer_topics)
+    producer_topics_str_schemas = settings.kafka_producer_events_topics[producer_event.get_event_name()]
+    producer_topics_schemas = {topic: import_string(schema_str)
+                               for topic, schema_str in producer_topics_str_schemas.items()}
+
+    producer_event.extend_topics_schemas(producer_topics_schemas)
 
 # Init publisher
 publisher = KafkaPublisher(producer)

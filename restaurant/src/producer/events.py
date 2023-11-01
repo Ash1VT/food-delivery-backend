@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List, Set, TypeVar, Type
+from typing import List, Set, TypeVar, Type, Iterable, Dict
 
 from pydantic import BaseModel
 
@@ -22,55 +22,59 @@ class ProducerEvent(ABC):
     Events are used for simplifying data publishing to Kafka.
 
     Attributes:
-        _topics (Set[str]): Set of topics to which the event's data will be published.
-        schema_class: Schema class for the event data.
+        _topics_schemas (Dict[str, Type[BaseEventSchema]]): Dictionary of topics to which the event's data
+        will be published and associated schemas with them.
     """
 
-    _topics: Set[str]
-    schema_class: Type[BaseEventSchema] = None
+    _topics_schemas: Dict[str, Type[BaseEventSchema]]
 
-    def __init__(self, schema: BaseEventSchema):
+    def __init__(self, **data):
         """
         Constructor for the inherited classes from ProducerEvent class.
 
         Args:
-            schema (dict): The schema of the data to be published.
+            data: The data to be published.
         """
 
-        self._data: dict = schema.model_dump()
+        self._data = data
 
-    @property
-    def data(self) -> dict:
+    def get_data(self, topic: str) -> dict:
         """
         Data to be published.
+
+        Data is serialized according to the topic's schema.
+
+        Args:
+            topic (str): The topic to which the data will be published.
 
         Returns:
             dict: Data to be published.
         """
 
-        return self._data
+        return self._topics_schemas.get(topic)(**self._data).model_dump()
 
     @classmethod
-    def extend_topics(cls, topics: List[str]):
+    def extend_topics_schemas(cls, topics_schemas: Dict[str, Type[BaseEventSchema]]):
         """
         Extends the set of topics to which the event's data will be published.
 
         Args:
-            topics (List[str]): List of topics to which the event's data will be published.
+            topics_schemas (Dict[str, Type[BaseEventSchema]]): Dictionary of topics to which the event's data
+            will be published and associated schemas with them.
         """
 
-        cls._topics.update(topics)
+        cls._topics_schemas.update(topics_schemas)
 
     @classmethod
-    def get_topics(cls) -> Set[str]:
+    def get_topics(cls) -> Iterable[str]:
         """
-        Returns the set of topics to which the event's data will be published.
+        Returns the sequence of topics to which the event's data will be published.
 
         Returns:
-            Set[str]: Set of topics to which the event's data will be published.
+            Iterable[str]: Sequence of topics to which the event's data will be published.
         """
 
-        return cls._topics
+        return cls._topics_schemas.keys()
 
     @classmethod
     def get_event_name(cls) -> str:
@@ -78,7 +82,7 @@ class ProducerEvent(ABC):
         Returns the name of the event.
 
         Returns:
-            str: Name of the event.
+            str: Name of the event
         """
 
         return cls.__name__
@@ -89,19 +93,7 @@ class RestaurantActivatedEvent(ProducerEvent):
     Event that is published when a restaurant is activated.
     """
 
-    _topics = set()
-    schema_class = RestaurantActivatedSchema
-
-    def __init__(self, restaurant_id: int):
-        """
-        Constructor for the RestaurantActivatedEvent class.
-
-        Args:
-            restaurant_id (int): The id of the restaurant.
-        """
-
-        schema = self.schema_class(restaurant_id=restaurant_id)
-        super().__init__(schema)
+    _topics_schemas = dict()
 
 
 class RestaurantDeactivatedEvent(ProducerEvent):
@@ -109,19 +101,7 @@ class RestaurantDeactivatedEvent(ProducerEvent):
     Event that is published when a restaurant is deactivated.
     """
 
-    _topics = set()
-    schema_class = RestaurantDeactivatedSchema
-
-    def __init__(self, restaurant_id: int):
-        """
-        Constructor for the RestaurantDeactivatedEvent class.
-
-        Args:
-            restaurant_id (int): The id of the restaurant.
-        """
-
-        schema = self.schema_class(restaurant_id=restaurant_id)
-        super().__init__(schema)
+    _topics_schemas = dict()
 
 
 class RestaurantApplicationConfirmedEvent(ProducerEvent):
@@ -129,18 +109,4 @@ class RestaurantApplicationConfirmedEvent(ProducerEvent):
     Event that is published when a restaurant application is confirmed.
     """
 
-    _topics = set()
-    schema_class = RestaurantApplicationConfirmedSchema
-
-    def __init__(self, restaurant_id: int, restaurant_manager_id: int):
-        """
-        Constructor for the RestaurantApplicationConfirmedEvent class.
-
-        Args:
-            restaurant_id (int): The id of the restaurant.
-            restaurant_manager_id (int): The id of the restaurant manager.
-        """
-
-        schema = self.schema_class(restaurant_id=restaurant_id,
-                                   restaurant_manager_id=restaurant_manager_id)
-        super().__init__(schema)
+    _topics_schemas = dict()
