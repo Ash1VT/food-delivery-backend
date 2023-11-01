@@ -23,8 +23,8 @@ consumer_events = [
     ModeratorCreatedEvent
 ]
 
-# Init kafka receivers
 
+# Init kafka receivers
 
 def init_kafka_receivers() -> List[KafkaReceiver]:
     kafka_receivers = list()
