@@ -26,12 +26,17 @@ class Settings(BaseSettings):
         ]
     }
 
-    kafka_producer_events_topics: Dict[str, List[str]] = {
-        'RestaurantActivatedEvent': ['menu_restaurant'],
-        'RestaurantDeactivatedEvent': ['menu_restaurant'],
-        'RestaurantApplicationConfirmedEvent': ['menu_restaurant'],
+    kafka_producer_events_topics: Dict[str, Dict[str, str]] = {
+        'RestaurantActivatedEvent': {
+            'menu_restaurant': 'producer.schemas.RestaurantActivatedSchema',
+        },
+        'RestaurantDeactivatedEvent': {
+            'menu_restaurant': 'producer.schemas.RestaurantDeactivatedSchema'
+        },
+        'RestaurantApplicationConfirmedEvent': {
+            'menu_restaurant': 'producer.schemas.RestaurantApplicationConfirmedSchema'
+        },
     }
-
 
 
 class DevelopSettings(Settings):
