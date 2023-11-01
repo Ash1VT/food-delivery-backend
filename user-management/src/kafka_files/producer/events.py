@@ -1,5 +1,7 @@
 from abc import ABC
-from typing import List, Set, Any
+from typing import List, Set, Any, Dict, Type, Iterable
+
+from rest_framework.serializers import Serializer
 
 from .serializers import RestaurantManagerCreatedSerializer, ModeratorCreatedSerializer
 
@@ -17,55 +19,59 @@ class ProducerEvent(ABC):
     Events are used for simplifying data publishing to Kafka.
 
     Attributes:
-        _topics (Set[str]): Set of topics to which the event's data will be published.
-        serializer_class: Serializer class for the event data.
+        _topics_serializers (Dict[str, Type[Serializer]]): Dictionary of topics to which the event's data
+        will be published and associated serializers with them.
     """
 
-    _topics: Set[str]
-    serializer_class = None
+    _topics_serializers: Dict[str, Type[Serializer]]
 
-    def __init__(self, data: Any):
+    def __init__(self, data: dict):
         """
         Constructor for the inherited classes from ProducerEvent class.
 
         Args:
-            data (Any): The data to be published.
+            data (dict): The data to be published.
         """
 
-        self._data: dict = self.serializer_class(data).data
+        self._data = data
 
-    @property
-    def data(self) -> dict:
+    def get_data(self, topic: str) -> dict:
         """
         Data to be published.
+
+        Data is serialized according to the topic's serializer
+
+        Args:
+            topic (str): The topic to which the data will be published.
 
         Returns:
             dict: Data to be published.
         """
 
-        return self._data
+        return self._topics_serializers.get(topic)(self._data).data
 
     @classmethod
-    def extend_topics(cls, topics: List[str]):
+    def extend_topics_serializers(cls, topics_serializers: Dict[str, Type[Serializer]]):
         """
         Extends the set of topics to which the event's data will be published.
 
         Args:
-            topics (List[str]): List of topics to which the event's data will be published.
+            topics_serializers (Dict[str, Type[Serializer]]): Dictionary of topics to which the event's data
+            will be published and associated serializers with them.
         """
 
-        cls._topics.update(topics)
+        cls._topics_serializers.update(topics_serializers)
 
     @classmethod
-    def get_topics(cls) -> Set[str]:
+    def get_topics(cls) -> Iterable[str]:
         """
-        Returns the set of topics to which the event's data will be published.
+        Returns the sequence of topics to which the event's data will be published.
 
         Returns:
-            Set[str]: Set of topics to which the event's data will be published.
+            Iterable[str]: Sequence of topics to which the event's data will be published.
         """
 
-        return cls._topics
+        return cls._topics_serializers.keys()
 
     @classmethod
     def get_event_name(cls) -> str:
@@ -73,9 +79,8 @@ class ProducerEvent(ABC):
         Returns the name of the event.
 
         Returns:
-            str: Name of the event.
+            str: Name of the event
         """
-
         return cls.__name__
 
 
@@ -84,8 +89,7 @@ class RestaurantManagerCreatedEvent(ProducerEvent):
     Event when RestaurantManager is created.
     """
 
-    _topics = set()
-    serializer_class = RestaurantManagerCreatedSerializer
+    _topics_serializers = dict()
 
 
 class ModeratorCreatedEvent(ProducerEvent):
@@ -93,5 +97,4 @@ class ModeratorCreatedEvent(ProducerEvent):
     Event when Moderator is created.
     """
 
-    _topics = set()
-    serializer_class = ModeratorCreatedSerializer
+    _topics_serializers = dict()

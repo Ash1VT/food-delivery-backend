@@ -166,8 +166,13 @@ class Base(Configuration):
     KAFKA_BROKER_PASSWORD = env('KAFKA_BROKER_PASSWORD')
 
     KAFKA_PRODUCER_EVENTS_TOPICS = {
-        'RestaurantManagerCreatedEvent': ['user_restaurant', 'user_menu'],
-        'ModeratorCreatedEvent': ['user_restaurant']
+        'RestaurantManagerCreatedEvent': {
+            'user_restaurant': 'kafka_files.producer.serializers.RestaurantManagerCreatedSerializer',
+            'user_menu': 'kafka_files.producer.serializers.RestaurantManagerCreatedSerializer'
+        },
+        'ModeratorCreatedEvent': {
+            'user_restaurant': 'kafka_files.producer.serializers.ModeratorCreatedSerializer',
+        }
     }
 
     # Auth user model

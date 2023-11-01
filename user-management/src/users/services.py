@@ -97,7 +97,9 @@ class UserService:
 
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
 
-        publisher.publish(RestaurantManagerCreatedEvent(data=user))
+        publisher.publish(RestaurantManagerCreatedEvent(data={
+            'id': user.id
+        }))
 
         return user
 
@@ -109,6 +111,8 @@ class UserService:
 
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
 
-        publisher.publish(ModeratorCreatedEvent(data=user))
+        publisher.publish(ModeratorCreatedEvent(data={
+            'id': user.id
+        }))
 
         return user
