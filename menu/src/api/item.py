@@ -26,3 +26,12 @@ async def update_item(item_id: int,
                       menu_item_service: MenuItemService = Depends(get_menu_item_service),
                       uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
     return await menu_item_service.update(item_id, menu_item, uow)
+
+
+@router.delete('/{item_id}')
+@handle_app_errors
+async def delete_item(item_id: int,
+                      menu_item_service: MenuItemService = Depends(get_menu_item_service),
+                      uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    await menu_item_service.delete(item_id, uow)
+    return {}
