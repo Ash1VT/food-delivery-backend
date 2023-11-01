@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-
+from producer import publisher, RestaurantActivatedEvent, RestaurantDeactivatedEvent
 from roles import ModeratorRole, RestaurantManagerRole
 from exceptions import PermissionDeniedError
 from exceptions.manager import RestaurantManagerAlreadyHaveApplicationError, RestaurantManagerAlreadyHaveRestaurantError
@@ -240,6 +240,10 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         retrieved_restaurant.is_active = True
 
+        publisher.publish(
+            RestaurantActivatedEvent(restaurant_id=retrieved_restaurant.id)
+        )
+
     async def deactivate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
         Deactivates a restaurant by setting its `is_active` attribute to False.
@@ -272,3 +276,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
             raise RestaurantAlreadyNotActiveError(retrieved_restaurant.id)
 
         retrieved_restaurant.is_active = False
+
+        publisher.publish(
+            RestaurantDeactivatedEvent(restaurant_id=retrieved_restaurant.id)
+        )
