@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from .cache import config_cache
@@ -11,6 +12,26 @@ class Settings(BaseSettings):
     reload: bool
     roles_grpc_server_host: str
     roles_grpc_server_port: str
+    kafka_bootstrap_server_host: str
+    kafka_bootstrap_server_port: int
+    kafka_sasl_mechanism: str = 'PLAIN'
+    kafka_broker_user: str
+    kafka_broker_password: str
+
+    kafka_group_consumers_count: int = 1
+    kafka_consumer_topic_events: Dict[str, List[str]] = {
+        'user_restaurant': [
+            'RestaurantManagerCreatedEvent',
+            'ModeratorCreatedEvent',
+        ]
+    }
+
+    kafka_producer_events_topics: Dict[str, List[str]] = {
+        'RestaurantActivatedEvent': ['menu_restaurant'],
+        'RestaurantDeactivatedEvent': ['menu_restaurant'],
+        'RestaurantApplicationConfirmedEvent': ['menu_restaurant'],
+    }
+
 
 
 class DevelopSettings(Settings):
@@ -21,20 +42,14 @@ class DevelopSettings(Settings):
     pg_user: str
     pg_password: str
 
-    model_config = SettingsConfigDict(env_file=[ENV_DIRECTORY / '.env.dev',
-                                                ENV_DIRECTORY / '.env',
-                                                SRC_DIRECTORY / '.env',
-                                                BASE_DIRECTORY / '.env'])
+    model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.dev')
 
 
 class TestSettings(Settings):
     reload: bool = False
     sqlite_db_file: str
 
-    model_config = SettingsConfigDict(env_file=[ENV_DIRECTORY / '.env.test',
-                                                ENV_DIRECTORY / '.env',
-                                                SRC_DIRECTORY / '.env',
-                                                BASE_DIRECTORY / '.env'])
+    model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.test')
 
 
 @config_cache
