@@ -6,8 +6,6 @@ __all__ = [
     "ModeratorRetrieveOut",
     "ModeratorCreateIn",
     "ModeratorCreateOut",
-    "ModeratorUpdateIn",
-    "ModeratorUpdateOut"
 ]
 
 
@@ -27,7 +25,6 @@ class ModeratorBaseOut(ModeratorBase, ABC):
     """
 
     id: int = Field(ge=0)
-    is_active: bool
 
     model_config = {
         "from_attributes": True
@@ -57,24 +54,6 @@ class ModeratorCreateIn(ModeratorBase):
 class ModeratorCreateOut(ModeratorBaseOut):
     """
     Schema class for output representation after creating a moderator.
-    """
-
-    pass
-
-
-# Update
-
-class ModeratorUpdateIn(ModeratorBase):
-    """
-    Schema class for input data when updating a moderator.
-    """
-
-    is_active: bool
-
-
-class ModeratorUpdateOut(ModeratorBaseOut):
-    """
-    Schema class for output representation after updating a moderator.
     """
 
     pass

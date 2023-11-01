@@ -6,8 +6,6 @@ __all__ = [
     "RestaurantManagerRetrieveOut",
     "RestaurantManagerCreateIn",
     "RestaurantManagerCreateOut",
-    "RestaurantManagerUpdateIn",
-    "RestaurantManagerUpdateOut"
 ]
 
 
@@ -27,7 +25,6 @@ class RestaurantManagerBaseOut(RestaurantManagerBase, ABC):
     """
 
     id: int = Field(ge=0)
-    is_active: bool
 
     model_config = {
         "from_attributes": True
@@ -57,24 +54,6 @@ class RestaurantManagerCreateIn(RestaurantManagerBase):
 class RestaurantManagerCreateOut(RestaurantManagerBaseOut):
     """
     Schema class for output representation after creating a restaurant manager.
-    """
-
-    pass
-
-
-# Update
-
-class RestaurantManagerUpdateIn(RestaurantManagerBase):
-    """
-    Schema class for input data when updating a restaurant manager.
-    """
-
-    is_active: bool
-
-
-class RestaurantManagerUpdateOut(RestaurantManagerBaseOut):
-    """
-    Schema class for output representation after updating a restaurant manager.
     """
 
     pass
