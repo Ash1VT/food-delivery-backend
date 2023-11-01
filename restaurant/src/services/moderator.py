@@ -1,6 +1,5 @@
 from models import Moderator
-from schemas.moderator import ModeratorRetrieveOut, ModeratorCreateIn, ModeratorCreateOut, \
-    ModeratorUpdateIn, ModeratorUpdateOut
+from schemas.moderator import ModeratorRetrieveOut, ModeratorCreateIn, ModeratorCreateOut
 from uow import SqlAlchemyUnitOfWork
 from exceptions import ModeratorNotFoundWithIdError, ModeratorAlreadyExistsWithIdError
 
@@ -13,7 +12,6 @@ __all__ = [
 
 class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
                        CreateMixin[Moderator, ModeratorCreateIn, ModeratorCreateOut],
-                       UpdateMixin[Moderator, ModeratorUpdateIn, ModeratorUpdateOut],
                        DeleteMixin[Moderator]):
     """
     Service class for managing moderators.
@@ -27,7 +25,6 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
 
     schema_retrieve_out = ModeratorRetrieveOut
     schema_create_out = ModeratorCreateOut
-    schema_update_out = ModeratorUpdateOut
 
     async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> Moderator:
         """
@@ -72,31 +69,6 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
         data = item.model_dump()
 
         return await uow.moderators.create(data, **kwargs)
-
-    async def update_instance(self, id: int,
-                              data: ModeratorUpdateIn,
-                              uow: SqlAlchemyUnitOfWork, **kwargs) -> Moderator:
-        """
-        Update a moderator instance in the repository.
-
-        Args:
-            id (int): The ID of the moderator to update.
-            data (ModeratorUpdateIn): The data to update the moderator.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-
-        Returns:
-            Moderator: The updated moderator instance.
-
-        Raises:
-            ModeratorNotFoundWithIdError: If the moderator with the given ID is not found.
-        """
-
-        if not await uow.moderators.exists(id):
-            raise ModeratorNotFoundWithIdError(id)
-
-        data = data.model_dump()
-
-        return await uow.moderators.update(id, data, **kwargs)
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
