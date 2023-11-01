@@ -33,7 +33,8 @@ class Base(Configuration):
 
         'users',
         'tokens',
-        'kafka_files',
+        'producer',
+        'consumer',
     ]
 
     # Middlewares
@@ -167,11 +168,11 @@ class Base(Configuration):
 
     KAFKA_PRODUCER_EVENTS_TOPICS = {
         'RestaurantManagerCreatedEvent': {
-            'user_restaurant': 'kafka_files.producer.serializers.RestaurantManagerCreatedSerializer',
-            'user_menu': 'kafka_files.producer.serializers.RestaurantManagerCreatedSerializer'
+            'user_restaurant': 'producer.serializers.RestaurantManagerCreatedSerializer',
+            'user_menu': 'producer.serializers.RestaurantManagerCreatedSerializer'
         },
         'ModeratorCreatedEvent': {
-            'user_restaurant': 'kafka_files.producer.serializers.ModeratorCreatedSerializer',
+            'user_restaurant': 'producer.serializers.ModeratorCreatedSerializer',
         }
     }
 
@@ -235,7 +236,11 @@ class Base(Configuration):
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
-            'kafka_files': {
+            'producer': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+            },
+            'consumer': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
