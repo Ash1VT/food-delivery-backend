@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from decorators import handle_app_errors
-from dependencies import get_uow, get_menu_service, get_menu_item_service
+from dependencies import get_uow, get_uow_with_commit, get_menu_service, get_menu_item_service, get_restaurant_service
 from schemas import MenuItemRetrieveOut
 from schemas.menu import MenuRetrieveOut
-from services import MenuService, MenuItemService
+from services import MenuService, MenuItemService, RestaurantService
 from uow import SqlAlchemyUnitOfWork
 
 router = APIRouter(
@@ -36,3 +36,22 @@ async def get_restaurant_items(restaurant_id: int,
                                menu_item_service: MenuItemService = Depends(get_menu_item_service),
                                uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
     return await menu_item_service.list_restaurant_items(restaurant_id, uow)
+
+
+@router.post('/{restaurant_id}/menus/{menu_id}/current')
+@handle_app_errors
+async def set_restaurant_current_menu(restaurant_id: int,
+                                      menu_id: int,
+                                      restaurant_service: RestaurantService = Depends(get_restaurant_service),
+                                      uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    await restaurant_service.set_current_menu(restaurant_id, menu_id, uow)
+    return {}
+
+
+@router.delete('/{restaurant_id}/menus/current')
+@handle_app_errors
+async def unset_restaurant_current_menu(restaurant_id: int,
+                                        restaurant_service: RestaurantService = Depends(get_restaurant_service),
+                                        uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    await restaurant_service.unset_current_menu(restaurant_id, uow)
+    return {}
