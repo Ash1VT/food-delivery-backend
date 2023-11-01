@@ -4,15 +4,16 @@ import logging
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from tokens.generators import email_verification_token_generator
 from tokens.utils import set_jwt_cookies
 from .models import User, UserRole
-from .serializers import CustomerPostSerializer, CourierPostSerializer, UserUpdateSerializer, \
-    UserOutSerializer, UserUpdateModeratorSerializer, UserOutModeratorSerializer
+from .serializers import CustomerPostSerializer, CourierPostSerializer, RestaurantManagerPostSerializer, \
+    ModeratorPostSerializer, UserUpdateSerializer, UserOutSerializer, \
+    UserUpdateModeratorSerializer, UserOutModeratorSerializer
 from .permissions import IsModerator, IsEmailVerified
 from .services import UserService
 from .utils import send_verification_email
@@ -48,6 +49,19 @@ class CreateCourierView(BaseCreateUserView):
     """View for registering courier's account (no permissions)"""
 
     serializer_class = CourierPostSerializer
+
+
+class CreateRestaurantManagerView(BaseCreateUserView):
+    """View for registering restaurant manager's account (no permissions)"""
+
+    serializer_class = RestaurantManagerPostSerializer
+
+
+class CreateModeratorView(BaseCreateUserView):
+    """View for registering moderator's account (staff permissions)"""
+    permission_classes = [IsAdminUser]
+    
+    serializer_class = ModeratorPostSerializer
 
 
 class RetrieveUpdateCurrentUserView(RetrieveUpdateAPIView):
