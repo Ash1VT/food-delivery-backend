@@ -1,6 +1,7 @@
 from typing import Optional
 
-from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantAlreadyExistsWithIdError
+from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantAlreadyExistsWithIdError, \
+    RestaurantMissingCurrentMenuError
 from exceptions.manager import RestaurantManagerNotFoundWithIdError
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
@@ -140,7 +141,7 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
         if not self._restaurant_manager:
             raise PermissionDeniedError(RestaurantManagerRole)
 
-        # Check if restaurant exists
+        # Check restaurant for existence
         if not await uow.restaurants.exists(restaurant_id, **kwargs):
             raise RestaurantNotFoundWithIdError(restaurant_id)
 
@@ -158,6 +159,38 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Set current menu
         restaurant.current_menu_id = menu_id
+
+    async def unset_current_menu(self, restaurant_id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+        """
+        Unsets current menu of a restaurant by its IDs.
+
+        Args:
+            restaurant_id (int): ID of the restaurant.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            RestaurantNotFoundWithIdError: If the restaurant is not found.
+        """
+
+        # Permissions checks
+        if not self._restaurant_manager:
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check restaurant for existence
+        restaurant = await uow.restaurants.retrieve(restaurant_id, **kwargs)
+
+        if not restaurant:
+            raise RestaurantNotFoundWithIdError(restaurant_id)
+
+        # Check if restaurant manager owns restaurant
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
+
+        # Set current menu
+        if not restaurant.current_menu_id:
+            raise RestaurantMissingCurrentMenuError(restaurant_id)
+
+        restaurant.current_menu_id = None
 
     async def activate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
