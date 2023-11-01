@@ -30,6 +30,10 @@ class RolesServicer(pb2_grpc.RolesServicer):
             context.abort(StatusCode.UNAUTHENTICATED, "User has got unverified email")
             return
 
+        if user.is_staff:
+            context.abort(StatusCode.UNAUTHENTICATED, "User is staff")
+            return
+
         return user
 
     def GetUserRole(self, request, context):
