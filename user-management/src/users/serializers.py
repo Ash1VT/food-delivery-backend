@@ -76,8 +76,45 @@ class CourierPostSerializer(UserPostSerializer):
         Returns:
             User: The created courier user instance.
         """
+
         user_profile_data = validated_data.pop('user_profile')
         return UserService.create_courier(user_data=validated_data, user_profile_data=user_profile_data)
+
+
+class RestaurantManagerPostSerializer(UserPostSerializer):
+    """Restaurant manager serializer for post requests."""
+
+    def create(self, validated_data):
+        """
+        Create a new restaurant manager user with the provided data.
+
+        Args:
+            validated_data (dict): The validated data for creating the restaurant manager.
+
+        Returns:
+            User: The created restaurant manager user instance.
+        """
+
+        user_profile_data = validated_data.pop('user_profile')
+        return UserService.create_restaurant_manager(user_data=validated_data, user_profile_data=user_profile_data)
+
+
+class ModeratorPostSerializer(UserPostSerializer):
+    """Moderator serializer for post requests."""
+
+    def create(self, validated_data):
+        """
+        Create a new Moderator user with the provided data.
+
+        Args:
+            validated_data (dict): The validated data for creating the moderator.
+
+        Returns:
+            User: The created moderator user instance.
+        """
+
+        user_profile_data = validated_data.pop('user_profile')
+        return UserService.create_moderator(user_data=validated_data, user_profile_data=user_profile_data)
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
