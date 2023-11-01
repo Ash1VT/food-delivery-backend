@@ -2,8 +2,8 @@ import logging
 
 from .models import User, UserRole, UserProfile, CustomerProfile, CourierProfile
 from .utils import send_verification_email
-from kafka_files.producer import publisher
-from kafka_files.producer.events import RestaurantManagerCreatedEvent, ModeratorCreatedEvent
+from producer import publisher
+from producer.events import RestaurantManagerCreatedEvent, ModeratorCreatedEvent
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +105,7 @@ class UserService:
 
     @classmethod
     def create_moderator(cls, user_data: dict, user_profile_data: dict) -> User:
-        user = User.objects.create_user(**user_data, role=UserRole.MODERATOR)
+        user = User.objects.create_user(**user_data, role=UserRole.MODERATOR, is_email_verified=True)
 
         logger.info(f"Created moderator: {user}")
 
