@@ -201,7 +201,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             restaurant_manager.restaurant_id = restaurant.id
 
             publisher.publish(
-                RestaurantApplicationConfirmedEvent(restaurant_id=restaurant.id,
+                RestaurantApplicationConfirmedEvent(id=restaurant.id,
                                                     restaurant_manager_id=restaurant_manager.id)
             )
         elif application_type == ApplicationType.update:

@@ -241,7 +241,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         retrieved_restaurant.is_active = True
 
         publisher.publish(
-            RestaurantActivatedEvent(restaurant_id=retrieved_restaurant.id)
+            RestaurantActivatedEvent(id=retrieved_restaurant.id)
         )
 
     async def deactivate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
@@ -278,5 +278,5 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         retrieved_restaurant.is_active = False
 
         publisher.publish(
-            RestaurantDeactivatedEvent(restaurant_id=retrieved_restaurant.id)
+            RestaurantDeactivatedEvent(id=retrieved_restaurant.id)
         )
