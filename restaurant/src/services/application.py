@@ -3,6 +3,7 @@ from typing import Optional, List
 from exceptions import PermissionDeniedError, RestaurantApplicationNotFoundWithIdError, \
     RestaurantManagerNotFoundWithIdError
 from models import RestaurantApplication, Moderator, ApplicationType
+from producer import publisher, RestaurantApplicationConfirmedEvent
 from roles import ModeratorRole
 from schemas import RestaurantApplicationRetrieveOut
 from uow import SqlAlchemyUnitOfWork
@@ -198,6 +199,11 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         if application_type == ApplicationType.create:
             restaurant = await uow.restaurants.create(data)
             restaurant_manager.restaurant_id = restaurant.id
+
+            publisher.publish(
+                RestaurantApplicationConfirmedEvent(id=restaurant.id,
+                                                    restaurant_manager_id=restaurant_manager.id)
+            )
         elif application_type == ApplicationType.update:
             await uow.restaurants.update(restaurant_manager.restaurant_id, data)
 
