@@ -32,3 +32,4 @@ class RestaurantApplicationConfirmedSchema(BaseModel):
     """
 
     id: int = Field(ge=0)
+    restaurant_manager_id: int = Field(ge=0)
