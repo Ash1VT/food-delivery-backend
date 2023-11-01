@@ -171,7 +171,7 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
             RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
-        restaurant = uow.restaurants.retrieve(id, **kwargs)
+        restaurant = await uow.restaurants.retrieve(id, **kwargs)
 
         if not restaurant:
             raise RestaurantNotFoundWithIdError(id)
@@ -190,7 +190,7 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
             RestaurantNotFoundWithIdError: If the restaurant is not found.
         """
 
-        restaurant = uow.restaurants.retrieve(id, **kwargs)
+        restaurant = await uow.restaurants.retrieve(id, **kwargs)
 
         if not restaurant:
             raise RestaurantNotFoundWithIdError(id)
