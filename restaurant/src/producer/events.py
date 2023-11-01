@@ -1,8 +1,7 @@
 from abc import ABC
-from typing import List, Set, Any, TypeVar, Generic, Type
+from typing import List, Set, TypeVar, Type
 
 from pydantic import BaseModel
-from models import CustomBase
 
 from .schemas import RestaurantActivatedSchema, RestaurantDeactivatedSchema, RestaurantApplicationConfirmedSchema
 
@@ -86,28 +85,62 @@ class ProducerEvent(ABC):
 
 
 class RestaurantActivatedEvent(ProducerEvent):
+    """
+    Event that is published when a restaurant is activated.
+    """
+
     _topics = set()
     schema_class = RestaurantActivatedSchema
 
     def __init__(self, restaurant_id: int):
+        """
+        Constructor for the RestaurantActivatedEvent class.
+
+        Args:
+            restaurant_id (int): The id of the restaurant.
+        """
+
         schema = self.schema_class(restaurant_id=restaurant_id)
         super().__init__(schema)
 
 
 class RestaurantDeactivatedEvent(ProducerEvent):
+    """
+    Event that is published when a restaurant is deactivated.
+    """
+
     _topics = set()
     schema_class = RestaurantDeactivatedSchema
 
     def __init__(self, restaurant_id: int):
+        """
+        Constructor for the RestaurantDeactivatedEvent class.
+
+        Args:
+            restaurant_id (int): The id of the restaurant.
+        """
+
         schema = self.schema_class(restaurant_id=restaurant_id)
         super().__init__(schema)
 
 
 class RestaurantApplicationConfirmedEvent(ProducerEvent):
+    """
+    Event that is published when a restaurant application is confirmed.
+    """
+
     _topics = set()
     schema_class = RestaurantApplicationConfirmedSchema
 
     def __init__(self, restaurant_id: int, restaurant_manager_id: int):
+        """
+        Constructor for the RestaurantApplicationConfirmedEvent class.
+
+        Args:
+            restaurant_id (int): The id of the restaurant.
+            restaurant_manager_id (int): The id of the restaurant manager.
+        """
+
         schema = self.schema_class(restaurant_id=restaurant_id,
                                    restaurant_manager_id=restaurant_manager_id)
         super().__init__(schema)
