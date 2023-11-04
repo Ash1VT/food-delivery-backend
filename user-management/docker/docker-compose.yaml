@@ -38,11 +38,11 @@ services:
           - PG_DATABASE=user
           - PG_USER=${PG_USER}
           - PG_PASSWORD=${PG_PASSWORD}
-          - EMAIL_HOST=smtp.yandex.ru
+          - EMAIL_HOST=${EMAIL_HOST}
           - EMAIL_HOST_USER=${EMAIL_HOST_USER}
           - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-          - EMAIL_PORT=465
-          - EMAIL_USE_SSL=True
+          - EMAIL_PORT=${EMAIL_PORT}
+          - EMAIL_USE_SSL=${EMAIL_USE_SSL}
           - KAFKA_BOOTSTRAP_SERVER_HOST=kafka
           - KAFKA_BOOTSTRAP_SERVER_PORT=9092
           - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}

@@ -105,7 +105,7 @@ class UserService:
 
     @classmethod
     def create_moderator(cls, user_data: dict, user_profile_data: dict) -> User:
-        user = User.objects.create_user(**user_data, role=UserRole.MODERATOR, is_email_verified=True)
+        user = User.objects.create_user(**user_data, role=UserRole.MODERATOR)
 
         logger.info(f"Created moderator: {user}")
 
