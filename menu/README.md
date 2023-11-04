@@ -33,8 +33,7 @@ and Restaurant Managers can authenticate and interact with the menu management
 functionalities securely.
 
 5. **PostgreSQL**: PostgreSQL is employed as the relational database 
-management system to store user data, including user profiles, 
-roles, and authentication-related information.
+management system to store menu data, including menu items, menu categories and menus themselves.
 
 6. **Docker and Docker Compose**: Wrapping application in docker container makes 
 deployment, scaling, and management more streamlined and efficient.
@@ -91,7 +90,7 @@ For now there are no producer events.
 
 # Run Locally
 
-You can download source code and launch **User Management Microservice** using **Python**.
+You can download source code and launch **Menu Microservice** using **Python**.
 
 ### Requirements
 1) Python 3.10 (it is recommended to use virtual environment)
