@@ -55,18 +55,18 @@ These applications encompass essential information such as restaurant name,
 location, and contact details. The microservice ensures the validation 
 of this data and initiates the application review process.
 3. **Restaurant Parameter Control**.
-For **Restaurant Managers** who already own a restaurant, 
-the microservice provides the means to control and modify various restaurant parameters. 
-These parameters can include menu configurations, opening hours, 
-and other settings crucial for restaurant management.
-4. **Moderator Application Management**.
+For **Restaurant Managers** who already own a **Restaurant**, 
+the microservice provides the means to control and modify restaurant parameters, such as opening hours.
+To update other parameteres **Restaurant Manager** will create an update application.
+After moderator confirms application, the changes will be applied.
+5. **Moderator Application Management**.
 Moderators play a significant role in the microservice by 
 reviewing and managing applications submitted by **Restaurant Managers**. 
 They can approve or decline applications, 
-thereby controlling the onboarding of new restaurants into the system.
-5. **Producing events for other microservices**. The **Restaurant Microservice** can produce events to notify other microservices 
+thereby controlling the onboarding of new restaurants into the system and updating of old ones.
+6. **Producing events for other microservices**. The **Restaurant Microservice** can produce events to notify other microservices 
 about restaurant-related actions or events. More details at [Consumer](#consumer-events) section.
-6. **Consuming events from other microservices**. In addition to producing events, 
+7. **Consuming events from other microservices**. In addition to producing events, 
 the microservice can also consume events from other microservices. 
 This bidirectional communication allows it to react to events from various parts of the application ecosystem. 
 More details at [Producer](#producer-events) section.
