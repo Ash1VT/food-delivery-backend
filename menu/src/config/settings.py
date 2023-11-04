@@ -21,12 +21,12 @@ class Settings(BaseSettings):
     kafka_group_consumers_count: int = 1
     kafka_consumer_topic_events: Dict[str, List[str]] = {
         'menu_restaurant': [
-            'RestaurantApplicationConfirmedEvent',
-            'RestaurantActivatedEvent',
-            'RestaurantDeactivatedEvent',
+            'consumer.events.RestaurantApplicationConfirmedEvent',
+            'consumer.events.RestaurantActivatedEvent',
+            'consumer.events.RestaurantDeactivatedEvent',
         ],
         'user_menu': [
-            'RestaurantManagerCreatedEvent',
+            'consumer.events.RestaurantManagerCreatedEvent',
         ]
     }
 
