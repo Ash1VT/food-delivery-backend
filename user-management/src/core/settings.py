@@ -297,3 +297,24 @@ class Test(Base):
             'NAME': Base.BASE_DIR / 'db.sqlite3'
         }
     }
+
+class Production(Base):
+    DEBUG = False
+
+    ALLOWED_HOSTS = [
+        '0.0.0.0',
+        'localhost',
+        '127.0.0.1',
+    ]
+
+    # Database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': env('PG_HOST'),
+            'PORT': env('PG_PORT'),
+            'NAME': env('PG_DATABASE'),
+            'USER': env('PG_USER'),
+            'PASSWORD': env('PG_PASSWORD'),
+        }
+    }
