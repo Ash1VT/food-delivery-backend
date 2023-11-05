@@ -189,3 +189,7 @@ Run Docker containers (don't forget to provide path to your **env** file)
 ```bash
   docker compose --env-file=../.env up -d
 ```
+
+# Future Features
+1. Integrate pagination functionality.
+2. Integrate search functionality via ElasticSearch.

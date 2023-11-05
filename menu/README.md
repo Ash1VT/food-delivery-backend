@@ -191,3 +191,5 @@ Run Docker containers (don't forget to provide path to your **env** file)
 categories, or menus by a list of specific IDs. 
 2. The future roadmap includes the addition of image support for dishes within the menus. 
 3. Add Logging.
+4. Integrate pagination functionality.
+5. Integrate search functionality via ElasticSearch.
