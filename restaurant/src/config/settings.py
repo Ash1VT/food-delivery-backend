@@ -56,6 +56,15 @@ class TestSettings(Settings):
 
     model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.test')
 
+class ProductionSettings(Settings):
+    reload: bool = False
+    pg_host: str
+    pg_port: str
+    pg_database: str
+    pg_user: str
+    pg_password: str
+
+    model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.prod')
 
 @config_cache
 def get_settings():
@@ -66,5 +75,8 @@ def get_settings():
 
     if config == "Test":
         return TestSettings()
+
+    if config == "Production":
+        return ProductionSettings()
 
     return DevelopSettings()
