@@ -1,0 +1,14 @@
+[run]
+omit =
+    */migrations/*
+    */__init__.py
+    */tests/*
+    */setup/*
+    */db/*
+    */models/*
+    */schemas/*
+    */exceptions/*
+    */mixins.py
+    */uow.py
+    */generic.py
+    */grpc_files/generated/*

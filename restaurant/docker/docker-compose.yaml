@@ -1,0 +1,56 @@
+version: '3.6'
+name: 'restaurant'
+
+services:
+    db:
+        image: postgres:15.4-alpine
+        container_name: restaurant-postgres
+        ports:
+          - "5434:5432"
+        volumes:
+          - ~/apps/postgres/restaurant:/var/lib/postgresql/data
+        environment:
+          - PGPORT=5434
+          - POSTGRES_USER=${PG_USER}
+          - POSTGRES_PASSWORD=${PG_PASSWORD}
+          - POSTGRES_DB=restaurant
+        expose:
+          - "5434"
+        networks:
+          - restaurant_network
+    app:
+        build:
+          context: ../
+          dockerfile: ./docker/app/Dockerfile
+        container_name: restaurant-app
+        ports:
+          - "8002:8002"
+        environment:
+          - CONFIGURATION=Develop
+          - WEB_APP_HOST=0.0.0.0
+          - WEB_APP_PORT=8002
+          - ROLES_GRPC_SERVER_HOST=user-app
+          - ROLES_GRPC_SERVER_PORT=50051
+          - PG_HOST=db
+          - PG_PORT=5434
+          - PG_DATABASE=restaurant
+          - PG_USER=${PG_USER}
+          - PG_PASSWORD=${PG_PASSWORD}
+          - KAFKA_BOOTSTRAP_SERVER_HOST=kafka
+          - KAFKA_BOOTSTRAP_SERVER_PORT=9092
+          - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
+          - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
+        depends_on:
+          - db
+        networks:
+          - restaurant_network
+          - user_grpc_network
+          - kafka_kafka_network
+
+
+networks:
+  kafka_kafka_network:
+    external: true
+  user_grpc_network:
+    external: true
+  restaurant_network:

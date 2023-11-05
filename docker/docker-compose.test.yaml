@@ -1,0 +1,67 @@
+#file: noinspection YAMLSchemaValidation
+version: '3.6'
+name: 'kafka-test'
+services:
+    zookeeper-test:
+        image: 'bitnami/zookeeper:3.6'
+        container_name: zookeeper-test
+        ports:
+          - "2183:2183"
+        environment:
+          - ZOO_PORT_NUMBER=2183
+          - ZOO_ENABLE_AUTH=true
+          - ZOO_SERVER_USERS=${ZOOKEEPER_SERVER_USERS}
+          - ZOO_SERVER_PASSWORDS=${ZOOKEEPER_SERVER_PASSWORDS}
+          - ZOO_CLIENT_USER=${ZOOKEEPER_CLIENT_USER}
+          - ZOO_CLIENT_PASSWORD=${ZOOKEEPER_CLIENT_PASSWORD}
+        networks:
+          - kafka_test_network
+
+    kafka-test:
+        image: 'bitnami/kafka:2.8.1'
+        container_name: kafka-test
+        ports:
+          - "9099:9098"
+        environment:
+          - ALLOW_PLAINTEXT_LISTENER=no
+          - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
+          - KAFKA_CFG_LISTENERS=INTERNAL://:9098,CLIENT://:9099,
+          - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka-test:9098,CLIENT://localhost:9099
+          - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:SASL_PLAINTEXT,CLIENT:SASL_PLAINTEXT
+          - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
+          - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper-test:2183
+          # Client credentials
+          - KAFKA_CLIENT_USERS=${KAFKA_CLIENT_USERS}
+          - KAFKA_CLIENT_PASSWORDS=${KAFKA_CLIENT_PASSWORDS}
+          # Interbroker credentials
+          - KAFKA_INTER_BROKER_USER=${KAFKA_INTER_BROKER_USER}
+          - KAFKA_INTER_BROKER_PASSWORD=${KAFKA_INTER_BROKER_PASSWORD}
+          # Zookeeper credentials
+          - KAFKA_ZOOKEEPER_PROTOCOL=SASL
+          - KAFKA_ZOOKEEPER_USER=${ZOOKEEPER_CLIENT_USER}
+          - KAFKA_ZOOKEEPER_PASSWORD=${ZOOKEEPER_CLIENT_PASSWORD}
+        expose:
+          - "9098"
+        depends_on:
+          - zookeeper-test
+        networks:
+          - kafka_test_network
+
+    topics-test:
+        build: ./topics
+        container_name: topics-creation-test
+        environment:
+          - KAFKA_BROKER_HOST=kafka-test
+          - KAFKA_BROKER_PORT=9098
+          - KAFKA_INTER_BROKER_USER=${KAFKA_INTER_BROKER_USER}
+          - KAFKA_INTER_BROKER_PASSWORD=${KAFKA_INTER_BROKER_PASSWORD}
+          - KAFKA_TOPIC_PARTITIONS=3
+          - KAFKA_TOPIC_REPLICATION_FACTOR=1
+          - KAFKA_TOPICS=user_restaurant,user_menu,menu_restaurant
+        depends_on:
+          - kafka-test
+        networks:
+          - kafka_test_network
+
+networks:
+    kafka_test_network:
