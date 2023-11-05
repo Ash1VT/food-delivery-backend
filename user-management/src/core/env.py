@@ -12,3 +12,5 @@ if configuration == 'Develop':
     Env.read_env(env_file=ENV_DIRECTORY / '.env.dev')
 elif configuration == 'Test':
     Env.read_env(env_file=ENV_DIRECTORY / '.env.test')
+elif configuration == 'Production':
+    Env.read_env(env_file=ENV_DIRECTORY / '.env.prod')
