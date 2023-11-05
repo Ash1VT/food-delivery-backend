@@ -1,0 +1,10 @@
+import os
+
+import uvicorn
+
+from config import get_settings
+
+if __name__ == "__main__":
+    os.environ.setdefault('CONFIGURATION', 'Develop')
+    settings = get_settings()
+    uvicorn.run(app="setup.app:app", host=settings.web_app_host, port=settings.web_app_port, reload=settings.reload)
