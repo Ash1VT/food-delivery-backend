@@ -6,10 +6,9 @@ export default function configCache(func: ConfiguredFunction): ConfiguredFunctio
 
     const wrapper: ConfiguredFunction = (...args: any[]) => {
 
-        if (cache) {
+        if (cache)
             return cache
-        }
-
+        
         cache = func(...args);
         return cache
     };

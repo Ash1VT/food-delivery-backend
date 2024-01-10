@@ -7,4 +7,7 @@ export interface SettingsOptions {
     pgUser: string
     pgPassword: string
     databaseURL: string
+    appHost: string
+    appPort: number
+    [index: string]: any
 }
