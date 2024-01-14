@@ -98,7 +98,7 @@ model Order {
   promocodeId          BigInt?     @map("promocode_id")
   promotionId          BigInt?     @map("promotion_id")
   status               OrderStatus
-  createdAt            DateTime    @map("created_at") @db.Timestamptz()
+  createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz()
   deliveryAcceptedAt   DateTime?   @map("delivery_accepted_at") @db.Timestamptz()
   supposedDeliveryTime DateTime    @map("supposed_delivery_time") @db.Time()
   actualDeliveryTime   DateTime?   @map("actual_delivery_time") @db.Time()
