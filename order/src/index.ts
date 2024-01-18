@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import getSettings from "./config";
-import { PrismaClient } from '@prisma/client'
+import { OrderStatus, PrismaClient } from '@prisma/client'
 import OrderRepository from "./repositories/OrderRepository";
 import CustomerRepository from "./repositories/CustomerRepository";
 
@@ -16,8 +16,27 @@ const settings = getSettings()
 const prismaClient = new PrismaClient()
 const orderRepository = new OrderRepository(prismaClient)
 const customerRepository = new CustomerRepository(prismaClient)
+
+const date = new Date()
+
+const fuckingShit = {
+    customerId: 1,
+    restaurantId: 0,
+    supposedDeliveryTime: date,
+    totalPrice: 12.00,
+    decountedPrice: 13.00,
+    items: {
+        create: [
+            {
+                menuItemId: 1,
+                quantity: 2
+            }
+        ]
+    }
+}
+
 app.get('/', async (req, res) => {
-    res.json({'message': await customerRepository.getMany()})
+    res.json({'message': await orderRepository.create(fuckingShit)})
 })
 
 // app.get('/hi', (req, res) => {
