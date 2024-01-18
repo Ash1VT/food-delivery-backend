@@ -42,7 +42,8 @@ model Restaurant {
   id                BigInt             @id
   restaurantManager RestaurantManager?
 
-  orders Order[]
+  orders   Order[]
+  menuItem MenuItem[]
 
   @@map("restaurants")
 }
@@ -62,7 +63,7 @@ model Promocode {
   validUntil         DateTime @map("valid_until") @db.Timestamptz()
   maxUsageCount      Int      @map("max_usage_count")
   currentUsageCount  Int      @map("current_usage_count")
-  isActive           Boolean  @map("is_active")
+  isActive           Boolean  @default(true) @map("is_active")
 
   orders Order[]
 
@@ -70,16 +71,18 @@ model Promocode {
 }
 
 model MenuItem {
-  id    BigInt  @id
-  price Decimal @db.Decimal(8, 2)
+  id           BigInt  @id
+  price        Decimal @db.Decimal(8, 2)
+  restaurantId BigInt  @map("restaurant_id")
 
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
   orderItems OrderItem[]
 
   @@map("menu_items")
 }
 
 model OrderItem {
-  id         BigInt @id
+  id         BigInt @id @default(autoincrement())
   menuItemId BigInt @map("menu_item_id")
   orderId    BigInt @map("order_id")
   quantity   Int
@@ -97,7 +100,7 @@ model Order {
   restaurantId         BigInt      @map("restaurant_id")
   promocodeId          BigInt?     @map("promocode_id")
   promotionId          BigInt?     @map("promotion_id")
-  status               OrderStatus
+  status               OrderStatus @default(PENDING)
   createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz()
   deliveryAcceptedAt   DateTime?   @map("delivery_accepted_at") @db.Timestamptz()
   supposedDeliveryTime DateTime    @map("supposed_delivery_time") @db.Time()
