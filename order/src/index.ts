@@ -1,9 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import getSettings from "./config";
-import { OrderStatus, PrismaClient } from '@prisma/client'
-import OrderRepository from "./repositories/OrderRepository";
-import CustomerRepository from "./repositories/CustomerRepository";
+import { OrderStatus, Prisma, PrismaClient } from '@prisma/client'
+import ICustomerRepository from "./repositories/interfaces/ICustomerRepository";
+import IMenuItemRepository from "./repositories/interfaces/IMenuItemRepository";
+import PrismaMenuItemRepository from "./repositories/prisma/PrismaMenuItemRepository";
+import PrismaCustomerRepository from "./repositories/prisma/PrismaCustomerRepository";
+import PrismaOrderRepository from "./repositories/prisma/PrismaOrderRepository";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unreachable code error
@@ -14,9 +17,9 @@ BigInt.prototype.toJSON = function () {
 const app = express()
 const settings = getSettings()
 const prismaClient = new PrismaClient()
-const orderRepository = new OrderRepository(prismaClient)
-const customerRepository = new CustomerRepository(prismaClient)
-
+const orderRepository = new PrismaOrderRepository(prismaClient)
+const customerRepository: ICustomerRepository = new PrismaCustomerRepository(prismaClient)
+const menuItemRepository: IMenuItemRepository = new PrismaMenuItemRepository(prismaClient)
 const date = new Date()
 
 const fuckingShit = {
@@ -36,7 +39,7 @@ const fuckingShit = {
 }
 
 app.get('/', async (req, res) => {
-    res.json({'message': await orderRepository.create(fuckingShit)})
+    res.json({'message': await customerRepository.getMany()})
 })
 
 // app.get('/hi', (req, res) => {
