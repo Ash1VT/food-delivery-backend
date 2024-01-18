@@ -9,4 +9,12 @@ export default class OrderRepository extends BaseRepository<OrderDelegate, Order
         super(prisma.order)
     }
     
+    async create(data: OrderCreateInput): Promise<OrderModel> {
+        return await this.delegate.create({
+            data,
+            include: {
+                items: true
+            }                
+        })
+    }
 }
