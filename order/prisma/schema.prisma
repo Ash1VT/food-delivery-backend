@@ -71,9 +71,9 @@ model Promocode {
 }
 
 model MenuItem {
-  id           BigInt  @id
-  price        Decimal @db.Decimal(8, 2)
-  restaurantId BigInt  @map("restaurant_id")
+  id           BigInt @id
+  price        Float
+  restaurantId BigInt @map("restaurant_id")
 
   restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
   orderItems OrderItem[]
@@ -106,8 +106,8 @@ model Order {
   supposedDeliveryTime DateTime    @map("supposed_delivery_time") @db.Time()
   actualDeliveryTime   DateTime?   @map("actual_delivery_time") @db.Time()
   deliveryFinishedAt   DateTime?   @map("delivery_finished_at") @db.Timestamptz()
-  totalPrice           Decimal     @map("total_price") @db.Decimal(8, 2)
-  decountedPrice       Decimal     @map("decounted_price") @db.Decimal(8, 2)
+  totalPrice           Float
+  decountedPrice       Float
 
   customer   Customer    @relation(fields: [customerId], references: [id])
   courier    Courier?    @relation(fields: [courierId], references: [id])

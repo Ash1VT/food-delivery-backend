@@ -1,18 +1,18 @@
-import IDelegate from "./interfaces/IDelegate"
-import IRepository from "./interfaces/IRepository"
+import IPrismaDelegate from "../interfaces/prisma/IPrismaDelegate"
+import IBaseRepository from "../interfaces/IBaseRepository"
 
-export default abstract class BaseRepository<
-    Delegate extends IDelegate,
+export default abstract class PrismaBaseRepository<
+    Delegate extends IPrismaDelegate,
     Model,
     CreateInput,
     UpdateInput
-> implements IRepository<Model, CreateInput, UpdateInput> {
+> implements IBaseRepository<Model, CreateInput, UpdateInput> {
 
     constructor(
         protected delegate: Delegate
     ) {}
 
-    async getOne(id: number): Promise<Model | null> {
+    public async getOne(id: number): Promise<Model | null> {
         return await this.delegate.findFirst({
             where: {
                 id
@@ -20,17 +20,17 @@ export default abstract class BaseRepository<
         })
     }
 
-    async getMany(): Promise<Model[]> {
+    public async getMany(): Promise<Model[]> {
         return await this.delegate.findMany()
     }
 
-    async create(data: CreateInput): Promise<Model> {
+    public async create(data: CreateInput): Promise<Model> {
         return await this.delegate.create({
             data
         })
     }
 
-    async update(id: number, data: UpdateInput): Promise<Model | null> {
+    public async update(id: number, data: UpdateInput): Promise<Model | null> {
         return await this.delegate.update({
             where: {
                 id
@@ -39,7 +39,7 @@ export default abstract class BaseRepository<
         })
     }
 
-    async delete(id: number) {
+    public async delete(id: number) {
         await this.delegate.delete({
             where: {
                 id

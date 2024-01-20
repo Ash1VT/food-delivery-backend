@@ -1,0 +1,1 @@
+export type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "DELIVERING" | "DELIVERED" | "CANCELLED"

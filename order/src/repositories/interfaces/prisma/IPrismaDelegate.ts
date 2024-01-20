@@ -1,4 +1,4 @@
-export default interface IDelegate {
+export default interface IPrismaDelegate {
     findFirst(data?: any): any
     findMany(data?: any): any
     create(data?: any): any
