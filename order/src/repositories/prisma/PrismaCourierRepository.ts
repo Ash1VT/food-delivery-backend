@@ -12,23 +12,4 @@ export default class PrismaCourierRepository extends PrismaBaseRepository<Courie
         super(prisma.courier)
     }
     
-    public async getOneWithOrders(id: number): Promise<CourierModel | null> {
-        return await this.delegate.findFirst({
-            where: {
-                id
-            },
-            include: {
-                orders: true
-            }
-        })
-    }
-
-    public async getManyWithOrders(): Promise<CourierModel[]> {
-        return await this.delegate.findMany({
-            include: {
-                orders: true
-            }
-        })
-    }
-    
 }
