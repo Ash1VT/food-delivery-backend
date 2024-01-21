@@ -44,4 +44,11 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         })
     }
     
+    public async getCourierOrders(courierId: number): Promise<OrderModel[]> {
+        return await this.delegate.findMany({
+            where: {
+                courierId
+            }
+        })
+    }
 }
