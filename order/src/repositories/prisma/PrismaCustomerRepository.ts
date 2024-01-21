@@ -11,24 +11,5 @@ export default class PrismaCustomerRepository extends PrismaBaseRepository<Custo
     constructor(prisma: PrismaClient) {
         super(prisma.customer)
     }
-    
-    public async getOneWithOrders(id: number): Promise<CustomerModel | null> {
-        return await this.delegate.findFirst({
-            where: {
-                id
-            },
-            include: {
-                orders: true
-            }
-        })
-    }
-
-    public async getManyWithOrders(): Promise<CustomerModel[]> {
-        return await this.delegate.findMany({
-            include: {
-                orders: true
-            }
-        })
-    }
 
 }
