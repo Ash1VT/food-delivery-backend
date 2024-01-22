@@ -1,63 +1,83 @@
 import { OrderCreateInputDTO, OrderCreateOutputDTO, OrderGetOutputDTO } from "../dto/order";
 import { OrderCreateInput, OrderModel } from "../models/order";
 import { IOrderGetMapper, IOrderCreateMapper } from "./interfaces/instances/order";
-import { OrderItemGetMapper } from "./orderItem";
-import { OrderCreateAdditionalData } from "./types/additionalData";
+import { IOrderItemGetMapper, IOrderItemWithOrderCreateMapper } from "./interfaces/instances/orderItem";
+import { OrderCreateDbModelAdditionalData, OrderCreateDtoModelAdditionalData, OrderGetDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class OrderGetMapper implements IOrderGetMapper {
 
     constructor(
-        protected orderItemGetMapper: OrderItemGetMapper
+        protected orderItemGetMapper: IOrderItemGetMapper
     ) {}
 
-    toDto(dbModel: OrderModel): OrderGetOutputDTO {
+    toDto(dbModel: OrderModel, additionalData: OrderGetDtoModelAdditionalData): OrderGetOutputDTO {
         return {
             id: Number(dbModel.id),
             customerId: Number(dbModel.customerId),
             courierId: Number(dbModel.courierId),
             restaurantId: Number(dbModel.restaurantId),
+            promocode: additionalData.promocode,
             status: dbModel.status,
             createdAt: dbModel.createdAt.toString(),
             supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
             totalPrice: dbModel.totalPrice,
             decountedPrice: dbModel.decountedPrice,
-            items: dbModel.items ? this.orderItemGetMapper.toDtos(dbModel.items) : undefined
+            items: dbModel.items ? this.orderItemGetMapper.toDtos(dbModel.items, additionalData.itemsAdditionalData) : undefined
         }
     }
 
-    toDtos(dbModels: OrderModel[]): OrderGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: OrderModel[], additionalData: OrderGetDtoModelAdditionalData[]): OrderGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class OrderCreateMapper implements IOrderCreateMapper {
 
-    toDto(dbModel: OrderModel): OrderCreateOutputDTO {
-        throw new Error("Method not implemented.");
+    constructor(
+        protected orderItemCreateMapper: IOrderItemWithOrderCreateMapper
+    ) {}
+
+    toDto(dbModel: OrderModel, additionalData: OrderCreateDtoModelAdditionalData): OrderCreateOutputDTO {
+        return {
+            id: Number(dbModel.id),
+            customerId: Number(dbModel.customerId),
+            courierId: dbModel.courierId ? Number(dbModel.courierId) : undefined,
+            restaurantId: Number(dbModel.restaurantId),
+            status: dbModel.status,
+            promocode: additionalData.promocode,
+            createdAt: dbModel.createdAt.toString(),
+            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toString(),
+            supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
+            actualDeliveryTime: dbModel.actualDeliveryTime?.toString(),
+            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
+            totalPrice: dbModel.totalPrice,
+            decountedPrice: dbModel.decountedPrice,
+            items: dbModel.items ? this.orderItemCreateMapper.toDtos(dbModel.items, additionalData.itemsAdditionalData) : undefined
+        }
     }
 
-    toDtos(dbModels: OrderModel[]): OrderCreateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: OrderModel[], additionalData: OrderCreateDtoModelAdditionalData[]): OrderCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: OrderCreateInputDTO, additionalData: OrderCreateAdditionalData): OrderCreateInput {
+    toDbModel(dtoModel: OrderCreateInputDTO, additionalData: OrderCreateDbModelAdditionalData): OrderCreateInput {
         return {
             customerId: BigInt(additionalData.customerId),
             restaurantId: BigInt(dtoModel.restaurantId),
             promocodeId: additionalData.promocodeId ? BigInt(additionalData.promocodeId) : undefined,
             supposedDeliveryTime: additionalData.supposedDeliveryTime,
             totalPrice: additionalData.totalPrice,
-            decountedPrice: additionalData.decountedPrice
+            decountedPrice: additionalData.decountedPrice,
+            create: {
+                items: this.orderItemCreateMapper.toDbModels(dtoModel.items, additionalData.itemsAdditionalData)
+            }
         }
     }
 
-    toDbModels(dtoModels: OrderCreateInputDTO[], additionalData?: OrderCreateAdditionalData[]): OrderCreateInput[] {
-        throw new Error("Method not implemented.");
-    }
-    
-    parse(data: any): OrderCreateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: OrderCreateInputDTO[], additionalData: OrderCreateDbModelAdditionalData[]): OrderCreateInput[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
     }
 
 }
