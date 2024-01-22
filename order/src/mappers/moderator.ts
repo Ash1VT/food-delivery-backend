@@ -1,41 +1,43 @@
 import { ModeratorCreateInputDTO, ModeratorCreateOutputDTO, ModeratorGetOutputDTO } from "../dto/moderator";
-import { ModeratorModel } from "../models/moderator";
+import { ModeratorCreateInput, ModeratorModel } from "../models/moderator";
 import { IModeratorGetMapper, IModeratorCreateMapper } from "./interfaces/instances/moderator";
+import { ModeratorCreateDbModelAdditionalData, ModeratorCreateDtoModelAdditionalData, ModeratorGetDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class ModeratorGetMapper implements IModeratorGetMapper {
 
-    toDto(dbModel: ModeratorModel): ModeratorGetOutputDTO {
+    toDto(dbModel: ModeratorModel, additionalData: ModeratorGetDtoModelAdditionalData): ModeratorGetOutputDTO {
         return {
             id: Number(dbModel.id)
         }
     }
 
-    toDtos(dbModels: ModeratorModel[]): ModeratorGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: ModeratorModel[], additionalData: ModeratorGetDtoModelAdditionalData[]): ModeratorGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class ModeratorCreateMapper implements IModeratorCreateMapper {
 
-    toDto(dbModel: ModeratorModel): ModeratorCreateOutputDTO {
-        throw new Error("Method not implemented.");
+    toDto(dbModel: ModeratorModel, additionalData: ModeratorCreateDtoModelAdditionalData): ModeratorCreateOutputDTO {
+        return {
+            id: Number(dbModel.id)
+        }
     }
 
-    toDtos(dbModels: ModeratorModel[]): ModeratorCreateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: ModeratorModel[], additionalData: ModeratorCreateDtoModelAdditionalData[]): ModeratorCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: ModeratorCreateInputDTO): ModeratorModel {
-        throw new Error("Method not implemented.");
+    toDbModel(dtoModel: ModeratorCreateInputDTO, additionalData: ModeratorCreateDbModelAdditionalData = {}): ModeratorCreateInput {
+        return {
+            id: BigInt(dtoModel.id)
+        }
     }
 
-    toDbModels(dtoModels: ModeratorCreateInputDTO[]): ModeratorModel[] {
-        throw new Error("Method not implemented.");
-    }
-
-    parse(data: any): ModeratorCreateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: ModeratorCreateInputDTO[], additionalData: ModeratorCreateDbModelAdditionalData[] = []): ModeratorCreateInput[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
     }
 
 }
