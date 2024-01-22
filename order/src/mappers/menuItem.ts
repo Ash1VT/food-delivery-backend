@@ -1,66 +1,71 @@
 import { MenuItemCreateInputDTO, MenuItemCreateOutputDTO, MenuItemGetOutputDTO, MenuItemUpdateInputDTO, MenuItemUpdateOutputDTO } from "../dto/menuItem";
-import { MenuItemModel } from "../models/menuItem";
+import { MenuItemModel, MenuItemUpdateInput } from "../models/menuItem";
 import { IMenuItemGetMapper, IMenuItemCreateMapper, IMenuItemUpdateMapper } from "./interfaces/instances/menuItem";
+import { MenuItemCreateDbModelAdditionalData, MenuItemCreateDtoModelAdditionalData, MenuItemGetDtoModelAdditionalData, MenuItemUpdateDbModelAdditionalData, MenuItemUpdateDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class MenuItemGetMapper implements IMenuItemGetMapper {
 
-    toDto(dbModel: MenuItemModel): MenuItemGetOutputDTO {
+    toDto(dbModel: MenuItemModel, additionalData: MenuItemGetDtoModelAdditionalData): MenuItemGetOutputDTO {
         return {
             id: Number(dbModel.id),
             restaurantId: Number(dbModel.restaurantId)
         }
     }
 
-    toDtos(dbModels: MenuItemModel[]): MenuItemGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: MenuItemModel[], additionalData: MenuItemGetDtoModelAdditionalData[]): MenuItemGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class MenuItemCreateMapper implements IMenuItemCreateMapper {
 
-    toDto(dbModel: MenuItemModel): MenuItemCreateOutputDTO {
-        throw new Error("Method not implemented.");
+    toDto(dbModel: MenuItemModel, additionalData: MenuItemCreateDtoModelAdditionalData): MenuItemCreateOutputDTO {
+        return {
+            id: Number(dbModel.id),
+            restaurantId: Number(dbModel.restaurantId)
+        }
     }
 
-    toDtos(dbModels: MenuItemModel[]): MenuItemCreateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: MenuItemModel[], additionalData: MenuItemCreateDtoModelAdditionalData[]): MenuItemCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: MenuItemCreateInputDTO): MenuItemModel {
-        throw new Error("Method not implemented.");
+    toDbModel(dtoModel: MenuItemCreateInputDTO, additionalData: MenuItemCreateDbModelAdditionalData): MenuItemModel {
+        return {
+            id: BigInt(dtoModel.id),
+            restaurantId: BigInt(dtoModel.restaurantId),
+            price: dtoModel.price
+        }
     }
 
-    toDbModels(dtoModels: MenuItemCreateInputDTO[]): MenuItemModel[] {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: MenuItemCreateInputDTO[], additionalData: MenuItemCreateDbModelAdditionalData[]): MenuItemModel[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
     }
-
-    parse(data: any): MenuItemCreateInputDTO {
-        throw new Error("Method not implemented.");
-    }
-
 }
 
 export class MenuItemUpdateMapper implements IMenuItemUpdateMapper {
 
-    toDto(dbModel: MenuItemModel): MenuItemUpdateOutputDTO {
-        throw new Error("Method not implemented.");
+    toDto(dbModel: MenuItemModel, additionalData: MenuItemUpdateDtoModelAdditionalData): MenuItemUpdateOutputDTO {
+        return {
+            id: Number(dbModel.id),
+            restaurantId: Number(dbModel.restaurantId)
+        }
     }
 
-    toDtos(dbModels: MenuItemModel[]): MenuItemUpdateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: MenuItemModel[], additionalData: MenuItemUpdateDtoModelAdditionalData[]): MenuItemUpdateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: MenuItemUpdateInputDTO): MenuItemModel {
-        throw new Error("Method not implemented.");
+    toDbModel(dtoModel: MenuItemUpdateInputDTO, additionalData: MenuItemUpdateDbModelAdditionalData): MenuItemUpdateInput {
+        return {
+            price: dtoModel.price
+        }
     }
 
-    toDbModels(dbModels: MenuItemUpdateInputDTO[]): MenuItemModel[] {
-        throw new Error("Method not implemented.");
-    }
-
-    parse(data: any): MenuItemUpdateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dbModels: MenuItemUpdateInputDTO[], additionalData: MenuItemUpdateDbModelAdditionalData[]): MenuItemUpdateInput[] {
+        return mapManyModels(dbModels, this.toDbModel, additionalData)
     }
 
 }
