@@ -1,4 +1,4 @@
-import { OrderItemModel } from "./orderItem";
+import { OrderItemModel, OrderItemWithOrderCreateInput } from "./orderItem";
 import { OrderStatus } from "./orderStatus";
 
 export type OrderModel = {
@@ -33,6 +33,9 @@ export type OrderCreateInput = {
     deliveryFinishedAt?: Date
     totalPrice: number
     decountedPrice: number
+    create?: {
+        items: OrderItemWithOrderCreateInput[]
+    }
 }
 
 export type OrderUpdateInput = {
