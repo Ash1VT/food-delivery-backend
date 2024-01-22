@@ -10,6 +10,7 @@ export interface MenuItemGetOutputDTO extends MenuItemBaseOutputDTO {}
 export interface MenuItemCreateInputDTO extends MenuItemBaseDTO {
     id: number
     restaurantId: number
+    price: number
 }
 
 export interface MenuItemCreateOutputDTO extends MenuItemBaseOutputDTO {}

@@ -1,11 +1,11 @@
 export type RestaurantManagerModel = {
     id: bigint
-    restaurantId: bigint
+    restaurantId?: bigint
 }
 
 export type RestaurantManagerCreateInput = {
     id: bigint
-    restaurantId: bigint
+    restaurantId?: bigint
 }
 
 export type RestaurantManagerUpdateInput = {
