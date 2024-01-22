@@ -1,4 +1,4 @@
-export default abstract class DatabaseToDtoMapper<DatabaseModel, DtoModel> {
-    public abstract toDto(dbModel: DatabaseModel): DtoModel
-    public abstract toDtos(dbModels: DatabaseModel[]): DtoModel[]
+export default interface DatabaseToDtoMapper<DatabaseModel, DtoModel, DtoModelAdditionalData> {
+    toDto(dbModel: DatabaseModel, additionalData: DtoModelAdditionalData): DtoModel
+    toDtos(dbModels: DatabaseModel[], additionalData: DtoModelAdditionalData[]): DtoModel[]
 }
