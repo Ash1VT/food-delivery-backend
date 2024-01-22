@@ -1,41 +1,44 @@
 import { CourierCreateInputDTO, CourierCreateOutputDTO, CourierGetOutputDTO } from "../dto/courier";
 import { CourierCreateInput, CourierModel } from "../models/courier";
 import { ICourierCreateMapper, ICourierGetMapper } from "./interfaces/instances/courier";
+import { CourierCreateDbModelAdditionalData, CourierCreateDtoModelAdditionalData, CourierGetDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class CourierGetMapper implements ICourierGetMapper {
 
-    toDto(dbModel: CourierModel): CourierGetOutputDTO {
+    toDto(dbModel: CourierModel, additionalData: CourierGetDtoModelAdditionalData): CourierGetOutputDTO {
         return {
             id: Number(dbModel.id)
         }
     }
 
-    toDtos(dbModels: CourierModel[]): CourierGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: CourierModel[], additionalData: CourierGetDtoModelAdditionalData[]): CourierGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class CourierCreateMapper implements ICourierCreateMapper {
 
-    toDto(dbModel: CourierModel): CourierCreateOutputDTO {
-        throw new Error("Method not implemented.");
+    toDto(dbModel: CourierModel, additionalData: CourierCreateDtoModelAdditionalData): CourierCreateOutputDTO {
+        return {
+            id: Number(dbModel.id)
+        }
     }
     
-    toDtos(dbModels: CourierModel[]): CourierCreateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: CourierModel[], additionalData: CourierCreateDtoModelAdditionalData[]): CourierCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: CourierCreateInputDTO): CourierCreateInput {
-        throw new Error("Method not implemented.");
+    toDbModel(dtoModel: CourierCreateInputDTO, additionalData: CourierCreateDbModelAdditionalData): CourierCreateInput {
+        return {
+            id: BigInt(dtoModel.id)
+        }
     }
     
-    toDbModels(dtoModels: CourierCreateInputDTO[]): CourierCreateInput[] {
-        throw new Error("Method not implemented.");
-    }
-    
-    parse(data: any): CourierCreateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: CourierCreateInputDTO[], additionalData: CourierCreateDbModelAdditionalData[]): CourierCreateInput[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
+
     }
 
 }
