@@ -1,41 +1,43 @@
 import { RestaurantGetOutputDTO, RestaurantCreateOutputDTO, RestaurantCreateInputDTO } from "../dto/restaurant";
 import { RestaurantModel } from "../models/restaurant";
 import { IRestaurantGetMapper, IRestaurantCreateMapper } from "./interfaces/instances/restaurant";
+import { RestaurantCreateDbModelAdditionalData, RestaurantCreateDtoModelAdditionalData, RestaurantGetDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class RestaurantGetMapper implements IRestaurantGetMapper {
 
-    toDto(dbModel: RestaurantModel): RestaurantGetOutputDTO {
+    toDto(dbModel: RestaurantModel, additionalData: RestaurantGetDtoModelAdditionalData): RestaurantGetOutputDTO {
         return {
             id: Number(dbModel.id)
         }
     }
 
-    toDtos(dbModels: RestaurantModel[]): RestaurantGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: RestaurantModel[], additionalData: RestaurantGetDtoModelAdditionalData[]): RestaurantGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class RestaurantCreateMapper implements IRestaurantCreateMapper {
 
-    toDto(dbModel: RestaurantModel): RestaurantCreateOutputDTO {
-        throw new Error("Method not implemented.");
+    toDto(dbModel: RestaurantModel, additionalData: RestaurantCreateDtoModelAdditionalData): RestaurantCreateOutputDTO {
+        return {
+            id: Number(dbModel.id)
+        }
     }
     
-    toDtos(dbModels: RestaurantModel[]): RestaurantCreateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: RestaurantModel[], additionalData: RestaurantCreateDtoModelAdditionalData[]): RestaurantCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: RestaurantCreateInputDTO): RestaurantModel {
-        throw new Error("Method not implemented.");
+    toDbModel(dtoModel: RestaurantCreateInputDTO, additionalData: RestaurantCreateDbModelAdditionalData): RestaurantModel {
+        return {
+            id: BigInt(dtoModel.id)
+        }
     }
 
-    toDbModels(dtoModels: RestaurantCreateInputDTO[]): RestaurantModel[] {
-        throw new Error("Method not implemented.");
-    }
-
-    parse(data: any): RestaurantCreateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: RestaurantCreateInputDTO[], additionalData: RestaurantCreateDbModelAdditionalData[]): RestaurantModel[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
     }
 
 }
