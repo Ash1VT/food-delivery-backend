@@ -1,13 +1,12 @@
 import { RestaurantCreateOutputDTO, RestaurantCreateInputDTO, RestaurantGetOutputDTO } from "../../../dto/restaurant";
 import { RestaurantCreateInput, RestaurantModel } from "../../../models/restaurant";
-import { RestaurantCreateAdditionalData } from "../../types/additionalData";
+import { RestaurantCreateDbModelAdditionalData, RestaurantCreateDtoModelAdditionalData, RestaurantGetDtoModelAdditionalData } from "../../types/additionalData";
 import DatabaseToDtoMapper from "../IDatabaseToDtoMapper";
 import DtoToDatabaseMapper from "../IDtoToDatabaseMapper";
-import IObjectToDtoMapper from "../ObjectToDtoMapper";
 
 
-export interface IRestaurantCreateMapper extends DatabaseToDtoMapper<RestaurantModel, RestaurantCreateOutputDTO>,
-                                              DtoToDatabaseMapper<RestaurantCreateInputDTO, RestaurantCreateInput, RestaurantCreateAdditionalData>,
-                                              IObjectToDtoMapper<RestaurantCreateInputDTO> {}
+export interface IRestaurantCreateMapper extends DatabaseToDtoMapper<RestaurantModel, RestaurantCreateOutputDTO, RestaurantCreateDtoModelAdditionalData>,
+                                                 DtoToDatabaseMapper<RestaurantCreateInputDTO, RestaurantCreateInput, RestaurantCreateDbModelAdditionalData> 
+                                                 {}
 
-export interface IRestaurantGetMapper extends DatabaseToDtoMapper<RestaurantModel, RestaurantGetOutputDTO> {}
+export interface IRestaurantGetMapper extends DatabaseToDtoMapper<RestaurantModel, RestaurantGetOutputDTO, RestaurantGetDtoModelAdditionalData> {}

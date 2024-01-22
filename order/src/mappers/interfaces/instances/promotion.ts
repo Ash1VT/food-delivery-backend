@@ -1,13 +1,11 @@
 import { PromotionCreateOutputDTO, PromotionCreateInputDTO, PromotionGetOutputDTO } from "../../../dto/promotion";
 import { PromotionCreateInput, PromotionModel } from "../../../models/promotion";
-import { PromocodeCreateAdditionalData } from "../../types/additionalData";
+import { PromocodeCreateDbModelAdditionalData, PromotionCreateDbModelAdditionalData, PromotionCreateDtoModelAdditionalData, PromotionGetDtoModelAdditionalData } from "../../types/additionalData";
 import DatabaseToDtoMapper from "../IDatabaseToDtoMapper";
 import DtoToDatabaseMapper from "../IDtoToDatabaseMapper";
-import IObjectToDtoMapper from "../ObjectToDtoMapper";
 
 
-export interface IPromotionCreateMapper extends DatabaseToDtoMapper<PromotionModel, PromotionCreateOutputDTO>,
-                                              DtoToDatabaseMapper<PromotionCreateInputDTO, PromotionCreateInput, PromocodeCreateAdditionalData>,
-                                              IObjectToDtoMapper<PromotionCreateInputDTO> {}
+export interface IPromotionCreateMapper extends DatabaseToDtoMapper<PromotionModel, PromotionCreateOutputDTO, PromotionCreateDtoModelAdditionalData>,
+                                              DtoToDatabaseMapper<PromotionCreateInputDTO, PromotionCreateInput, PromotionCreateDbModelAdditionalData> {}
 
-export interface IPromotionGetMapper extends DatabaseToDtoMapper<PromotionModel, PromotionGetOutputDTO> {}
+export interface IPromotionGetMapper extends DatabaseToDtoMapper<PromotionModel, PromotionGetOutputDTO, PromotionGetDtoModelAdditionalData> {}
