@@ -1,6 +1,5 @@
 interface OrderItemBaseDTO {
     menuItemId: number
-    orderId: number
     quantity: number
 }
 
