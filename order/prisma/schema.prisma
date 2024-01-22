@@ -30,10 +30,10 @@ model Moderator {
 }
 
 model RestaurantManager {
-  id           BigInt @id
-  restaurantId BigInt @unique @map("restaurant_id")
+  id           BigInt  @id
+  restaurantId BigInt? @unique @map("restaurant_id")
 
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
 
   @@map("restaurant_managers")
 }
