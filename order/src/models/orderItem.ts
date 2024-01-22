@@ -12,6 +12,12 @@ export type OrderItemCreateInput = {
     quantity: number
 }
 
+export type OrderItemWithOrderCreateInput = {
+    id?: bigint
+    menuItemId: bigint
+    quantity: number
+}
+
 export type OrderItemUpdateInput = {
     id?: bigint
     menuItemId?: bigint
