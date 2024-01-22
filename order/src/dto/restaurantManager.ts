@@ -3,7 +3,7 @@ interface RestaurantManagerBaseDTO {
 }
 
 interface RestaurantManagerBaseOutputDTO extends RestaurantManagerBaseDTO {
-    restaurantId: number
+    restaurantId?: number
 }
 
 export interface RestaurantManagerGetOutputDTO extends RestaurantManagerBaseOutputDTO {}
