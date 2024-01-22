@@ -1,26 +1,59 @@
-import { OrderItemCreateInputDTO, OrderItemCreateOutputDTO, OrderItemGetOutputDTO } from "../dto/orderItem";
+import { OrderItemCreateInputDTO, OrderItemCreateOutputDTO, OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "../dto/orderItem";
 import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../models/orderItem";
-import { IOrderItemGetMapper, IOrderItemCreateMapper } from "./interfaces/instances/orderItem";
+import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemWithOrderCreateMapper } from "./interfaces/instances/orderItem";
+import { OrderItemCreateDbModelAdditionalData, OrderItemCreateDtoModelAdditionalData, OrderItemGetDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class OrderItemGetMapper implements IOrderItemGetMapper {
 
-    toDto(dbModel: OrderItemModel): OrderItemGetOutputDTO {
+    toDto(dbModel: OrderItemModel, additionalData: OrderItemGetDtoModelAdditionalData): OrderItemGetOutputDTO {
         return {
             id: Number(dbModel.id),
+            orderId: Number(dbModel.orderId),
             menuItemId: Number(dbModel.menuItemId),
             quantity: dbModel.quantity
         }
     }
 
-    toDtos(dbModels: OrderItemModel[]): OrderItemGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: OrderItemModel[], additionalData: OrderItemGetDtoModelAdditionalData[]): OrderItemGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class OrderItemCreateMapper implements IOrderItemCreateMapper {
 
-    toDto(dbModel: OrderItemModel): OrderItemCreateOutputDTO {
+    toDto(dbModel: OrderItemModel, additionalData: OrderItemCreateDtoModelAdditionalData): OrderItemCreateOutputDTO {
+        return {
+            id: Number(dbModel.id),
+            orderId: Number(dbModel.orderId),
+            menuItemId: Number(dbModel.menuItemId),
+            quantity: dbModel.quantity
+        }
+    }
+
+    toDtos(dbModels: OrderItemModel[], additionalData: OrderItemCreateDtoModelAdditionalData[]): OrderItemCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
+    }
+
+    toDbModel(dtoModel: OrderItemCreateInputDTO, additionalData: OrderItemCreateDbModelAdditionalData): OrderItemCreateInput {
+        return {
+            menuItemId: BigInt(dtoModel.menuItemId),
+            orderId: BigInt(dtoModel.orderId),
+            quantity: dtoModel.quantity
+        }
+    }
+
+    toDbModels(dtoModels: OrderItemCreateInputDTO[], additionalData: OrderItemCreateDbModelAdditionalData[]): OrderItemCreateInput[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
+    }
+
+}
+
+
+export class OrderItemWithOrderCreateMapper implements IOrderItemWithOrderCreateMapper {
+
+    toDto(dbModel: OrderItemModel, additionalData: OrderItemCreateDtoModelAdditionalData): OrderItemWithOrderCreateOutputDTO {
         return {
             id: Number(dbModel.id),
             menuItemId: Number(dbModel.menuItemId),
@@ -28,23 +61,19 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
         }
     }
 
-    toDtos(dbModels: OrderItemModel[]): OrderItemCreateOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: OrderItemModel[], additionalData: OrderItemCreateDtoModelAdditionalData[]): OrderItemWithOrderCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
-    toDbModel(dtoModel: OrderItemCreateInputDTO): OrderItemWithOrderCreateInput {
+    toDbModel(dtoModel: OrderItemWithOrderCreateInputDTO, additionalData: OrderItemCreateDbModelAdditionalData): OrderItemWithOrderCreateInput {
         return {
             menuItemId: BigInt(dtoModel.menuItemId),
             quantity: dtoModel.quantity
         }
     }
 
-    toDbModels(dtoModels: OrderItemCreateInputDTO[]): OrderItemWithOrderCreateInput[] {
-        return dtoModels.map((dtoModel) => this.toDbModel(dtoModel))
-    }
-
-    parse(data: any): OrderItemCreateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: OrderItemWithOrderCreateInputDTO[], additionalData: OrderItemCreateDbModelAdditionalData[]): OrderItemWithOrderCreateInput[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
     }
 
 }
