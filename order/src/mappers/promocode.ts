@@ -1,10 +1,12 @@
 import { PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeGetOutputDTO } from "../dto/promocode";
-import { PromocodeModel } from "../models/promocode";
+import { PromocodeCreateInput, PromocodeModel } from "../models/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper } from "./interfaces/instances/promocode";
+import { PromocodeCreateDbModelAdditionalData, PromocodeCreateDtoModelAdditionalData, PromocodeGetDtoModelAdditionalData } from "./types/additionalData";
+import mapManyModels from "./utils";
 
 export class PromocodeGetMapper implements IPromocodeGetMapper {
 
-    toDto(dbModel: PromocodeModel): PromocodeGetOutputDTO {
+    toDto(dbModel: PromocodeModel, additionalData: PromocodeGetDtoModelAdditionalData): PromocodeGetOutputDTO {
         return {
             id: Number(dbModel.id),
             nameIdentifier: dbModel.nameIdentifier,
@@ -17,32 +19,44 @@ export class PromocodeGetMapper implements IPromocodeGetMapper {
         }
     }
 
-    toDtos(dbModels: PromocodeModel[]): PromocodeGetOutputDTO[] {
-        return dbModels.map((dbModel) => this.toDto(dbModel))
+    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeGetDtoModelAdditionalData[]): PromocodeGetOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class PromocodeCreateMapper implements IPromocodeCreateMapper {
     
-    toDto(dbModel: PromocodeModel): PromocodeCreateOutputDTO {
-        throw new Error("Method not implemented.");
+    toDto(dbModel: PromocodeModel, additionalData: PromocodeCreateDtoModelAdditionalData): PromocodeCreateOutputDTO {
+        return {
+            id: Number(dbModel.id),
+            nameIdentifier: dbModel.nameIdentifier,
+            discountPercentage: dbModel.discountPercentage,
+            validFrom: dbModel.validFrom.toString(),
+            validUntil: dbModel.validUntil.toString(),
+            maxUsageCount: dbModel.maxUsageCount,
+            currentUsageCount: dbModel.currentUsageCount,
+            isActive: dbModel.isActive
+        }
     }
 
-    toDtos(dbModels: PromocodeModel[]): PromocodeCreateOutputDTO[] {
-        throw new Error("Method not implemented.");
+    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeCreateDtoModelAdditionalData[]): PromocodeCreateOutputDTO[] {
+        return mapManyModels(dbModels, this.toDto, additionalData)
     }
     
-    toDbModel(dtoModel: PromocodeCreateInputDTO): PromocodeModel {
-        throw new Error("Method not implemented.");
+    toDbModel(dtoModel: PromocodeCreateInputDTO, additionalData: PromocodeCreateDbModelAdditionalData = {}): PromocodeCreateInput {
+        return {
+            nameIdentifier: dtoModel.nameIdentifier,
+            discountPercentage: dtoModel.discountPercentage,
+            validFrom: new Date(dtoModel.validFrom),
+            validUntil: new Date(dtoModel.validUntil),
+            maxUsageCount: dtoModel.maxUsageCount,
+            currentUsageCount: dtoModel.currentUsageCount
+        }
     }
 
-    toDbModels(dtoModels: PromocodeCreateInputDTO[]): PromocodeModel[] {
-        throw new Error("Method not implemented.");
-    }
-
-    parse(data: any): PromocodeCreateInputDTO {
-        throw new Error("Method not implemented.");
+    toDbModels(dtoModels: PromocodeCreateInputDTO[], additionalData: PromocodeCreateDbModelAdditionalData[] = []): PromocodeCreateInput[] {
+        return mapManyModels(dtoModels, this.toDbModel, additionalData)
     }
 
 }
