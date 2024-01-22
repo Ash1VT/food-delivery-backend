@@ -9,6 +9,7 @@ interface PromocodeBaseDTO {
 
 interface PromocodeBaseOutputDTO extends PromocodeBaseDTO {
     id: number
+    isActive: boolean
 }
 
 export interface PromocodeGetOutputDTO extends PromocodeBaseOutputDTO {}
