@@ -1,5 +1,5 @@
-import IPrismaDelegate from "../interfaces/prisma/IPrismaDelegate"
-import IBaseRepository from "../interfaces/IBaseRepository"
+import IPrismaDelegate from "./interfaces/IPrismaDelegate"
+import IBaseRepository from "./interfaces/IBaseRepository"
 
 export default abstract class PrismaBaseRepository<
     Delegate extends IPrismaDelegate,
