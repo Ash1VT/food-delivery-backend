@@ -1,8 +1,8 @@
-import { PromotionGetOutputDTO, PromotionCreateOutputDTO, PromotionCreateInputDTO } from "../dto/promotion";
-import { PromotionModel } from "../models/promotion";
-import { IPromotionGetMapper, IPromotionCreateMapper } from "./interfaces/promotion";
-import { PromotionGetDtoModelAdditionalData, PromotionCreateDtoModelAdditionalData, PromotionCreateDbModelAdditionalData } from "./additionalData";
-import mapManyModels from "../../../utils/mapManyModels";
+import { PromotionGetOutputDTO, PromotionCreateOutputDTO, PromotionCreateInputDTO } from "../../dto/promotion";
+import { PromotionModel } from "../../models/promotion";
+import { IPromotionGetMapper, IPromotionCreateMapper } from "../interfaces/promotion";
+import { PromotionGetDtoModelAdditionalData, PromotionCreateDtoModelAdditionalData, PromotionCreateDbModelAdditionalData } from "../additionalData";
+import mapManyModels from "../../../../utils/mapManyModels";
 
 export class PromotionGetMapper implements IPromotionGetMapper {
 

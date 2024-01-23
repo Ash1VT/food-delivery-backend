@@ -1,8 +1,8 @@
-import { CourierCreateInputDTO, CourierCreateOutputDTO, CourierGetOutputDTO } from "../dto/courier";
-import { CourierCreateInput, CourierModel } from "../models/courier";
-import { ICourierCreateMapper, ICourierGetMapper } from "./interfaces/courier";
-import { CourierGetDtoModelAdditionalData, CourierCreateDtoModelAdditionalData, CourierCreateDbModelAdditionalData } from "./additionalData";
-import mapManyModels from "../../../utils/mapManyModels";
+import { CourierCreateInputDTO, CourierCreateOutputDTO, CourierGetOutputDTO } from "../../dto/courier";
+import { CourierCreateInput, CourierModel } from "../../models/courier";
+import { ICourierCreateMapper, ICourierGetMapper } from "../interfaces/courier";
+import { CourierGetDtoModelAdditionalData, CourierCreateDtoModelAdditionalData, CourierCreateDbModelAdditionalData } from "../additionalData";
+import mapManyModels from "../../../../utils/mapManyModels";
 
 export class CourierGetMapper implements ICourierGetMapper {
 

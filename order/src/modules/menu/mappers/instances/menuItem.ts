@@ -1,8 +1,8 @@
-import { MenuItemCreateInputDTO, MenuItemCreateOutputDTO, MenuItemGetOutputDTO, MenuItemUpdateInputDTO, MenuItemUpdateOutputDTO } from "../dto/menuItem";
-import { MenuItemModel, MenuItemUpdateInput } from "../models/menuItem";
-import { IMenuItemGetMapper, IMenuItemCreateMapper, IMenuItemUpdateMapper } from "./interfaces/menuItem";
-import { MenuItemGetDtoModelAdditionalData, MenuItemCreateDtoModelAdditionalData, MenuItemCreateDbModelAdditionalData, MenuItemUpdateDtoModelAdditionalData, MenuItemUpdateDbModelAdditionalData } from "./additionalData";
-import mapManyModels from "../../../utils/mapManyModels";
+import { MenuItemCreateInputDTO, MenuItemCreateOutputDTO, MenuItemGetOutputDTO, MenuItemUpdateInputDTO, MenuItemUpdateOutputDTO } from "../../dto/menuItem";
+import { MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
+import { IMenuItemGetMapper, IMenuItemCreateMapper, IMenuItemUpdateMapper } from "../interfaces/menuItem";
+import { MenuItemGetDtoModelAdditionalData, MenuItemCreateDtoModelAdditionalData, MenuItemCreateDbModelAdditionalData, MenuItemUpdateDtoModelAdditionalData, MenuItemUpdateDbModelAdditionalData } from "../additionalData";
+import mapManyModels from "../../../../utils/mapManyModels";
 
 export class MenuItemGetMapper implements IMenuItemGetMapper {
 
