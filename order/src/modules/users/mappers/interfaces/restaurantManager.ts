@@ -2,12 +2,11 @@ import { RestaurantManagerCreateOutputDTO, RestaurantManagerCreateInputDTO, Rest
 import { RestaurantManagerCreateInput, RestaurantManagerModel } from "../../models/restaurantManager";
 import DatabaseToDtoMapper from "../../../../base/mappers/interfaces/IDatabaseToDtoMapper";
 import DtoToDatabaseMapper from "../../../../base/mappers/interfaces/IDtoToDatabaseMapper";
-import { RestaurantCreateDbModelAdditionalData } from "../../../restaurants/mappers/additionalData";
-import { RestaurantManagerCreateDtoModelAdditionalData, RestaurantManagerGetDtoModelAdditionalData } from "../additionalData";
+import { RestaurantManagerCreateDbModelAdditionalData, RestaurantManagerCreateDtoModelAdditionalData, RestaurantManagerGetDtoModelAdditionalData } from "../additionalData";
 
 
 export interface IRestaurantManagerCreateMapper extends DatabaseToDtoMapper<RestaurantManagerModel, RestaurantManagerCreateOutputDTO, RestaurantManagerCreateDtoModelAdditionalData>,
-                                              DtoToDatabaseMapper<RestaurantManagerCreateInputDTO, RestaurantManagerCreateInput, RestaurantCreateDbModelAdditionalData>
+                                              DtoToDatabaseMapper<RestaurantManagerCreateInputDTO, RestaurantManagerCreateInput, RestaurantManagerCreateDbModelAdditionalData>
                                                 {}
 
 
