@@ -1,9 +1,9 @@
 import { OrderCreateInputDTO, OrderCreateOutputDTO, OrderGetOutputDTO } from "../dto/order";
 import { OrderCreateInput, OrderModel } from "../models/order";
-import { IOrderGetMapper, IOrderCreateMapper } from "./interfaces/instances/order";
-import { IOrderItemGetMapper, IOrderItemWithOrderCreateMapper } from "./interfaces/instances/orderItem";
-import { OrderCreateDbModelAdditionalData, OrderCreateDtoModelAdditionalData, OrderGetDtoModelAdditionalData } from "./types/additionalData";
-import mapManyModels from "./utils";
+import { IOrderGetMapper, IOrderCreateMapper } from "./interfaces/order";
+import { IOrderItemGetMapper, IOrderItemWithOrderCreateMapper } from "./interfaces/orderItem";
+import { OrderGetDtoModelAdditionalData, OrderCreateDtoModelAdditionalData, OrderCreateDbModelAdditionalData } from "./additionalData";
+import mapManyModels from "../../../utils/mapManyModels";
 
 export class OrderGetMapper implements IOrderGetMapper {
 
