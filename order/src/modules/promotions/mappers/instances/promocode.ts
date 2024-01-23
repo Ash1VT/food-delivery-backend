@@ -2,7 +2,7 @@ import { PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeGetOutputDT
 import { PromocodeCreateInput, PromocodeModel } from "../../models/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper } from "../interfaces/promocode";
 import { PromocodeGetDtoModelAdditionalData, PromocodeCreateDtoModelAdditionalData, PromocodeCreateDbModelAdditionalData } from "../additionalData";
-import mapManyModels from "../../../../utils/mapManyModels";
+import mapManyModels from "@/utils/mapManyModels";
 
 export class PromocodeGetMapper implements IPromocodeGetMapper {
 

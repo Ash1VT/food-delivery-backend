@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
+import PrismaBaseRepository from "@/base/repositories/prisma/PrismaBaseRepository";
 import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "../../models/moderator";
 import IModeratorRepository from "../interfaces/IModeratorRepository";
 import { ModeratorDelegate } from "./delegates";

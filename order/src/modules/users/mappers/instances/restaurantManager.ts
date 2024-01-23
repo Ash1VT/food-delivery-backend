@@ -2,7 +2,7 @@ import { RestaurantManagerGetOutputDTO, RestaurantManagerCreateOutputDTO, Restau
 import { RestaurantManagerCreateInput, RestaurantManagerModel } from "../../models/restaurantManager";
 import { IRestaurantManagerGetMapper, IRestaurantManagerCreateMapper } from "../interfaces/restaurantManager";
 import { RestaurantManagerGetDtoModelAdditionalData, RestaurantManagerCreateDtoModelAdditionalData, RestaurantManagerCreateDbModelAdditionalData } from "../additionalData";
-import mapManyModels from "../../../../utils/mapManyModels";
+import mapManyModels from "@/utils/mapManyModels";
 
 export class RestaurantManagerGetMapper implements IRestaurantManagerGetMapper {
 

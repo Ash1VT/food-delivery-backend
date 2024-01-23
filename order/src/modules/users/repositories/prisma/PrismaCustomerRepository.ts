@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
+import PrismaBaseRepository from "@/base/repositories/prisma/PrismaBaseRepository";
 import { CustomerCreateInput, CustomerModel, CustomerUpdateInput } from "../../models/customer";
 import ICustomerRepository from "../interfaces/ICustomerRepository";
 import { CustomerDelegate } from "./delegates";

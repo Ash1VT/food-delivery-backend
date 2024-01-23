@@ -2,7 +2,7 @@ import { MenuItemCreateInputDTO, MenuItemCreateOutputDTO, MenuItemGetOutputDTO, 
 import { MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
 import { IMenuItemGetMapper, IMenuItemCreateMapper, IMenuItemUpdateMapper } from "../interfaces/menuItem";
 import { MenuItemGetDtoModelAdditionalData, MenuItemCreateDtoModelAdditionalData, MenuItemCreateDbModelAdditionalData, MenuItemUpdateDtoModelAdditionalData, MenuItemUpdateDbModelAdditionalData } from "../additionalData";
-import mapManyModels from "../../../../utils/mapManyModels";
+import mapManyModels from "@/utils/mapManyModels";
 
 export class MenuItemGetMapper implements IMenuItemGetMapper {
 

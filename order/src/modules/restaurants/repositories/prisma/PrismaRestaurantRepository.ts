@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
+import PrismaBaseRepository from "@/base/repositories/prisma/PrismaBaseRepository";
 import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "../../models/restaurant";
 import IRestaurantRepository from "../interfaces/IRestaurantRepository";
 import { RestaurantDelegate } from "./delegates";

@@ -1,4 +1,4 @@
-import { OrderItemCreateOutputDTO, OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "./orderItem"
+import { OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "./orderItem"
 
 interface OrderBaseDTO {
     restaurantId: number
