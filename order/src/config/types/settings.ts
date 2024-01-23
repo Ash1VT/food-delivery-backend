@@ -1,6 +1,4 @@
-export type ConfiguredFunction = (...args: any[]) => any;
-
-export interface SettingsOptions {
+export type SettingsOptions = {
     pgHost: string
     pgPort: string
     pgDatabase: string
@@ -9,5 +7,4 @@ export interface SettingsOptions {
     databaseURL: string
     appHost: string
     appPort: number
-    [index: string]: any
 }
