@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { MenuItemCreateInput, MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
-import PrismaBaseRepository from "./PrismaBaseRepository";
+import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
 import IMenuItemRepository from "../interfaces/IMenuItemRepository";
-import { MenuItemDelegate } from "../types/prisma/delegate.type";
+import { MenuItemDelegate } from "./delegates";
 
 
 export default class PrismaMenuItemRepository extends PrismaBaseRepository<MenuItemDelegate, MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput> 
