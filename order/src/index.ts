@@ -1,12 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
-import getSettings from "./config";
+import getSettings from "./utils/getSettings";
 import { OrderStatus, Prisma, PrismaClient } from '@prisma/client'
-import ICustomerRepository from "./repositories/interfaces/ICustomerRepository";
-import IMenuItemRepository from "./repositories/interfaces/IMenuItemRepository";
-import PrismaMenuItemRepository from "./repositories/prisma/PrismaMenuItemRepository";
-import PrismaCustomerRepository from "./repositories/prisma/PrismaCustomerRepository";
-import PrismaOrderRepository from "./repositories/prisma/PrismaOrderRepository";
+import ICustomerRepository from "./modules/users/repositories/interfaces/ICustomerRepository";
+import IMenuItemRepository from "./modules/menu/repositories/interfaces/IMenuItemRepository";
+import PrismaMenuItemRepository from "./modules/menu/repositories/prisma/PrismaMenuItemRepository";
+import PrismaCustomerRepository from "./modules/users/repositories/prisma/PrismaCustomerRepository";
+import PrismaOrderRepository from "./modules/orders/repositories/prisma/PrismaOrderRepository";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unreachable code error
