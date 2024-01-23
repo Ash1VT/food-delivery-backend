@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import PrismaBaseRepository from "./PrismaBaseRepository";
+import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
 import { CourierCreateInput, CourierModel, CourierUpdateInput } from "../../models/courier";
 import ICourierRepository from "../interfaces/ICourierRepository";
-import { CourierDelegate } from "../types/prisma/delegate.type";
+import { CourierDelegate } from "./delegates";
 
 
 export default class PrismaCourierRepository extends PrismaBaseRepository<CourierDelegate, CourierModel, CourierCreateInput, CourierUpdateInput>

@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import PrismaBaseRepository from "./PrismaBaseRepository";
+import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
 import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "../../models/moderator";
 import IModeratorRepository from "../interfaces/IModeratorRepository";
-import { ModeratorDelegate } from "../types/prisma/delegate.type";
+import { ModeratorDelegate } from "./delegates";
 
 
 export default class PrismaModeratorRepository extends PrismaBaseRepository<ModeratorDelegate, ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput>
