@@ -1,8 +1,8 @@
 import { PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeGetOutputDTO } from "../dto/promocode";
 import { PromocodeCreateInput, PromocodeModel } from "../models/promocode";
-import { IPromocodeGetMapper, IPromocodeCreateMapper } from "./interfaces/instances/promocode";
-import { PromocodeCreateDbModelAdditionalData, PromocodeCreateDtoModelAdditionalData, PromocodeGetDtoModelAdditionalData } from "./types/additionalData";
-import mapManyModels from "./utils";
+import { IPromocodeGetMapper, IPromocodeCreateMapper } from "./interfaces/promocode";
+import { PromocodeGetDtoModelAdditionalData, PromocodeCreateDtoModelAdditionalData, PromocodeCreateDbModelAdditionalData } from "./additionalData";
+import mapManyModels from "../../../utils/mapManyModels";
 
 export class PromocodeGetMapper implements IPromocodeGetMapper {
 
