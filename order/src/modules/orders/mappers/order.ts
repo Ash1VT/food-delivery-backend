@@ -36,7 +36,7 @@ export class OrderGetMapper implements IOrderGetMapper {
 export class OrderCreateMapper implements IOrderCreateMapper {
 
     constructor(
-        protected orderItemCreateMapper: IOrderItemWithOrderCreateMapper
+        protected orderItemWithOrderCreateMapper: IOrderItemWithOrderCreateMapper
     ) {}
 
     toDto(dbModel: OrderModel, additionalData: OrderCreateDtoModelAdditionalData): OrderCreateOutputDTO {
@@ -54,7 +54,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
             totalPrice: dbModel.totalPrice,
             decountedPrice: dbModel.decountedPrice,
-            items: dbModel.items ? this.orderItemCreateMapper.toDtos(dbModel.items, additionalData.itemsAdditionalData) : undefined
+            items: dbModel.items ? this.orderItemWithOrderCreateMapper.toDtos(dbModel.items, additionalData.itemsAdditionalData) : undefined
         }
     }
 
@@ -71,7 +71,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             totalPrice: additionalData.totalPrice,
             decountedPrice: additionalData.decountedPrice,
             create: {
-                items: this.orderItemCreateMapper.toDbModels(dtoModel.items, additionalData.itemsAdditionalData)
+                items: this.orderItemWithOrderCreateMapper.toDbModels(dtoModel.items, additionalData.itemsAdditionalData)
             }
         }
     }
