@@ -1,8 +1,8 @@
 import { CustomerCreateOutputDTO, CustomerCreateInputDTO, CustomerGetOutputDTO } from "../../dto/customer";
 import { CustomerCreateInput, CustomerModel } from "../../models/customer";
-import { CustomerCreateDbModelAdditionalData, CustomerCreateDtoModelAdditionalData, CustomerGetDtoModelAdditionalData } from "../../../../mappers/types/additionalData";
 import DatabaseToDtoMapper from "../../../../base/mappers/interfaces/IDatabaseToDtoMapper";
 import DtoToDatabaseMapper from "../../../../base/mappers/interfaces/IDtoToDatabaseMapper";
+import { CustomerCreateDtoModelAdditionalData, CustomerCreateDbModelAdditionalData, CustomerGetDtoModelAdditionalData } from "../additionalData";
 
 
 export interface ICustomerCreateMapper extends DatabaseToDtoMapper<CustomerModel, CustomerCreateOutputDTO, CustomerCreateDtoModelAdditionalData>,
