@@ -1,8 +1,8 @@
-import { OrderItemCreateOutputDTO, OrderItemCreateInputDTO, OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "../../../dto/orderItem";
-import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../../models/orderItem";
-import { OrderItemCreateDbModelAdditionalData, OrderItemCreateDtoModelAdditionalData, OrderItemGetDtoModelAdditionalData } from "../../types/additionalData";
-import DatabaseToDtoMapper from "../IDatabaseToDtoMapper";
-import DtoToDatabaseMapper from "../IDtoToDatabaseMapper";
+import { OrderItemCreateOutputDTO, OrderItemCreateInputDTO, OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "../../dto/orderItem";
+import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../models/orderItem";
+import { OrderItemCreateDbModelAdditionalData, OrderItemCreateDtoModelAdditionalData, OrderItemGetDtoModelAdditionalData } from "../../../../mappers/types/additionalData";
+import DatabaseToDtoMapper from "../../../../base/mappers/interfaces/IDatabaseToDtoMapper";
+import DtoToDatabaseMapper from "../../../../base/mappers/interfaces/IDtoToDatabaseMapper";
 
 
 export interface IOrderItemCreateMapper extends DatabaseToDtoMapper<OrderItemModel, OrderItemCreateOutputDTO, OrderItemCreateDtoModelAdditionalData>,
