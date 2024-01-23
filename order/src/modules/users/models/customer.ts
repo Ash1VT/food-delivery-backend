@@ -1,4 +1,4 @@
-import { OrderModel } from "./order";
+import { OrderModel } from "../../orders/models/order";
 
 export type CustomerModel = {
     id: bigint
