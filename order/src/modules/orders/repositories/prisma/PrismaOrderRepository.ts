@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { OrderCreateInput, OrderModel, OrderUpdateInput } from "../../models/order";
-import PrismaBaseRepository from "./PrismaBaseRepository";
+import PrismaBaseRepository from "../../../../base/repositories/PrismaBaseRepository";
 import IOrderRepository from "../interfaces/IOrderRepository";
-import { OrderDelegate } from "../types/prisma/delegate.type";
+import { OrderDelegate } from "./delegates";
 
 
 export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDelegate, OrderModel, OrderCreateInput, OrderUpdateInput>
