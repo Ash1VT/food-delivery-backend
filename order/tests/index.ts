@@ -1,3 +1,3 @@
-import getSettings from "../src/config";
+import getSettings from "../src/utils/getSettings";
 
 const settings = getSettings()
