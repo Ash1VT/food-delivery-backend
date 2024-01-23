@@ -1,5 +1,5 @@
-import { Settings } from "./settings";
-import EnvManager from "./envManager";
+import EnvManager from "./EnvManager";
+import { Settings } from "./Settings";
 
 export abstract class BaseSettingsBuilder {
     public abstract build(): Settings;
