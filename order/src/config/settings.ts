@@ -1,4 +1,4 @@
-import { SettingsOptions } from "../types/config.type";
+import { SettingsOptions } from "./types/settings";
 
 export class Settings {
     
