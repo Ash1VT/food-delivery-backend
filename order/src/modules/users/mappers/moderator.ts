@@ -1,8 +1,8 @@
 import { ModeratorCreateInputDTO, ModeratorCreateOutputDTO, ModeratorGetOutputDTO } from "../dto/moderator";
 import { ModeratorCreateInput, ModeratorModel } from "../models/moderator";
-import { IModeratorGetMapper, IModeratorCreateMapper } from "./interfaces/instances/moderator";
-import { ModeratorCreateDbModelAdditionalData, ModeratorCreateDtoModelAdditionalData, ModeratorGetDtoModelAdditionalData } from "./types/additionalData";
-import mapManyModels from "./utils";
+import { IModeratorGetMapper, IModeratorCreateMapper } from "./interfaces/moderator";
+import { ModeratorGetDtoModelAdditionalData, ModeratorCreateDtoModelAdditionalData, ModeratorCreateDbModelAdditionalData } from "./additionalData";
+import mapManyModels from "../../../utils/mapManyModels";
 
 export class ModeratorGetMapper implements IModeratorGetMapper {
 
