@@ -1,4 +1,4 @@
-import { Settings } from "../config/Settings";
+import { Settings } from "@src/config/Settings";
 
 
 type SettingsCache = Settings

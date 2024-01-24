@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { OrderCreateInput, OrderModel, OrderUpdateInput } from "../../models/order";
-import PrismaBaseRepository from "@/base/repositories/prisma/PrismaBaseRepository";
+import PrismaBaseRepository from "@src/base/repositories/prisma/PrismaBaseRepository";
 import IOrderRepository from "../interfaces/IOrderRepository";
 import { OrderDelegate } from "./delegates";
 

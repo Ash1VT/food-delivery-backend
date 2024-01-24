@@ -1,5 +1,5 @@
-import DatabaseInstanceAlreadyExistsError from "@/base/errors/DatabaseInstanceAlreadyExistsError";
-import DatabaseInstanceNotFoundError from "@/base/errors/DatabaseInstanceNotFoundError";
+import DatabaseInstanceAlreadyExistsError from "@src/base/errors/DatabaseInstanceAlreadyExistsError";
+import DatabaseInstanceNotFoundError from "@src/base/errors/DatabaseInstanceNotFoundError";
 
 export class ModeratorNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
