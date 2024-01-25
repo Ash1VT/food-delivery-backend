@@ -1,3 +1,4 @@
+import AppError from "@src/base/errors/AppError";
 import DatabaseInstanceAlreadyExistsError from "@src/base/errors/DatabaseInstanceAlreadyExistsError";
 import DatabaseInstanceNotFoundError from "@src/base/errors/DatabaseInstanceNotFoundError";
 
@@ -13,6 +14,18 @@ export class OrderAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExists
 
     constructor(id: number) {
         super("id", id.toString(), "Order")
+    }
+
+}
+
+export class OrderNotReadyError extends AppError {
+
+    constructor(id: number) {
+        super(`Order with id=${id} is not in 'Ready' status`)        
+    }
+
+    public get statusCode(): number {
+        return 403
     }
 
 }
