@@ -1,5 +1,5 @@
-import { SettingsBuilder } from "../config/SettingsBuilder";
-import { Settings } from "../config/Settings";
+import { SettingsBuilder } from "@src/config/SettingsBuilder";
+import { Settings } from "@src/config/Settings";
 import settingsCache from "./settingsCache";
 
 export default function getSettings(): Settings {

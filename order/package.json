@@ -5,7 +5,7 @@
   "author": "ash1vt",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tscpaths -p tsconfig.json -s . -o dist",
     "start": "node ./dist/src/index.js",
     "watch": "tsc -w",
     "start:dev": "dotenv -e ./env/.env.dev -- nodemon --inspect ./dist/src/index.js",
@@ -25,6 +25,7 @@
     "nodemon": "^3.0.2",
     "prisma": "^5.8.0",
     "ts-node": "^10.9.2",
+    "tscpaths": "^0.0.9",
     "typescript": "^5.3.3"
   }
 }

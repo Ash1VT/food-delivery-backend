@@ -2,7 +2,7 @@ import { CustomerCreateInput, CustomerModel } from "../../models/customer";
 import { CustomerGetOutputDTO, CustomerCreateOutputDTO, CustomerCreateInputDTO } from "../../dto/customer";
 import { ICustomerCreateMapper, ICustomerGetMapper } from "../interfaces/customer";
 import { CustomerGetDtoModelAdditionalData, CustomerCreateDtoModelAdditionalData, CustomerCreateDbModelAdditionalData } from "../additionalData";
-import mapManyModels from "@/utils/mapManyModels";
+import mapManyModels from "@src/utils/mapManyModels";
 
 export class CustomerGetMapper implements ICustomerGetMapper {
 

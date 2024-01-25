@@ -106,8 +106,8 @@ model Order {
   supposedDeliveryTime DateTime    @map("supposed_delivery_time") @db.Time()
   actualDeliveryTime   DateTime?   @map("actual_delivery_time") @db.Time()
   deliveryFinishedAt   DateTime?   @map("delivery_finished_at") @db.Timestamptz()
-  totalPrice           Float
-  decountedPrice       Float
+  totalPrice           Float       @map("total_price")
+  decountedPrice       Float       @map("decounted_price")
 
   customer   Customer    @relation(fields: [customerId], references: [id])
   courier    Courier?    @relation(fields: [courierId], references: [id])
@@ -123,6 +123,7 @@ enum OrderStatus {
   PENDING
   CONFIRMED
   PREPARING
+  READY
   DELIVERING
   DELIVERED
   CANCELLED
