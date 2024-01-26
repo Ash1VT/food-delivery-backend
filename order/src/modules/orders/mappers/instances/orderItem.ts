@@ -10,7 +10,9 @@ export class OrderItemGetMapper implements IOrderItemGetMapper {
         return {
             id: Number(dbModel.id),
             orderId: Number(dbModel.orderId),
-            menuItemId: Number(dbModel.menuItemId),
+            menuItemName: dbModel.menuItemName,
+            menuItemImageUrl: dbModel.menuItemImageUrl,
+            menuItemPrice: dbModel.menuItemPrice,
             quantity: dbModel.quantity
         }
     }
@@ -27,7 +29,9 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
         return {
             id: Number(dbModel.id),
             orderId: Number(dbModel.orderId),
-            menuItemId: Number(dbModel.menuItemId),
+            menuItemName: dbModel.menuItemName,
+            menuItemImageUrl: dbModel.menuItemImageUrl,
+            menuItemPrice: dbModel.menuItemPrice,
             quantity: dbModel.quantity
         }
     }
@@ -38,7 +42,9 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
 
     toDbModel(dtoModel: OrderItemCreateInputDTO, additionalData: OrderItemCreateDbModelAdditionalData): OrderItemCreateInput {
         return {
-            menuItemId: BigInt(dtoModel.menuItemId),
+            menuItemName: additionalData.menuItemName,
+            menuItemImageUrl: additionalData.menuItemImageUrl,
+            menuItemPrice: additionalData.menuItemPrice,
             orderId: BigInt(dtoModel.orderId),
             quantity: dtoModel.quantity
         }
@@ -56,7 +62,9 @@ export class OrderItemWithOrderCreateMapper implements IOrderItemWithOrderCreate
     toDto(dbModel: OrderItemModel, additionalData: OrderItemCreateDtoModelAdditionalData): OrderItemWithOrderCreateOutputDTO {
         return {
             id: Number(dbModel.id),
-            menuItemId: Number(dbModel.menuItemId),
+            menuItemName: dbModel.menuItemName,
+            menuItemImageUrl: dbModel.menuItemImageUrl,
+            menuItemPrice: dbModel.menuItemPrice,
             quantity: dbModel.quantity
         }
     }
@@ -67,7 +75,9 @@ export class OrderItemWithOrderCreateMapper implements IOrderItemWithOrderCreate
 
     toDbModel(dtoModel: OrderItemWithOrderCreateInputDTO, additionalData: OrderItemCreateDbModelAdditionalData): OrderItemWithOrderCreateInput {
         return {
-            menuItemId: BigInt(dtoModel.menuItemId),
+            menuItemName: additionalData.menuItemName,
+            menuItemImageUrl: additionalData.menuItemImageUrl,
+            menuItemPrice: additionalData.menuItemPrice,
             quantity: dtoModel.quantity
         }
     }

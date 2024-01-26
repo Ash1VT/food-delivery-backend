@@ -72,23 +72,28 @@ model Promocode {
 
 model MenuItem {
   id           BigInt @id
+  name         String
+  imageUrl     String @map("image_url")
   price        Float
   restaurantId BigInt @map("restaurant_id")
 
-  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
-  orderItems OrderItem[]
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@map("menu_items")
 }
 
 model OrderItem {
-  id         BigInt @id @default(autoincrement())
-  menuItemId BigInt @map("menu_item_id")
-  orderId    BigInt @map("order_id")
-  quantity   Int
+  id BigInt @id @default(autoincrement())
 
-  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
-  order    Order    @relation(fields: [orderId], references: [id])
+  //menuItemId BigInt @map("menu_item_id")
+
+  menuItemPrice Float  @map("menu_item_price")
+  menuItemName  String @map("menu_item_name")
+  menuItemImage String @map("menu_item_image_url")
+  orderId       BigInt @map("order_id")
+  quantity      Int
+
+  order Order @relation(fields: [orderId], references: [id])
 
   @@map("order_items")
 }

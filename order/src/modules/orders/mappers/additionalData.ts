@@ -1,4 +1,8 @@
-export type OrderItemCreateDbModelAdditionalData = {}
+export type OrderItemCreateDbModelAdditionalData = {
+    menuItemName: string
+    menuItemImageUrl: string
+    menuItemPrice: number
+}
 
 export type OrderItemCreateDtoModelAdditionalData = {}
 
