@@ -12,4 +12,12 @@ export default class PrismaPromocodeRepository extends PrismaBaseRepository<Prom
         super(prisma.promocode)
     }
 
+    public async getOneByName(name: string): Promise<PromocodeModel | null> {
+        return await this.delegate.findFirst({
+            where: {
+                nameIdentifier: name
+            }
+        })
+    }
+
 }
