@@ -9,6 +9,14 @@ export class PromocodeNotFoundWithIdError extends DatabaseInstanceNotFoundError 
 
 }
 
+export class PromocodeNotFoundWithNameError extends DatabaseInstanceNotFoundError {
+
+    constructor(name: string) {
+        super("name", name, "Promocode")
+    }
+
+}
+
 export class PromocodeAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
     constructor(id: number) {
