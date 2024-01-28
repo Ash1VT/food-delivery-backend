@@ -2,6 +2,11 @@ export type PromocodeCreateDbModelAdditionalData = {}
 
 export type PromocodeCreateDtoModelAdditionalData = {}
 
+export type PromocodeUpdateDbModelAdditionalData = {}
+
+export type PromocodeUpdateDtoModelAdditionalData = {}
+
+
 export type PromocodeGetDtoModelAdditionalData = {}
 
 
