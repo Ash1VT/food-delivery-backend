@@ -16,7 +16,7 @@ export type PromocodeCreateInput = {
     validFrom: Date
     validUntil: Date
     maxUsageCount: number
-    currentUsageCount: number
+    currentUsageCount?: number
 }
 
 export type PromocodeUpdateInput = {
