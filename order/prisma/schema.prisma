@@ -62,7 +62,7 @@ model Promocode {
   validFrom          DateTime @map("valid_from") @db.Timestamptz()
   validUntil         DateTime @map("valid_until") @db.Timestamptz()
   maxUsageCount      Int      @map("max_usage_count")
-  currentUsageCount  Int      @map("current_usage_count")
+  currentUsageCount  Int      @default(0) @map("current_usage_count")
   isActive           Boolean  @default(true) @map("is_active")
 
   orders Order[]
