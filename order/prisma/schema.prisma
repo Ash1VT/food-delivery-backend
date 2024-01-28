@@ -42,8 +42,9 @@ model Restaurant {
   id                BigInt             @id
   restaurantManager RestaurantManager?
 
-  orders   Order[]
-  menuItem MenuItem[]
+  orders     Order[]
+  menuItem   MenuItem[]
+  promocodes Promocode[]
 
   @@map("restaurants")
 }
@@ -64,8 +65,10 @@ model Promocode {
   maxUsageCount      Int      @map("max_usage_count")
   currentUsageCount  Int      @default(0) @map("current_usage_count")
   isActive           Boolean  @default(true) @map("is_active")
+  restaurantId       BigInt   @map("restaurant_id")
 
-  orders Order[]
+  orders     Order[]
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@map("promocodes")
 }
