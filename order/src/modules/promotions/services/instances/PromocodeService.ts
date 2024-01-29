@@ -2,8 +2,10 @@ import { PromocodeGetOutputDTO, PromocodeCreateInputDTO, PromocodeCreateOutputDT
 import { PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError } from "../../errors/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../../mappers/interfaces/promocode";
 import { PromocodeModel } from "../../models/promocode";
+import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
 import IPromocodeRepository from "../../repositories/interfaces/IPromocodeRepository";
 import IPromocodeService from "../interfaces/IPromocodeService";
+import { RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant";
 
 export default class PromocodeService implements IPromocodeService {
 
@@ -11,7 +13,8 @@ export default class PromocodeService implements IPromocodeService {
         protected promocodeGetMapper: IPromocodeGetMapper,
         protected promocodeCreateMapper: IPromocodeCreateMapper,
         protected promocodeUpdateMapper: IPromocodeUpdateMapper,
-        protected promocodeRepository: IPromocodeRepository
+        protected promocodeRepository: IPromocodeRepository,
+        protected restaurantRepository: IRestaurantRepository
     ) {}
 
 
@@ -42,6 +45,13 @@ export default class PromocodeService implements IPromocodeService {
     
     public async create(data: PromocodeCreateInputDTO): Promise<PromocodeCreateOutputDTO> {
         const promocodeCreateInput = await this.promocodeCreateMapper.toDbModel(data, {})
+
+        const restaurantInstance = await this.restaurantRepository.getOne(data.restaurantId)
+
+        if (!restaurantInstance) {
+            throw new RestaurantNotFoundWithIdError(data.restaurantId)
+        }
+
         const promocodeCreatedInstance = await this.promocodeRepository.create(promocodeCreateInput)
         return this.promocodeCreateMapper.toDto(promocodeCreatedInstance, {})
     }
