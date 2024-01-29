@@ -67,7 +67,7 @@ model Promocode {
   isActive           Boolean  @default(true) @map("is_active")
   restaurantId       BigInt   @map("restaurant_id")
 
-  orders     Order[]
+  // orders     Order[]
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@map("promocodes")
@@ -106,7 +106,8 @@ model Order {
   customerId           BigInt      @map("customer_id")
   courierId            BigInt?     @map("courier_id")
   restaurantId         BigInt      @map("restaurant_id")
-  promocodeId          BigInt?     @map("promocode_id")
+  promocodeName        String?     @map("promocode_name")
+  promocodeDiscount    Int?        @map("promocode_discount")
   promotionId          BigInt?     @map("promotion_id")
   status               OrderStatus @default(PENDING)
   createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz()
@@ -120,7 +121,7 @@ model Order {
   customer   Customer    @relation(fields: [customerId], references: [id])
   courier    Courier?    @relation(fields: [courierId], references: [id])
   restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
-  promocode  Promocode?  @relation(fields: [promocodeId], references: [id])
+  // promocode  Promocode?  @relation(fields: [promocodeId], references: [id])
   promotion  Promotion?  @relation(fields: [promotionId], references: [id])
   items      OrderItem[]
 
