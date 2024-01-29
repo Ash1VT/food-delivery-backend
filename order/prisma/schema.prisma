@@ -90,11 +90,11 @@ model OrderItem {
 
   //menuItemId BigInt @map("menu_item_id")
 
-  menuItemPrice Float  @map("menu_item_price")
-  menuItemName  String @map("menu_item_name")
-  menuItemImage String @map("menu_item_image_url")
-  orderId       BigInt @map("order_id")
-  quantity      Int
+  menuItemPrice    Float  @map("menu_item_price")
+  menuItemName     String @map("menu_item_name")
+  menuItemImageUrl String @map("menu_item_image_url")
+  orderId          BigInt @map("order_id")
+  quantity         Int
 
   order Order @relation(fields: [orderId], references: [id])
 
