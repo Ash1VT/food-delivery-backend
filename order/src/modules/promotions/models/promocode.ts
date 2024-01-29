@@ -6,6 +6,7 @@ export type PromocodeModel = {
     validUntil: Date
     maxUsageCount: number
     currentUsageCount: number
+    restaurantId: bigint
     isActive: boolean
 }
 
@@ -16,6 +17,7 @@ export type PromocodeCreateInput = {
     validFrom: Date
     validUntil: Date
     maxUsageCount: number
+    restaurantId: bigint
     currentUsageCount?: number
 }
 
@@ -27,5 +29,6 @@ export type PromocodeUpdateInput = {
     validUntil?: Date
     maxUsageCount?: number
     currentUsageCount?: number
+    restaurantId?: bigint
     isActive?: boolean
 }

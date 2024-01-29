@@ -15,6 +15,7 @@ export class PromocodeGetMapper implements IPromocodeGetMapper {
             validUntil: dbModel.validUntil.toString(),
             maxUsageCount: dbModel.maxUsageCount,
             currentUsageCount: dbModel.currentUsageCount,
+            restaurantId: Number(dbModel.restaurantId),
             isActive: dbModel.isActive
         }
     }
@@ -36,6 +37,7 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
             validUntil: dbModel.validUntil.toString(),
             maxUsageCount: dbModel.maxUsageCount,
             currentUsageCount: dbModel.currentUsageCount,
+            restaurantId: Number(dbModel.restaurantId),
             isActive: dbModel.isActive
         }
     }
@@ -51,6 +53,7 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
             validFrom: new Date(dtoModel.validFrom),
             validUntil: new Date(dtoModel.validUntil),
             maxUsageCount: dtoModel.maxUsageCount,
+            restaurantId: BigInt(dtoModel.restaurantId)
         }
     }
 
@@ -71,6 +74,7 @@ export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
             validUntil: dbModel.validUntil.toString(),
             maxUsageCount: dbModel.maxUsageCount,
             currentUsageCount: dbModel.currentUsageCount,
+            restaurantId: Number(dbModel.restaurantId),
             isActive: dbModel.isActive
         }
     }

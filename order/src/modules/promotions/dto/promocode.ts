@@ -9,12 +9,14 @@ interface PromocodeBaseOutputDTO extends PromocodeBaseDTO {
     id: number
     nameIdentifier: string
     currentUsageCount: number
+    restaurantId: number
     isActive: boolean
 }
 
 export interface PromocodeGetOutputDTO extends PromocodeBaseOutputDTO {}
 
 export interface PromocodeCreateInputDTO extends PromocodeBaseDTO {
+    restaurantId: number
     nameIdentifier: string
 }
 
