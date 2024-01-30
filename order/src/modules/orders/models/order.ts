@@ -6,7 +6,8 @@ export type OrderModel = {
     customerId: bigint
     courierId: bigint | null
     restaurantId: bigint
-    promocodeId: bigint | null
+    promocodeName: string | null
+    promocodeDiscount: number | null
     promotionId: bigint | null
     status: OrderStatus
     createdAt: Date
@@ -24,7 +25,8 @@ export type OrderCreateInput = {
     customerId: bigint
     courierId?: bigint
     restaurantId: bigint
-    promocodeId?: bigint
+    promocodeName?: string
+    promocodeDiscount?: number
     status?: OrderStatus
     createdAt?: Date
     deliveryAcceptedAt?: Date
@@ -43,7 +45,8 @@ export type OrderUpdateInput = {
     customerId?: bigint
     courierId?: bigint
     restaurantId?: bigint
-    promocodeId?: bigint
+    promocodeName?: string
+    promocodeDiscount?: number
     status?: OrderStatus
     createdAt?: Date
     deliveryAcceptedAt?: Date

@@ -8,7 +8,8 @@ interface OrderBaseOutputDTO extends OrderBaseDTO {
     id: number
     customerId: number
     courierId?: number
-    promocode?: string
+    promocodeName?: string
+    promocodeDiscount?: number
     status: string
     createdAt: string
     deliveryAcceptedAt?: string
