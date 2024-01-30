@@ -1,12 +1,10 @@
 import { PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeGetOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
 import { PromocodeCreateInput, PromocodeModel, PromocodeUpdateInput } from "../../models/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../interfaces/promocode";
-import { PromocodeGetDtoModelAdditionalData, PromocodeCreateDtoModelAdditionalData, PromocodeCreateDbModelAdditionalData, PromocodeUpdateDbModelAdditionalData, PromocodeUpdateDtoModelAdditionalData } from "../additionalData";
-import mapManyModels from "@src/utils/mapManyModels";
 
 export class PromocodeGetMapper implements IPromocodeGetMapper {
 
-    toDto(dbModel: PromocodeModel, additionalData: PromocodeGetDtoModelAdditionalData): PromocodeGetOutputDTO {
+    toDto(dbModel: PromocodeModel): PromocodeGetOutputDTO {
         return {
             id: Number(dbModel.id),
             nameIdentifier: dbModel.nameIdentifier,
@@ -18,17 +16,13 @@ export class PromocodeGetMapper implements IPromocodeGetMapper {
             restaurantId: Number(dbModel.restaurantId),
             isActive: dbModel.isActive
         }
-    }
-
-    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeGetDtoModelAdditionalData[]): PromocodeGetOutputDTO[] {
-        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class PromocodeCreateMapper implements IPromocodeCreateMapper {
     
-    toDto(dbModel: PromocodeModel, additionalData: PromocodeCreateDtoModelAdditionalData): PromocodeCreateOutputDTO {
+    toDto(dbModel: PromocodeModel): PromocodeCreateOutputDTO {
         return {
             id: Number(dbModel.id),
             nameIdentifier: dbModel.nameIdentifier,
@@ -42,11 +36,7 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
         }
     }
 
-    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeCreateDtoModelAdditionalData[]): PromocodeCreateOutputDTO[] {
-        return mapManyModels(dbModels, this.toDto, additionalData)
-    }
-    
-    toDbModel(dtoModel: PromocodeCreateInputDTO, additionalData: PromocodeCreateDbModelAdditionalData = {}): PromocodeCreateInput {
+    toDbModel(dtoModel: PromocodeCreateInputDTO): PromocodeCreateInput {
         return {
             nameIdentifier: dtoModel.nameIdentifier,
             discountPercentage: dtoModel.discountPercentage,
@@ -57,15 +47,11 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
         }
     }
 
-    toDbModels(dtoModels: PromocodeCreateInputDTO[], additionalData: PromocodeCreateDbModelAdditionalData[] = []): PromocodeCreateInput[] {
-        return mapManyModels(dtoModels, this.toDbModel, additionalData)
-    }
-
 }
 
 export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
 
-    toDto(dbModel: PromocodeModel, additionalData: PromocodeUpdateDtoModelAdditionalData): PromocodeUpdateOutputDTO {
+    toDto(dbModel: PromocodeModel): PromocodeUpdateOutputDTO {
         return {
             id: Number(dbModel.id),
             nameIdentifier: dbModel.nameIdentifier,
@@ -79,11 +65,7 @@ export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
         }
     }
     
-    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeUpdateDtoModelAdditionalData[]): PromocodeUpdateOutputDTO[] {
-        return mapManyModels(dbModels, this.toDto, additionalData)
-    }
-    
-    toDbModel(dtoModel: PromocodeUpdateInputDTO, additionalData: PromocodeUpdateDbModelAdditionalData): PromocodeUpdateInput {
+    toDbModel(dtoModel: PromocodeUpdateInputDTO): PromocodeUpdateInput {
         return {
             discountPercentage: dtoModel.discountPercentage,
             validFrom: new Date(dtoModel.validFrom),
@@ -92,8 +74,4 @@ export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
         }
     }
     
-    toDbModels(dtoModels: PromocodeUpdateInputDTO[], additionalData: PromocodeUpdateDbModelAdditionalData[]): PromocodeUpdateInput[] {
-        return mapManyModels(dtoModels, this.toDbModel, additionalData)
-    }
-
 }
