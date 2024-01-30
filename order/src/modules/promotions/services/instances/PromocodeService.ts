@@ -6,6 +6,7 @@ import IRestaurantRepository from "@src/modules/restaurants/repositories/interfa
 import IPromocodeRepository from "../../repositories/interfaces/IPromocodeRepository";
 import IPromocodeService from "../interfaces/IPromocodeService";
 import { RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant";
+import { mapManyModels } from "@src/utils/mapManyModels";
 
 export default class PromocodeService implements IPromocodeService {
 
@@ -25,7 +26,7 @@ export default class PromocodeService implements IPromocodeService {
             throw new PromocodeNotFoundWithIdError(id)
         }
 
-        return this.promocodeGetMapper.toDto(promocodeInstance, {})
+        return this.promocodeGetMapper.toDto(promocodeInstance)
     }
 
     public async getOneByName(name: string): Promise<PromocodeGetOutputDTO> {
@@ -35,16 +36,16 @@ export default class PromocodeService implements IPromocodeService {
             throw new PromocodeNotFoundWithNameError(name)
         }
 
-        return this.promocodeGetMapper.toDto(promocodeInstance, {})
+        return this.promocodeGetMapper.toDto(promocodeInstance)
     }
 
     public async getMany(): Promise<PromocodeGetOutputDTO[]> {
         const promocodeInstances = await this.promocodeRepository.getMany()
-        return this.promocodeGetMapper.toDtos(promocodeInstances, [])
+        return mapManyModels(promocodeInstances, this.promocodeGetMapper.toDto)
     }
     
     public async create(data: PromocodeCreateInputDTO): Promise<PromocodeCreateOutputDTO> {
-        const promocodeCreateInput = await this.promocodeCreateMapper.toDbModel(data, {})
+        const promocodeCreateInput = this.promocodeCreateMapper.toDbModel(data)
 
         const restaurantInstance = await this.restaurantRepository.getOne(data.restaurantId)
 
@@ -53,7 +54,7 @@ export default class PromocodeService implements IPromocodeService {
         }
 
         const promocodeCreatedInstance = await this.promocodeRepository.create(promocodeCreateInput)
-        return this.promocodeCreateMapper.toDto(promocodeCreatedInstance, {})
+        return this.promocodeCreateMapper.toDto(promocodeCreatedInstance)
     }
 
     public async update(id: number, data: PromocodeUpdateInputDTO): Promise<PromocodeUpdateOutputDTO> {
@@ -63,7 +64,7 @@ export default class PromocodeService implements IPromocodeService {
             throw new PromocodeNotFoundWithIdError(id)
         }
 
-        const promocodeUpdateInput = await this.promocodeUpdateMapper.toDbModel(data, {})
+        const promocodeUpdateInput = this.promocodeUpdateMapper.toDbModel(data)
         
         // if (promocodeUpdateInput.validFrom && promocodeUpdateInput.validFrom >= promocodeInstance.validUntil) {
 
@@ -78,7 +79,7 @@ export default class PromocodeService implements IPromocodeService {
         }
 
         const promocodeUpdatedInstance = await this.promocodeRepository.update(id, promocodeUpdateInput) as PromocodeModel
-        return this.promocodeUpdateMapper.toDto(promocodeUpdatedInstance, {})
+        return this.promocodeUpdateMapper.toDto(promocodeUpdatedInstance)
     }
 
     public async deactivate(id: number): Promise<undefined> {

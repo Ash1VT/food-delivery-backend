@@ -1,3 +1,4 @@
+import { mapManyModels } from "@src/utils/mapManyModels";
 import { ModeratorGetOutputDTO, ModeratorCreateInputDTO, ModeratorCreateOutputDTO } from "../../dto/moderator";
 import { ModeratorNotFoundWithIdError } from "../../errors/moderator";
 import { IModeratorGetMapper, IModeratorCreateMapper } from "../../mappers/interfaces/moderator";
@@ -19,18 +20,18 @@ export default class ModeratorService implements IModeratorService {
             throw new ModeratorNotFoundWithIdError(id)
         }
 
-        return this.moderatorGetMapper.toDto(moderatorInstance, {})
+        return this.moderatorGetMapper.toDto(moderatorInstance)
     }
 
     public async getMany(): Promise<ModeratorGetOutputDTO[]> {
         const moderatorInstances = await this.moderatorRepository.getMany()
-        return this.moderatorGetMapper.toDtos(moderatorInstances, [])
+        return mapManyModels(moderatorInstances, this.moderatorGetMapper.toDto)
     }
 
     public async create(data: ModeratorCreateInputDTO): Promise<ModeratorCreateOutputDTO> {
-        const moderatorCreateInput = await this.moderatorCreateMapper.toDbModel(data, {})
+        const moderatorCreateInput = this.moderatorCreateMapper.toDbModel(data)
         const moderatorCreatedInstance = await this.moderatorRepository.create(moderatorCreateInput)
-        return this.moderatorCreateMapper.toDto(moderatorCreatedInstance, {})
+        return this.moderatorCreateMapper.toDto(moderatorCreatedInstance)
     }
 
 }

@@ -1,3 +1,4 @@
+import { mapManyModels } from "@src/utils/mapManyModels";
 import { RestaurantGetOutputDTO, RestaurantCreateInputDTO, RestaurantCreateOutputDTO } from "../../dto/restaurant";
 import { RestaurantNotFoundWithIdError } from "../../errors/restaurant";
 import { IRestaurantGetMapper, IRestaurantCreateMapper } from "../../mappers/interfaces/restaurant";
@@ -19,18 +20,18 @@ export default class RestaurantService implements IRestaurantService {
             throw new RestaurantNotFoundWithIdError(id)
         }
 
-        return this.restaurantGetMapper.toDto(restaurantInstance, {})
+        return this.restaurantGetMapper.toDto(restaurantInstance)
     }
     
     public async getMany(): Promise<RestaurantGetOutputDTO[]> {
         const restaurantInstances = await this.restaurantRepository.getMany()
-        return this.restaurantGetMapper.toDtos(restaurantInstances, [])
+        return mapManyModels(restaurantInstances, this.restaurantGetMapper.toDto)
     }
     
     public async create(data: RestaurantCreateInputDTO): Promise<RestaurantCreateOutputDTO> {
-        const restaurantCreateInput = await this.restaurantCreateMapper.toDbModel(data, {})
+        const restaurantCreateInput = this.restaurantCreateMapper.toDbModel(data)
         const restaurantCreatedInstance = await this.restaurantRepository.create(restaurantCreateInput)
-        return this.restaurantCreateMapper.toDto(restaurantCreatedInstance, {})
+        return this.restaurantCreateMapper.toDto(restaurantCreatedInstance)
     }
 
 }

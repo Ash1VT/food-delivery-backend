@@ -3,6 +3,7 @@ import { ICourierGetMapper, ICourierCreateMapper } from "../../mappers/interface
 import ICourierRepository from "../../repositories/interfaces/ICourierRepository";
 import ICourierService from "../interfaces/ICourierService";
 import { CourierNotFoundWithIdError } from "../../errors/courier";
+import { mapManyModels } from "@src/utils/mapManyModels";
 
 export default class CourierService implements ICourierService {
 
@@ -19,18 +20,18 @@ export default class CourierService implements ICourierService {
             throw new CourierNotFoundWithIdError(id)
         }
 
-        return this.courierGetMapper.toDto(courierInstance, {})
+        return this.courierGetMapper.toDto(courierInstance)
     }
 
     public async getMany(): Promise<CourierGetOutputDTO[]> {
         const courierInstances = await this.courierRepository.getMany()
-        return this.courierGetMapper.toDtos(courierInstances, [])
+        return mapManyModels(courierInstances, this.courierGetMapper.toDto)
     }
 
     public async create(data: CourierCreateInputDTO): Promise<CourierCreateOutputDTO> {
-        const courierCreateInput = await this.courierCreateMapper.toDbModel(data, {})
+        const courierCreateInput = this.courierCreateMapper.toDbModel(data)
         const courierCreatedInstance = await this.courierRepository.create(courierCreateInput)
-        return this.courierCreateMapper.toDto(courierCreatedInstance, {})
+        return this.courierCreateMapper.toDto(courierCreatedInstance)
     }
 
 }

@@ -1,3 +1,4 @@
+import { mapManyModels } from "@src/utils/mapManyModels";
 import { PromotionGetOutputDTO, PromotionCreateInputDTO, PromotionCreateOutputDTO } from "../../dto/promotion";
 import { PromotionNotFoundWithIdError } from "../../errors/promotion";
 import { IPromotionGetMapper, IPromotionCreateMapper } from "../../mappers/interfaces/promotion";
@@ -19,18 +20,18 @@ export default class PromotionService implements IPromotionService {
             throw new PromotionNotFoundWithIdError(id)
         }
 
-        return this.promotionGetMapper.toDto(promotionInstance, {})
+        return this.promotionGetMapper.toDto(promotionInstance)
     }
 
     public async getMany(): Promise<PromotionGetOutputDTO[]> {
         const promotionInstances = await this.promotionRepository.getMany()
-        return this.promotionGetMapper.toDtos(promotionInstances, [])
+        return mapManyModels(promotionInstances, this.promotionGetMapper.toDto)
     }
 
     public async create(data: PromotionCreateInputDTO): Promise<PromotionCreateOutputDTO> {
-        const promotionCreateInput = await this.promotionCreateMapper.toDbModel(data, {})
+        const promotionCreateInput = this.promotionCreateMapper.toDbModel(data)
         const promotionCreatedInstance = await this.promotionRepository.create(promotionCreateInput)
-        return this.promotionCreateMapper.toDto(promotionCreatedInstance, {})
+        return this.promotionCreateMapper.toDto(promotionCreatedInstance)
     }
 
 }
