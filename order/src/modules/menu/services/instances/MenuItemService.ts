@@ -1,3 +1,4 @@
+import { mapManyModels } from "@src/utils/mapManyModels";
 import { MenuItemCreateInputDTO, MenuItemCreateOutputDTO, MenuItemGetOutputDTO } from "../../dto/menuItem";
 import { MenuItemNotFoundWithIdError } from "../../errors/menuItem";
 import { IMenuItemCreateMapper, IMenuItemGetMapper } from "../../mappers/interfaces/menuItem";
@@ -19,17 +20,17 @@ export default class MenuItemService implements IMenuItemService {
             throw new MenuItemNotFoundWithIdError(id)
         }
 
-        return this.menuItemGetMapper.toDto(menuItemInstance, {})
+        return this.menuItemGetMapper.toDto(menuItemInstance)
     }
 
     public async getMany(): Promise<MenuItemGetOutputDTO[]> {
         const menuItemInstances = await this.menuItemRepository.getMany()
-        return this.menuItemGetMapper.toDtos(menuItemInstances, [])
+        return mapManyModels(menuItemInstances, this.menuItemGetMapper.toDto)
     }
     
     public async create(data: MenuItemCreateInputDTO): Promise<MenuItemCreateOutputDTO> {
-        const menuItemCreateInput = await this.menuItemCreateMapper.toDbModel(data, {})
+        const menuItemCreateInput = this.menuItemCreateMapper.toDbModel(data)
         const menuItemCreatedInstance = await this.menuItemRepository.create(menuItemCreateInput)
-        return this.menuItemCreateMapper.toDto(menuItemCreatedInstance, {})
+        return this.menuItemCreateMapper.toDto(menuItemCreatedInstance)
     }
 }
