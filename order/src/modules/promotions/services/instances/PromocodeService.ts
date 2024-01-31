@@ -1,5 +1,5 @@
 import { PromocodeGetOutputDTO, PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
-import { PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError } from "../../errors/promocode";
+import { PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "../../errors/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../../mappers/interfaces/promocode";
 import { PromocodeModel } from "../../models/promocode";
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
@@ -75,7 +75,7 @@ export default class PromocodeService implements IPromocodeService {
         // }
 
         if (promocodeUpdateInput.maxUsageCount && promocodeUpdateInput.maxUsageCount > promocodeInstance.currentUsageCount) {
-
+            throw new PromocodeUsageError(id)
         }
 
         const promocodeUpdatedInstance = await this.promocodeRepository.update(id, promocodeUpdateInput) as PromocodeModel
