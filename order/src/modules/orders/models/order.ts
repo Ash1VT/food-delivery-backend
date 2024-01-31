@@ -4,17 +4,17 @@ import { OrderStatus } from "./orderStatus";
 export type OrderModel = {
     id: bigint
     customerId: bigint
-    courierId: bigint | null
+    courierId?: bigint
     restaurantId: bigint
-    promocodeName: string | null
-    promocodeDiscount: number | null
-    promotionId: bigint | null
+    promocodeName?: string
+    promocodeDiscount?: number
+    promotionId?: bigint
     status: OrderStatus
     createdAt: Date
-    deliveryAcceptedAt: Date | null
+    deliveryAcceptedAt?: Date
     supposedDeliveryTime: Date
-    actualDeliveryTime: Date | null
-    deliveryFinishedAt: Date | null
+    actualDeliveryTime?: Date
+    deliveryFinishedAt?: Date
     totalPrice: number
     decountedPrice: number
     items?: OrderItemModel[]

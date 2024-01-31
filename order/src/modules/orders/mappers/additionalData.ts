@@ -5,7 +5,7 @@ export type OrderItemAdditionalData = {
 }
 
 export type OrderAdditionalData = {
-    customerId: number,
+    customerId: bigint,
     promocodeName?: string
     promocodeDiscount?: number,
     supposedDeliveryTime: Date,
