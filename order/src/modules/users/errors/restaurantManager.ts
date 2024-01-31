@@ -30,3 +30,14 @@ export class RestaurantManagerOwnershipError extends AppError {
     }
 
 }
+
+export class RestaurantManagerMissingRestaurantError extends AppError {
+    
+    constructor() {
+        super(`Restaurant Manager doesn't have a restaurant`)
+    }
+
+    public get statusCode(): number {
+        return 403
+    }
+}
