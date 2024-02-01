@@ -1,3 +1,4 @@
+import { RestaurantManagerOwnershipError } from './../../../users/errors/restaurantManager';
 import { OrderGetOutputDTO, OrderCreateInputDTO, OrderCreateOutputDTO } from "../../dto/order";
 import { OrderCourierOwnershipError, OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from "../../errors/order";
 import { IOrderCreateMapper, IOrderGetMapper } from "../../mappers/interfaces/order";
@@ -77,7 +78,7 @@ export default class OrderService implements IOrderService {
         return mapManyModels(orderInstances, this.orderGetMapper.toDto)
     }
 
-    public async getCurrentRestaurantOrders(status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
+    public async getRestaurantOrders(restaurantId: number, status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
         
         // Check if user is restaurant manager
         if(!this.restaurantManager) {
@@ -85,11 +86,14 @@ export default class OrderService implements IOrderService {
         }
 
         // Check if restaurant manager has restaurant
-        if(!this.restaurantManager.restaurantId){
-            throw new RestaurantManagerMissingRestaurantError()
-        }
+        // if(!this.restaurantManager.restaurantId){
+        //     throw new RestaurantManagerMissingRestaurantError()
+        // }
 
-        const restaurantId = Number(this.restaurantManager.restaurantId)
+        // Check if restaurant manager has ownership on restaurant
+        if(Number(this.restaurantManager.restaurantId) !== restaurantId) {
+            throw new RestaurantManagerOwnershipError(this.restaurantManager.id, restaurantId)
+        }
 
         const orderInstances = await this.orderRepository.getRestaurantOrders(restaurantId, true, status)
         return mapManyModels(orderInstances, this.orderGetMapper.toDto)
