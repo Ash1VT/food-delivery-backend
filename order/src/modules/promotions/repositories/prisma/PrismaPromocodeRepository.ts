@@ -20,4 +20,12 @@ export default class PrismaPromocodeRepository extends PrismaBaseRepository<Prom
         })
     }
 
+    public async getRestaurantPromocodes(restaurantId: number): Promise<PromocodeModel[]> {
+        return await this.delegate.findMany({
+            where: {
+                restaurantId
+            }
+        })
+    }
+
 }
