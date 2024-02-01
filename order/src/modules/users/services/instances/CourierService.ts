@@ -13,23 +13,23 @@ export default class CourierService implements ICourierService {
         protected courierRepository: ICourierRepository
     ) {}
 
-    public async getOne(id: number): Promise<CourierGetOutputDTO> {
-        const courierInstance = await this.courierRepository.getOne(id)
+    // public async getOne(id: number): Promise<CourierGetOutputDTO> {
+    //     const courierInstance = await this.courierRepository.getOne(id)
 
-        if (!courierInstance) {
-            throw new CourierNotFoundWithIdError(id)
-        }
+    //     if (!courierInstance) {
+    //         throw new CourierNotFoundWithIdError(id)
+    //     }
 
-        return this.courierGetMapper.toDto(courierInstance)
-    }
+    //     return this.courierGetMapper.toDto(courierInstance)
+    // }
 
-    public async getMany(): Promise<CourierGetOutputDTO[]> {
-        const courierInstances = await this.courierRepository.getMany()
-        return mapManyModels(courierInstances, this.courierGetMapper.toDto)
-    }
+    // public async getMany(): Promise<CourierGetOutputDTO[]> {
+    //     const courierInstances = await this.courierRepository.getMany()
+    //     return mapManyModels(courierInstances, this.courierGetMapper.toDto)
+    // }
 
-    public async create(data: CourierCreateInputDTO): Promise<CourierCreateOutputDTO> {
-        const courierCreateInput = this.courierCreateMapper.toDbModel(data)
+    public async create(courierData: CourierCreateInputDTO): Promise<CourierCreateOutputDTO> {
+        const courierCreateInput = this.courierCreateMapper.toDbModel(courierData)
         const courierCreatedInstance = await this.courierRepository.create(courierCreateInput)
         return this.courierCreateMapper.toDto(courierCreatedInstance)
     }

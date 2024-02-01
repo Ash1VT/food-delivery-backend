@@ -13,20 +13,20 @@ export default class RestaurantService implements IRestaurantService {
         protected restaurantRepository: IRestaurantRepository
     ) {}
 
-    public async getOne(id: number): Promise<RestaurantGetOutputDTO> {
-        const restaurantInstance = await this.restaurantRepository.getOne(id)
+    // public async getOne(id: number): Promise<RestaurantGetOutputDTO> {
+    //     const restaurantInstance = await this.restaurantRepository.getOne(id)
 
-        if (!restaurantInstance) {
-            throw new RestaurantNotFoundWithIdError(id)
-        }
+    //     if (!restaurantInstance) {
+    //         throw new RestaurantNotFoundWithIdError(id)
+    //     }
 
-        return this.restaurantGetMapper.toDto(restaurantInstance)
-    }
+    //     return this.restaurantGetMapper.toDto(restaurantInstance)
+    // }
     
-    public async getMany(): Promise<RestaurantGetOutputDTO[]> {
-        const restaurantInstances = await this.restaurantRepository.getMany()
-        return mapManyModels(restaurantInstances, this.restaurantGetMapper.toDto)
-    }
+    // public async getMany(): Promise<RestaurantGetOutputDTO[]> {
+    //     const restaurantInstances = await this.restaurantRepository.getMany()
+    //     return mapManyModels(restaurantInstances, this.restaurantGetMapper.toDto)
+    // }
     
     public async create(data: RestaurantCreateInputDTO): Promise<RestaurantCreateOutputDTO> {
         const restaurantCreateInput = this.restaurantCreateMapper.toDbModel(data)

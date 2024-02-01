@@ -13,23 +13,23 @@ export default class ModeratorService implements IModeratorService {
         protected moderatorRepository: IModeratorRepository
     ) {}
 
-    public async getOne(id: number): Promise<ModeratorGetOutputDTO> {
-        const moderatorInstance = await this.moderatorRepository.getOne(id)
+    // public async getOne(id: number): Promise<ModeratorGetOutputDTO> {
+    //     const moderatorInstance = await this.moderatorRepository.getOne(id)
 
-        if (!moderatorInstance) {
-            throw new ModeratorNotFoundWithIdError(id)
-        }
+    //     if (!moderatorInstance) {
+    //         throw new ModeratorNotFoundWithIdError(id)
+    //     }
 
-        return this.moderatorGetMapper.toDto(moderatorInstance)
-    }
+    //     return this.moderatorGetMapper.toDto(moderatorInstance)
+    // }
 
-    public async getMany(): Promise<ModeratorGetOutputDTO[]> {
-        const moderatorInstances = await this.moderatorRepository.getMany()
-        return mapManyModels(moderatorInstances, this.moderatorGetMapper.toDto)
-    }
+    // public async getMany(): Promise<ModeratorGetOutputDTO[]> {
+    //     const moderatorInstances = await this.moderatorRepository.getMany()
+    //     return mapManyModels(moderatorInstances, this.moderatorGetMapper.toDto)
+    // }
 
-    public async create(data: ModeratorCreateInputDTO): Promise<ModeratorCreateOutputDTO> {
-        const moderatorCreateInput = this.moderatorCreateMapper.toDbModel(data)
+    public async create(moderatorData: ModeratorCreateInputDTO): Promise<ModeratorCreateOutputDTO> {
+        const moderatorCreateInput = this.moderatorCreateMapper.toDbModel(moderatorData)
         const moderatorCreatedInstance = await this.moderatorRepository.create(moderatorCreateInput)
         return this.moderatorCreateMapper.toDto(moderatorCreatedInstance)
     }

@@ -12,23 +12,23 @@ export default class RestaurantManagerService implements IRestaurantManagerServi
         protected restaurantManagerRepository: IRestaurantManagerRepository
     ) {}
 
-    public async getOne(id: number): Promise<RestaurantManagerGetOutputDTO> {
-        const restaurantManagerInstance = await this.restaurantManagerRepository.getOne(id)
+    // public async getOne(id: number): Promise<RestaurantManagerGetOutputDTO> {
+    //     const restaurantManagerInstance = await this.restaurantManagerRepository.getOne(id)
 
-        if (!restaurantManagerInstance) {
-            throw new RestaurantManagerNotFoundWithIdError(id)
-        }
+    //     if (!restaurantManagerInstance) {
+    //         throw new RestaurantManagerNotFoundWithIdError(id)
+    //     }
 
-        return this.restaurantManagerGetMapper.toDto(restaurantManagerInstance)
-    }
+    //     return this.restaurantManagerGetMapper.toDto(restaurantManagerInstance)
+    // }
     
-    public async getMany(): Promise<RestaurantManagerGetOutputDTO[]> {
-        const restaurantManagerInstances = await this.restaurantManagerRepository.getMany()
-        return mapManyModels(restaurantManagerInstances, this.restaurantManagerGetMapper.toDto)
-    }
+    // public async getMany(): Promise<RestaurantManagerGetOutputDTO[]> {
+    //     const restaurantManagerInstances = await this.restaurantManagerRepository.getMany()
+    //     return mapManyModels(restaurantManagerInstances, this.restaurantManagerGetMapper.toDto)
+    // }
     
-    public async create(data: RestaurantManagerCreateInputDTO): Promise<RestaurantManagerCreateOutputDTO> {
-        const restaurantManagerCreateInput = this.restaurantManagerCreateMapper.toDbModel(data)
+    public async create(restaurantManagerData: RestaurantManagerCreateInputDTO): Promise<RestaurantManagerCreateOutputDTO> {
+        const restaurantManagerCreateInput = this.restaurantManagerCreateMapper.toDbModel(restaurantManagerData)
         const restaurantManagerCreatedInstance = await this.restaurantManagerRepository.create(restaurantManagerCreateInput)
         return this.restaurantManagerCreateMapper.toDto(restaurantManagerCreatedInstance)
     }
