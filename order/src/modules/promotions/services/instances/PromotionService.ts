@@ -28,10 +28,6 @@ export default class PromotionService implements IPromotionService {
     //     const promotionInstances = await this.promotionRepository.getMany()
     //     return mapManyModels(promotionInstances, this.promotionGetMapper.toDto)
     // }
-    
-    public async getRestaurantPromocodes(restaurantId: number): Promise<PromocodeGetOutputDTO[]> {
-
-    }
 
     public async create(data: PromotionCreateInputDTO): Promise<PromotionCreateOutputDTO> {
         const promotionCreateInput = this.promotionCreateMapper.toDbModel(data)
