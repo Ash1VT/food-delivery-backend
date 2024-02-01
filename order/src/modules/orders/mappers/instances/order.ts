@@ -3,7 +3,7 @@ import { OrderCreateInputDTO, OrderCreateOutputDTO, OrderGetOutputDTO } from "..
 import { OrderCreateInput, OrderModel } from "../../models/order";
 import { OrderAdditionalData } from "../additionalData";
 import { IOrderGetMapper, IOrderCreateMapper } from "../interfaces/order";
-import { IOrderItemGetMapper, IOrderItemWithOrderCreateMapper } from "../interfaces/orderItem";
+import { IOrderItemCreateMapper, IOrderItemGetMapper } from "../interfaces/orderItem";
 
 export class OrderGetMapper implements IOrderGetMapper {
 
@@ -33,7 +33,7 @@ export class OrderGetMapper implements IOrderGetMapper {
 export class OrderCreateMapper implements IOrderCreateMapper {
 
     constructor(
-        protected orderItemWithOrderCreateMapper: IOrderItemWithOrderCreateMapper
+        protected orderItemCreateMapper: IOrderItemCreateMapper
     ) {}
 
     toDto(dbModel: OrderModel): OrderCreateOutputDTO {
@@ -52,7 +52,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
             totalPrice: dbModel.totalPrice,
             decountedPrice: dbModel.decountedPrice,
-            items: dbModel.items ? mapManyModels(dbModel.items, this.orderItemWithOrderCreateMapper.toDto) : undefined
+            items: dbModel.items ? mapManyModels(dbModel.items, this.orderItemCreateMapper.toDto) : undefined
         }
     }
 
@@ -66,7 +66,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             totalPrice: additionalData.totalPrice,
             decountedPrice: additionalData.decountedPrice,
             create: {
-                items: mapManyModelsWithAdditionalData(dtoModel.items, this.orderItemWithOrderCreateMapper.toDbModel, additionalData.itemsAdditionalData)
+                items: mapManyModelsWithAdditionalData(dtoModel.items, this.orderItemCreateMapper.toDbModelWithOrder, additionalData.itemsAdditionalData)
             }
         }
     }

@@ -1,7 +1,7 @@
-import { OrderItemCreateInputDTO, OrderItemCreateOutputDTO, OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "../../dto/orderItem";
+import { OrderItemCreateInputDTO, OrderItemCreateOutputDTO, OrderItemGetOutputDTO } from "../../dto/orderItem";
 import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../models/orderItem";
-import { OrderItemAdditionalData } from "../additionalData";
-import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemWithOrderCreateMapper } from "../interfaces/orderItem";
+import { OrderItemAdditionalData, OrderItemWithOrderAdditionalData } from "../additionalData";
+import { IOrderItemGetMapper, IOrderItemCreateMapper } from "../interfaces/orderItem";
 
 export class OrderItemGetMapper implements IOrderItemGetMapper {
 
@@ -36,27 +36,12 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
             menuItemName: additionalData.menuItemName,
             menuItemImageUrl: additionalData.menuItemImageUrl,
             menuItemPrice: additionalData.menuItemPrice,
-            orderId: BigInt(dtoModel.orderId),
+            orderId: BigInt(additionalData.orderId),
             quantity: dtoModel.quantity
         }
     }
 
-}
-
-
-export class OrderItemWithOrderCreateMapper implements IOrderItemWithOrderCreateMapper {
-
-    toDto(dbModel: OrderItemModel): OrderItemWithOrderCreateOutputDTO {
-        return {
-            id: Number(dbModel.id),
-            menuItemName: dbModel.menuItemName,
-            menuItemImageUrl: dbModel.menuItemImageUrl,
-            menuItemPrice: dbModel.menuItemPrice,
-            quantity: dbModel.quantity
-        }
-    }
-
-    toDbModel(dtoModel: OrderItemWithOrderCreateInputDTO, additionalData: OrderItemAdditionalData): OrderItemWithOrderCreateInput {
+    toDbModelWithOrder(dtoModel: OrderItemCreateInputDTO, additionalData: OrderItemWithOrderAdditionalData): OrderItemWithOrderCreateInput {
         return {
             menuItemName: additionalData.menuItemName,
             menuItemImageUrl: additionalData.menuItemImageUrl,
