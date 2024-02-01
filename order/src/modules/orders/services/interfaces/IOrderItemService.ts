@@ -1,5 +1,11 @@
-import ICreateService from '@src/base/services/interfaces/ICreateService';
 import { OrderItemGetOutputDTO, OrderItemCreateInputDTO, OrderItemCreateOutputDTO } from './../../dto/orderItem';
-import IGetService from "@src/base/services/interfaces/IGetService";
 
-export default interface IOrderItemService extends IGetService<OrderItemGetOutputDTO>, ICreateService<OrderItemCreateInputDTO, OrderItemCreateOutputDTO> {}
+export default interface IOrderItemService {
+    // getOne(id: number): Promise<OrderItemGetOutputDTO>
+
+    // Customer or courier
+    getOrderItems(orderId: number): Promise<OrderItemGetOutputDTO[]>
+    
+    // Customer
+    addOrderItem(orderId: number, orderItemData: OrderItemCreateInputDTO): Promise<OrderItemCreateOutputDTO>
+}
