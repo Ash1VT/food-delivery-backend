@@ -53,3 +53,15 @@ export class OrderCourierOwnershipError extends AppError {
     }
 
 }
+
+export class OrderCustomerOwnershipError extends AppError {
+
+    constructor(id: number | bigint) {
+        super(`Customer cannot perform actions on order with id=${id}`)        
+    }
+
+    public get statusCode(): number {
+        return 403
+    }
+
+}
