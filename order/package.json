@@ -8,7 +8,7 @@
     "build": "tsc && yarn build:paths",
     "build:paths": "tscpaths -p tsconfig.json -s . -o dist",
     "start": "node ./dist/src/index.js",
-    "watch": "tsc -w",
+    "watch": "tsc-watch --onSuccess \"yarn build:paths\"",
     "start:dev": "dotenv -e ./env/.env.dev -- nodemon --inspect ./dist/src/index.js",
     "start:test": "dotenv -e ./env/.env.test -- node ./dist/tests/index.js",
     "migrate:dev": "dotenv -e ./env/.env.dev -- prisma migrate dev",
@@ -26,6 +26,7 @@
     "nodemon": "^3.0.2",
     "prisma": "^5.8.0",
     "ts-node": "^10.9.2",
+    "tsc-watch": "^6.0.4",
     "tscpaths": "^0.0.9",
     "typescript": "^5.3.3"
   }
