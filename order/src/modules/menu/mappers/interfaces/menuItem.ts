@@ -1,13 +1,15 @@
 import { MenuItemCreateOutputDTO, MenuItemCreateInputDTO, MenuItemUpdateOutputDTO, MenuItemUpdateInputDTO, MenuItemGetOutputDTO } from "../../dto/menuItem";
 import { MenuItemCreateInput, MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
-import { MenuItemCreateDbModelAdditionalData, MenuItemCreateDtoModelAdditionalData, MenuItemGetDtoModelAdditionalData, MenuItemUpdateDbModelAdditionalData, MenuItemUpdateDtoModelAdditionalData } from "../additionalData";
-import IDatabaseToDtoMapper from "@src/base/mappers/interfaces/IDatabaseToDtoMapper";
-import IDtoToDatabaseMapper from "@src/base/mappers/interfaces/IDtoToDatabaseMapper";
+export interface IMenuItemGetMapper {
+    toDto(dbModel: MenuItemModel): MenuItemGetOutputDTO
+}
 
-export interface IMenuItemCreateMapper extends IDatabaseToDtoMapper<MenuItemModel, MenuItemCreateOutputDTO, MenuItemCreateDtoModelAdditionalData>,
-                                              IDtoToDatabaseMapper<MenuItemCreateInputDTO, MenuItemCreateInput, MenuItemCreateDbModelAdditionalData> {}
+export interface IMenuItemCreateMapper {
+    toDto(dbModel: MenuItemModel): MenuItemCreateOutputDTO
+    toDbModel(dtoModel: MenuItemCreateInputDTO): MenuItemCreateInput
+}
 
-export interface IMenuItemUpdateMapper extends IDatabaseToDtoMapper<MenuItemModel, MenuItemUpdateOutputDTO, MenuItemUpdateDtoModelAdditionalData>,
-                                              IDtoToDatabaseMapper<MenuItemUpdateInputDTO, MenuItemUpdateInput, MenuItemUpdateDbModelAdditionalData> {}
-
-export interface IMenuItemGetMapper extends IDatabaseToDtoMapper<MenuItemModel, MenuItemGetOutputDTO, MenuItemGetDtoModelAdditionalData> {}
+export interface IMenuItemUpdateMapper {
+    toDto(dbModel: MenuItemModel): MenuItemUpdateOutputDTO
+    toDbModel(dtoModel: MenuItemUpdateInputDTO): MenuItemUpdateInput
+}

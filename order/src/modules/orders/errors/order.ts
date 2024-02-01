@@ -20,8 +20,44 @@ export class OrderAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExists
 
 export class OrderNotReadyError extends AppError {
 
-    constructor(id: number) {
+    constructor(id: number | bigint) {
         super(`Order with id=${id} is not in 'Ready' status`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+
+}
+
+export class OrderNotDeliveringError extends AppError {
+
+    constructor(id: number | bigint) {
+        super(`Order with id=${id} is not in 'Delivering' status`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+
+}
+
+export class OrderCourierOwnershipError extends AppError {
+
+    constructor(id: number | bigint) {
+        super(`Courier cannot perform actions on order with id=${id}`)        
+    }
+
+    public get statusCode(): number {
+        return 403
+    }
+
+}
+
+export class OrderCustomerOwnershipError extends AppError {
+
+    constructor(id: number | bigint) {
+        super(`Customer cannot perform actions on order with id=${id}`)        
     }
 
     public get statusCode(): number {

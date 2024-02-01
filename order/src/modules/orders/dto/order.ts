@@ -1,4 +1,4 @@
-import { OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "./orderItem"
+import { OrderItemCreateInputDTO, OrderItemCreateOutputDTO, OrderItemGetOutputDTO } from "./orderItem"
 
 interface OrderBaseDTO {
     restaurantId: number
@@ -8,7 +8,8 @@ interface OrderBaseOutputDTO extends OrderBaseDTO {
     id: number
     customerId: number
     courierId?: number
-    promocode?: string
+    promocodeName?: string
+    promocodeDiscount?: number
     status: string
     createdAt: string
     deliveryAcceptedAt?: string
@@ -27,11 +28,11 @@ export interface OrderGetOutputDTO extends OrderBaseOutputDTO {
 export interface OrderCreateInputDTO extends OrderBaseDTO {
     promotionId?: number
     promocode?: string
-    items: OrderItemWithOrderCreateInputDTO[]
+    items: OrderItemCreateInputDTO[]
 }
 
 export interface OrderCreateOutputDTO extends OrderBaseOutputDTO {
-    items?: OrderItemWithOrderCreateOutputDTO[]
+    items?: OrderItemCreateOutputDTO[]
 }
 
 // export interface OrderUpdateInputDTO {

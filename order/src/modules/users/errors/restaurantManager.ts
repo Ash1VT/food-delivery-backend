@@ -20,7 +20,7 @@ export class RestaurantManagerAlreadyExistsWithIdError extends DatabaseInstanceA
 
 export class RestaurantManagerOwnershipError extends AppError {
     
-    constructor(restaurantManagerId: number, restaurantId: number) {
+    constructor(restaurantManagerId: number | bigint, restaurantId: number | bigint) {
         super(`Restaurant Manager with id=${restaurantManagerId} doesn't own
                Restaurant with id=${restaurantId} to perform this action`)
     }
@@ -29,4 +29,15 @@ export class RestaurantManagerOwnershipError extends AppError {
         return 403
     }
 
+}
+
+export class RestaurantManagerMissingRestaurantError extends AppError {
+    
+    constructor() {
+        super(`Restaurant Manager doesn't have a restaurant`)
+    }
+
+    public get statusCode(): number {
+        return 403
+    }
 }

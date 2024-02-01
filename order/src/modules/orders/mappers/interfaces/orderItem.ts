@@ -1,13 +1,15 @@
-import { OrderItemCreateOutputDTO, OrderItemCreateInputDTO, OrderItemGetOutputDTO, OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateOutputDTO } from "../../dto/orderItem";
-import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../models/orderItem";
-import { OrderItemCreateDtoModelAdditionalData, OrderItemCreateDbModelAdditionalData, OrderItemGetDtoModelAdditionalData } from "../additionalData";
-import IDatabaseToDtoMapper from "@src/base/mappers/interfaces/IDatabaseToDtoMapper";
-import IDtoToDatabaseMapper from "@src/base/mappers/interfaces/IDtoToDatabaseMapper";
+import { OrderItemWithOrderAdditionalData } from './../additionalData';
+import { OrderItemWithOrderCreateInput } from './../../models/orderItem';
+import { OrderItemCreateInputDTO, OrderItemGetOutputDTO } from "../../dto/orderItem";
+import { OrderItemCreateInput, OrderItemModel } from "../../models/orderItem";
+import { OrderItemAdditionalData } from "../additionalData";
 
-export interface IOrderItemCreateMapper extends IDatabaseToDtoMapper<OrderItemModel, OrderItemCreateOutputDTO, OrderItemCreateDtoModelAdditionalData>,
-                                              IDtoToDatabaseMapper<OrderItemCreateInputDTO, OrderItemCreateInput, OrderItemCreateDbModelAdditionalData> {}
+export interface IOrderItemGetMapper {
+    toDto(dbModel: OrderItemModel): OrderItemGetOutputDTO
+}
 
-export interface IOrderItemWithOrderCreateMapper extends IDatabaseToDtoMapper<OrderItemModel, OrderItemWithOrderCreateOutputDTO, OrderItemCreateDtoModelAdditionalData>,
-                                                         IDtoToDatabaseMapper<OrderItemWithOrderCreateInputDTO, OrderItemWithOrderCreateInput, OrderItemCreateDbModelAdditionalData> {}
-
-export interface IOrderItemGetMapper extends IDatabaseToDtoMapper<OrderItemModel, OrderItemGetOutputDTO, OrderItemGetDtoModelAdditionalData> {}
+export interface IOrderItemCreateMapper {
+    toDto(dbModel: OrderItemModel): OrderItemGetOutputDTO
+    toDbModel(dtoModel: OrderItemCreateInputDTO, additionalData: OrderItemAdditionalData): OrderItemCreateInput
+    toDbModelWithOrder(dtoModel: OrderItemCreateInputDTO, additionalData: OrderItemWithOrderAdditionalData): OrderItemWithOrderCreateInput
+}

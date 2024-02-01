@@ -1,10 +1,16 @@
-import { PromocodeCreateOutputDTO, PromocodeCreateInputDTO, PromocodeGetOutputDTO } from "../../dto/promocode";
-import { PromocodeCreateInput, PromocodeModel } from "../../models/promocode";
-import { PromocodeCreateDtoModelAdditionalData, PromocodeCreateDbModelAdditionalData, PromocodeGetDtoModelAdditionalData } from "../additionalData";
-import IDatabaseToDtoMapper from "@src/base/mappers/interfaces/IDatabaseToDtoMapper";
-import IDtoToDatabaseMapper from "@src/base/mappers/interfaces/IDtoToDatabaseMapper";
+import { PromocodeCreateOutputDTO, PromocodeCreateInputDTO, PromocodeGetOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
+import { PromocodeCreateInput, PromocodeModel, PromocodeUpdateInput } from "../../models/promocode";
 
-export interface IPromocodeCreateMapper extends IDatabaseToDtoMapper<PromocodeModel, PromocodeCreateOutputDTO, PromocodeCreateDtoModelAdditionalData>,
-                                              IDtoToDatabaseMapper<PromocodeCreateInputDTO, PromocodeCreateInput, PromocodeCreateDbModelAdditionalData> {}
+export interface IPromocodeGetMapper {
+    toDto(dbModel: PromocodeModel): PromocodeGetOutputDTO
+}
 
-export interface IPromocodeGetMapper extends IDatabaseToDtoMapper<PromocodeModel, PromocodeGetOutputDTO, PromocodeGetDtoModelAdditionalData> {}
+export interface IPromocodeCreateMapper {
+    toDto(dbModel: PromocodeModel): PromocodeCreateOutputDTO
+    toDbModel(dtoModel: PromocodeCreateInputDTO): PromocodeCreateInput
+}
+
+export interface IPromocodeUpdateMapper {
+    toDto(dbModel: PromocodeModel): PromocodeUpdateOutputDTO
+    toDbModel(dtoModel: PromocodeUpdateInputDTO): PromocodeUpdateInput
+}

@@ -3,7 +3,7 @@ import { OrderCreateInput, OrderModel, OrderUpdateInput } from "../../models/ord
 import PrismaBaseRepository from "@src/base/repositories/prisma/PrismaBaseRepository";
 import IOrderRepository from "../interfaces/IOrderRepository";
 import { OrderDelegate } from "./delegates";
-
+import { OrderStatus } from "../../models/orderStatus";
 
 export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDelegate, OrderModel, OrderCreateInput, OrderUpdateInput>
                                            implements IOrderRepository {
@@ -12,13 +12,29 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         super(prisma.order)
     }
 
-    public async getOne(id: number): Promise<OrderModel | null> {
+    
+    public async getOne(id: number, includeItems?: boolean): Promise<OrderModel | null> {
         return await this.delegate.findFirst({
             where: {
                 id
+            },
+            include: {
+                items: !!includeItems
             }
         })
     }
+
+    public async getMany(includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+        return await this.delegate.findMany({
+            where: {
+                status
+            },
+            include: {
+                items: !!includeItems
+            }
+        })
+    }
+
     public async create(data: OrderCreateInput): Promise<OrderModel> {
         return await this.delegate.create({
             data,
@@ -28,26 +44,38 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         })
     }
 
-    public async getCustomerOrders(customerId: number): Promise<OrderModel[]> {
+    public async getCustomerOrders(customerId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
-                customerId
+                customerId,
+                status
+            },
+            include: {
+                items: !!includeItems
             }
         })
     }
 
-    public async getRestaurantOrders(restaurantId: number): Promise<OrderModel[]> {
+    public async getRestaurantOrders(restaurantId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
-                restaurantId
+                restaurantId,
+                status
+            },
+            include: {
+                items: !!includeItems
             }
         })
     }
     
-    public async getCourierOrders(courierId: number): Promise<OrderModel[]> {
+    public async getCourierOrders(courierId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
-                courierId
+                courierId,
+                status
+            },
+            include: {
+                items: !!includeItems
             }
         })
     }

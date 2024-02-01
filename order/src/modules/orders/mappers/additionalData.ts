@@ -1,25 +1,22 @@
-export type OrderItemCreateDbModelAdditionalData = {}
+export type OrderItemAdditionalData = {
+    menuItemName: string
+    menuItemImageUrl: string
+    menuItemPrice: number
+    orderId: number
+}
 
-export type OrderItemCreateDtoModelAdditionalData = {}
+export type OrderItemWithOrderAdditionalData = {
+    menuItemName: string
+    menuItemImageUrl: string
+    menuItemPrice: number
+}
 
-export type OrderItemGetDtoModelAdditionalData = {}
-
-
-export type OrderCreateDbModelAdditionalData = {
-    customerId: number,
-    promocodeId?: number,
+export type OrderAdditionalData = {
+    customerId: bigint,
+    promocodeName?: string
+    promocodeDiscount?: number,
     supposedDeliveryTime: Date,
     totalPrice: number,
     decountedPrice: number
-    itemsAdditionalData: OrderItemCreateDbModelAdditionalData[]
-}
-
-export type OrderCreateDtoModelAdditionalData = {
-    promocode?: string
-    itemsAdditionalData: OrderItemCreateDtoModelAdditionalData[]
-}
-
-export type OrderGetDtoModelAdditionalData = {
-    promocode?: string
-    itemsAdditionalData: OrderItemGetDtoModelAdditionalData[]
+    itemsAdditionalData: OrderItemWithOrderAdditionalData[]
 }

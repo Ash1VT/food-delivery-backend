@@ -1,12 +1,10 @@
-import { PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeGetOutputDTO } from "../../dto/promocode";
-import { PromocodeCreateInput, PromocodeModel } from "../../models/promocode";
-import { IPromocodeGetMapper, IPromocodeCreateMapper } from "../interfaces/promocode";
-import { PromocodeGetDtoModelAdditionalData, PromocodeCreateDtoModelAdditionalData, PromocodeCreateDbModelAdditionalData } from "../additionalData";
-import mapManyModels from "@src/utils/mapManyModels";
+import { PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeGetOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
+import { PromocodeCreateInput, PromocodeModel, PromocodeUpdateInput } from "../../models/promocode";
+import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../interfaces/promocode";
 
 export class PromocodeGetMapper implements IPromocodeGetMapper {
 
-    toDto(dbModel: PromocodeModel, additionalData: PromocodeGetDtoModelAdditionalData): PromocodeGetOutputDTO {
+    toDto(dbModel: PromocodeModel): PromocodeGetOutputDTO {
         return {
             id: Number(dbModel.id),
             nameIdentifier: dbModel.nameIdentifier,
@@ -15,19 +13,16 @@ export class PromocodeGetMapper implements IPromocodeGetMapper {
             validUntil: dbModel.validUntil.toString(),
             maxUsageCount: dbModel.maxUsageCount,
             currentUsageCount: dbModel.currentUsageCount,
+            restaurantId: Number(dbModel.restaurantId),
             isActive: dbModel.isActive
         }
-    }
-
-    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeGetDtoModelAdditionalData[]): PromocodeGetOutputDTO[] {
-        return mapManyModels(dbModels, this.toDto, additionalData)
     }
 
 }
 
 export class PromocodeCreateMapper implements IPromocodeCreateMapper {
     
-    toDto(dbModel: PromocodeModel, additionalData: PromocodeCreateDtoModelAdditionalData): PromocodeCreateOutputDTO {
+    toDto(dbModel: PromocodeModel): PromocodeCreateOutputDTO {
         return {
             id: Number(dbModel.id),
             nameIdentifier: dbModel.nameIdentifier,
@@ -36,27 +31,47 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
             validUntil: dbModel.validUntil.toString(),
             maxUsageCount: dbModel.maxUsageCount,
             currentUsageCount: dbModel.currentUsageCount,
+            restaurantId: Number(dbModel.restaurantId),
             isActive: dbModel.isActive
         }
     }
 
-    toDtos(dbModels: PromocodeModel[], additionalData: PromocodeCreateDtoModelAdditionalData[]): PromocodeCreateOutputDTO[] {
-        return mapManyModels(dbModels, this.toDto, additionalData)
-    }
-    
-    toDbModel(dtoModel: PromocodeCreateInputDTO, additionalData: PromocodeCreateDbModelAdditionalData = {}): PromocodeCreateInput {
+    toDbModel(dtoModel: PromocodeCreateInputDTO): PromocodeCreateInput {
         return {
             nameIdentifier: dtoModel.nameIdentifier,
             discountPercentage: dtoModel.discountPercentage,
             validFrom: new Date(dtoModel.validFrom),
             validUntil: new Date(dtoModel.validUntil),
             maxUsageCount: dtoModel.maxUsageCount,
-            currentUsageCount: dtoModel.currentUsageCount
+            restaurantId: BigInt(dtoModel.restaurantId)
         }
     }
 
-    toDbModels(dtoModels: PromocodeCreateInputDTO[], additionalData: PromocodeCreateDbModelAdditionalData[] = []): PromocodeCreateInput[] {
-        return mapManyModels(dtoModels, this.toDbModel, additionalData)
-    }
+}
 
+export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
+
+    toDto(dbModel: PromocodeModel): PromocodeUpdateOutputDTO {
+        return {
+            id: Number(dbModel.id),
+            nameIdentifier: dbModel.nameIdentifier,
+            discountPercentage: dbModel.discountPercentage,
+            validFrom: dbModel.validFrom.toString(),
+            validUntil: dbModel.validUntil.toString(),
+            maxUsageCount: dbModel.maxUsageCount,
+            currentUsageCount: dbModel.currentUsageCount,
+            restaurantId: Number(dbModel.restaurantId),
+            isActive: dbModel.isActive
+        }
+    }
+    
+    toDbModel(dtoModel: PromocodeUpdateInputDTO): PromocodeUpdateInput {
+        return {
+            discountPercentage: dtoModel.discountPercentage,
+            validFrom: new Date(dtoModel.validFrom),
+            validUntil: new Date(dtoModel.validUntil),
+            maxUsageCount: dtoModel.maxUsageCount,
+        }
+    }
+    
 }

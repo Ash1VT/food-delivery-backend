@@ -46,4 +46,12 @@ export default abstract class PrismaBaseRepository<
             }
         })
     }
+
+    public async exists(id: number): Promise<boolean> {
+        return await this.delegate.count({
+            where: {
+                id
+            }
+        }) !== 0
+    }
 }
