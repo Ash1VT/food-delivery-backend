@@ -5,13 +5,23 @@
   "author": "ash1vt",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && tscpaths -p tsconfig.json -s . -o dist",
+    "env:dev": "dotenv -e ./env/.env.dev",
+    "env:test": "dotenv -e ./env/.env.test",
+
+    "build": "tsc && yarn build:paths",
+    "build:paths": "tscpaths -p tsconfig.json -s . -o dist",
+
+    "watch": "tsc-watch --onSuccess \"yarn build:paths\"",
+
     "start": "node ./dist/src/index.js",
-    "watch": "tsc -w",
-    "start:dev": "dotenv -e ./env/.env.dev -- nodemon --inspect ./dist/src/index.js",
-    "start:test": "dotenv -e ./env/.env.test -- node ./dist/tests/index.js",
-    "migrate:dev": "dotenv -e ./env/.env.dev -- prisma migrate dev",
-    "migrate:test": "dotenv -e ./env/.env.test -- prisma migrate dev"
+    "start:dev": "yarn env:dev \"nodemon --inspect ./dist/src/index.js\"",
+
+    "test": "yarn env:test \"node ./dist/tests/index.js\"",
+    
+    "migrate:dev": "yarn env:dev \"prisma migrate dev\"",
+    "migrate:test": "yarn env:test \"prisma migrate dev\"",
+    
+    "admin:dev": "yarn env:dev \"prisma studio\""
   },
   "dependencies": {
     "express": "^4.18.2"
@@ -25,6 +35,7 @@
     "nodemon": "^3.0.2",
     "prisma": "^5.8.0",
     "ts-node": "^10.9.2",
+    "tsc-watch": "^6.0.4",
     "tscpaths": "^0.0.9",
     "typescript": "^5.3.3"
   }
