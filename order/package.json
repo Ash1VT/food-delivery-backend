@@ -5,7 +5,8 @@
   "author": "ash1vt",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && tscpaths -p tsconfig.json -s . -o dist",
+    "build": "tsc && yarn build:paths",
+    "build:paths": "tscpaths -p tsconfig.json -s . -o dist",
     "start": "node ./dist/src/index.js",
     "watch": "tsc -w",
     "start:dev": "dotenv -e ./env/.env.dev -- nodemon --inspect ./dist/src/index.js",
