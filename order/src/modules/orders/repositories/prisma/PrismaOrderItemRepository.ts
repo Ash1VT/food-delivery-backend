@@ -11,5 +11,13 @@ export default class OrderItemRepository extends PrismaBaseRepository<OrderItemD
     constructor(prisma: PrismaClient) {
         super(prisma.orderItem)
     }
+
+    public async getOrderItems(orderId: number): Promise<OrderItemModel[]> {
+        return this.delegate.findMany({
+            where: {
+                orderId
+            }
+        })
+    }
     
 }
