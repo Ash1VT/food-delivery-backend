@@ -2,6 +2,13 @@ export type OrderItemAdditionalData = {
     menuItemName: string
     menuItemImageUrl: string
     menuItemPrice: number
+    orderId: number
+}
+
+export type OrderItemWithOrderAdditionalData = {
+    menuItemName: string
+    menuItemImageUrl: string
+    menuItemPrice: number
 }
 
 export type OrderAdditionalData = {
@@ -11,5 +18,5 @@ export type OrderAdditionalData = {
     supposedDeliveryTime: Date,
     totalPrice: number,
     decountedPrice: number
-    itemsAdditionalData: OrderItemAdditionalData[]
+    itemsAdditionalData: OrderItemWithOrderAdditionalData[]
 }
