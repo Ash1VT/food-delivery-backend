@@ -3,6 +3,7 @@ import { OrderModel, OrderCreateInput, OrderUpdateInput } from "../../models/ord
 import IBaseRepository from "@src/base/repositories/interfaces/IBaseRepository";
 
 export default interface IOrderRepository extends IBaseRepository<OrderModel, OrderCreateInput, OrderUpdateInput> {
+    getOne(id: number, includeItems?: boolean): Promise<OrderModel | null>
     getMany(includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]>
     getCustomerOrders(customerId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]>
     getCourierOrders(courierId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]>

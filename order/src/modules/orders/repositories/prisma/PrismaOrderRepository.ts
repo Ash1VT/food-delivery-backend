@@ -5,12 +5,23 @@ import IOrderRepository from "../interfaces/IOrderRepository";
 import { OrderDelegate } from "./delegates";
 import { OrderStatus } from "../../models/orderStatus";
 
-
 export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDelegate, OrderModel, OrderCreateInput, OrderUpdateInput>
                                            implements IOrderRepository {
 
     constructor(prisma: PrismaClient) {
         super(prisma.order)
+    }
+
+    
+    public async getOne(id: number, includeItems?: boolean): Promise<OrderModel | null> {
+        return await this.delegate.findFirst({
+            where: {
+                id
+            },
+            include: {
+                items: !!includeItems
+            }
+        })
     }
 
     public async getMany(includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
