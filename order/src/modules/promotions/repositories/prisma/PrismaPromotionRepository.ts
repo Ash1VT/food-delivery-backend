@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import PrismaBaseRepository from "@src/base/repositories/prisma/PrismaBaseRepository";
+import PrismaBaseRepository from "@src/core/repositories/prisma/PrismaBaseRepository";
 import { PromotionModel, PromotionCreateInput, PromotionUpdateInput } from "../../models/promotion";
 import IPromotionRepository from "../interfaces/IPromotionRepository";
 import { PromotionDelegate } from "./delegates";

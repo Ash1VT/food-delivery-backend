@@ -1,4 +1,4 @@
-import AppError from "@src/base/errors/AppError";
+import AppError from "@src/core/errors/AppError";
 
 export class PermissionDeniedError extends AppError {
 
