@@ -1,52 +1,16 @@
-import express from "express";
-import dotenv from "dotenv";
 import getSettings from "./utils/getSettings";
-import { OrderStatus, Prisma, PrismaClient } from '@prisma/client'
-import ICustomerRepository from "./modules/users/repositories/interfaces/ICustomerRepository";
-import IMenuItemRepository from "./modules/menu/repositories/interfaces/IMenuItemRepository";
-import PrismaMenuItemRepository from "./modules/menu/repositories/prisma/PrismaMenuItemRepository";
-import PrismaCustomerRepository from "./modules/users/repositories/prisma/PrismaCustomerRepository";
-import PrismaOrderRepository from "./modules/orders/repositories/prisma/PrismaOrderRepository";
+import { getExpressApp, startExpressApp } from "./core/setup/express";
+import { getPrismaClient } from "./core/setup/prisma";
+import { registerSwagger } from "./core/setup/swagger";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unreachable code error
-BigInt.prototype.toJSON = function () {
-    return this.toString();
-};
+const app = getExpressApp()
+const prismaClient = getPrismaClient()
+const appSettings = getSettings()
 
-const app = express()
-const settings = getSettings()
-const prismaClient = new PrismaClient()
-const orderRepository = new PrismaOrderRepository(prismaClient)
-const customerRepository: ICustomerRepository = new PrismaCustomerRepository(prismaClient)
-const menuItemRepository: IMenuItemRepository = new PrismaMenuItemRepository(prismaClient)
-const date = new Date()
-
-const fuckingShit = {
-    customerId: 1,
-    restaurantId: 0,
-    supposedDeliveryTime: date,
-    totalPrice: 12.00,
-    decountedPrice: 13.00,
-    items: {
-        create: [
-            {
-                menuItemId: 1,
-                quantity: 2
-            }
-        ]
-    }
-}
+registerSwagger(app)
 
 app.get('/', async (req, res) => {
-    res.json({'message': await customerRepository.getMany()})
+    res.json({'message': "Hello!"})
 })
 
-// app.get('/hi', (req, res) => {
-    // res.send("Hi!!!!")
-// })
-
-// app.disable('etag');
-app.listen(settings.variables.appPort, settings.variables.appHost, () => {
-    console.log("app started")
-})
+startExpressApp(app, appSettings)
