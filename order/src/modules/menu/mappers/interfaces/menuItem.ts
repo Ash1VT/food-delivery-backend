@@ -1,5 +1,6 @@
 import { MenuItemCreateOutputDTO, MenuItemCreateInputDTO, MenuItemUpdateOutputDTO, MenuItemUpdateInputDTO, MenuItemGetOutputDTO } from "../../dto/menuItem";
 import { MenuItemCreateInput, MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
+
 export interface IMenuItemGetMapper {
     toDto(dbModel: MenuItemModel): MenuItemGetOutputDTO
 }

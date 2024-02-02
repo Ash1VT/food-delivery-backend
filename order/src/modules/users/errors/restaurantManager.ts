@@ -1,6 +1,6 @@
-import AppError from "@src/base/errors/AppError";
-import DatabaseInstanceAlreadyExistsError from "@src/base/errors/DatabaseInstanceAlreadyExistsError";
-import DatabaseInstanceNotFoundError from "@src/base/errors/DatabaseInstanceNotFoundError";
+import AppError from "@src/core/errors/AppError";
+import DatabaseInstanceAlreadyExistsError from "@src/core/errors/DatabaseInstanceAlreadyExistsError";
+import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotFoundError";
 
 export class RestaurantManagerNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 

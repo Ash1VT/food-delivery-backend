@@ -1,6 +1,6 @@
-import { OrderStatus } from './../../models/orderStatus';
+import { OrderStatus } from '../../models/orderStatus';
 import { OrderModel, OrderCreateInput, OrderUpdateInput } from "../../models/order";
-import IBaseRepository from "@src/base/repositories/interfaces/IBaseRepository";
+import IBaseRepository from "@src/core/repositories/interfaces/IBaseRepository";
 
 export default interface IOrderRepository extends IBaseRepository<OrderModel, OrderCreateInput, OrderUpdateInput> {
     getOne(id: number, includeItems?: boolean): Promise<OrderModel | null>

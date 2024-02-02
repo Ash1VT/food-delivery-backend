@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PromocodeCreateInput, PromocodeModel, PromocodeUpdateInput } from "../../models/promocode";
-import PrismaBaseRepository from "@src/base/repositories/prisma/PrismaBaseRepository";
+import PrismaBaseRepository from "@src/core/repositories/prisma/PrismaBaseRepository";
 import IPromocodeRepository from "../interfaces/IPromocodeRepository";
 import { PromocodeDelegate } from "./delegates";
 

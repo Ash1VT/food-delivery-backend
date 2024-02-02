@@ -1,5 +1,5 @@
-import DatabaseInstanceAlreadyExistsError from "@src/base/errors/DatabaseInstanceAlreadyExistsError";
-import DatabaseInstanceNotFoundError from "@src/base/errors/DatabaseInstanceNotFoundError";
+import DatabaseInstanceAlreadyExistsError from "@src/core/errors/DatabaseInstanceAlreadyExistsError";
+import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotFoundError";
 
 export class PromotionNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
