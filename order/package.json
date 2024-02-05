@@ -1,7 +1,6 @@
 {
   "name": "order",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "ash1vt",
   "license": "MIT",
   "scripts": {
@@ -11,12 +10,12 @@
     "build:paths": "tscpaths -p tsconfig.json -s . -o dist",
     "watch": "tsc-watch --onSuccess \"yarn build:paths\"",
     "start": "node ./dist/src/app.js",
-    "start:dev": "yarn env:dev \"nodemon --inspect ./dist/src/app.js\"",
-    "test": "yarn env:test \"jest -c jest.config.json\"",
-    "test:coverage": "yarn env:test \"jest --coverage -c jest.config.json\"",
-    "migrate:dev": "yarn env:dev \"prisma migrate dev\"",
-    "migrate:test": "yarn env:test \"prisma migrate dev\"",
-    "admin:dev": "yarn env:dev \"prisma studio\""
+    "start:dev": "yarn env:dev -- -- nodemon --inspect ./dist/src/app.js",
+    "test": "yarn env:test -- -- jest -c jest.config.json",
+    "test:coverage": "yarn env:test -- -- jest --coverage -c jest.config.json",
+    "migrate:dev": "yarn env:dev -- -- prisma migrate dev",
+    "migrate:test": "yarn env:test -- -- prisma migrate dev",
+    "admin:dev": "yarn env:dev -- -- prisma studio"
   },
   "dependencies": {
     "express": "^4.18.2"
