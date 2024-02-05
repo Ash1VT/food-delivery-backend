@@ -35,8 +35,8 @@ export type OrderCreateInput = {
     deliveryFinishedAt?: Date
     totalPrice: number
     decountedPrice: number
-    create?: {
-        items: OrderItemWithOrderCreateInput[]
+    items?: {
+        create?: OrderItemWithOrderCreateInput[]
     }
 }
 
