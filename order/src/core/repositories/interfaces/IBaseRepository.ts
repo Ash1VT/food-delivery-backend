@@ -3,6 +3,6 @@ export default interface IBaseRepository<Model, CreateInput, UpdateInput> {
     getMany(): Promise<Model[]>
     create(data: CreateInput): Promise<Model>
     update(id: number, data: UpdateInput): Promise<Model | null>
-    delete(id: number): void
+    delete(id: number): Promise<void>
     exists(id: number): Promise<boolean>
 }
