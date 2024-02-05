@@ -5,8 +5,7 @@ import IRestaurantManagerRepository from "../interfaces/IRestaurantManagerReposi
 import { RestaurantManagerDelegate } from "./delegates";
 
 
-export default class PrismaRestaurantManagerRepository extends PrismaBaseRepository<RestaurantManagerDelegate, RestaurantManagerModel, RestaurantManagerCreateInput, RestaurantManagerUpdateInput>
-                                                       implements IRestaurantManagerRepository {
+export default class PrismaRestaurantManagerRepository extends PrismaBaseRepository<RestaurantManagerDelegate, RestaurantManagerModel, RestaurantManagerCreateInput, RestaurantManagerUpdateInput> implements IRestaurantManagerRepository {
 
     constructor(prisma: PrismaClient) {
         super(prisma.restaurantManager)

@@ -5,8 +5,7 @@ import IModeratorRepository from "../interfaces/IModeratorRepository";
 import { ModeratorDelegate } from "./delegates";
 
 
-export default class PrismaModeratorRepository extends PrismaBaseRepository<ModeratorDelegate, ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput>
-                                               implements IModeratorRepository {
+export default class PrismaModeratorRepository extends PrismaBaseRepository<ModeratorDelegate, ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput> implements IModeratorRepository {
 
     constructor(prisma: PrismaClient) {
         super(prisma.moderator)

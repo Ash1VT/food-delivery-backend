@@ -5,8 +5,7 @@ import ICourierRepository from "../interfaces/ICourierRepository";
 import { CourierDelegate } from "./delegates";
 
 
-export default class PrismaCourierRepository extends PrismaBaseRepository<CourierDelegate, CourierModel, CourierCreateInput, CourierUpdateInput>
-                                             implements ICourierRepository {
+export default class PrismaCourierRepository extends PrismaBaseRepository<CourierDelegate, CourierModel, CourierCreateInput, CourierUpdateInput> implements ICourierRepository {
 
     constructor(prisma: PrismaClient) {
         super(prisma.courier)

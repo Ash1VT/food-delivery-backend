@@ -5,8 +5,7 @@ import IOrderRepository from "../interfaces/IOrderRepository";
 import { OrderDelegate } from "./delegates";
 import { OrderStatus } from "../../models/orderStatus";
 
-export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDelegate, OrderModel, OrderCreateInput, OrderUpdateInput>
-                                           implements IOrderRepository {
+export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDelegate, OrderModel, OrderCreateInput, OrderUpdateInput> implements IOrderRepository {
 
     constructor(prisma: PrismaClient) {
         super(prisma.order)
