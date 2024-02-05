@@ -15,13 +15,16 @@ export class OrderGetMapper implements IOrderGetMapper {
         return {
             id: Number(dbModel.id),
             customerId: Number(dbModel.customerId),
-            courierId: Number(dbModel.courierId),
+            courierId: dbModel.courierId ? Number(dbModel.courierId) : undefined,
             restaurantId: Number(dbModel.restaurantId),
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
             status: dbModel.status,
             createdAt: dbModel.createdAt.toString(),
+            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toString(),
             supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
+            actualDeliveryTime: dbModel.actualDeliveryTime?.toString(),
+            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
             totalPrice: dbModel.totalPrice,
             decountedPrice: dbModel.decountedPrice,
             items: dbModel.items ? mapManyModels(dbModel.items, this.orderItemGetMapper.toDto) : undefined
@@ -65,8 +68,8 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             supposedDeliveryTime: additionalData.supposedDeliveryTime,
             totalPrice: additionalData.totalPrice,
             decountedPrice: additionalData.decountedPrice,
-            create: {
-                items: mapManyModelsWithAdditionalData(dtoModel.items, this.orderItemCreateMapper.toDbModelWithOrder, additionalData.itemsAdditionalData)
+            items: {
+                create: mapManyModelsWithAdditionalData(dtoModel.items, this.orderItemCreateMapper.toDbModelWithOrder, additionalData.itemsAdditionalData)
             }
         }
     }
