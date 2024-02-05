@@ -8,7 +8,6 @@ import IModeratorService from "../interfaces/IModeratorService";
 export default class ModeratorService implements IModeratorService {
     
     constructor(
-        protected moderatorGetMapper: IModeratorGetMapper,
         protected moderatorCreateMapper: IModeratorCreateMapper,
         protected moderatorRepository: IModeratorRepository
     ) {}

@@ -8,7 +8,6 @@ import IRestaurantService from "../interfaces/IRestaurantService";
 export default class RestaurantService implements IRestaurantService {
 
     constructor(
-        protected restaurantGetMapper: IRestaurantGetMapper,
         protected restaurantCreateMapper: IRestaurantCreateMapper,
         protected restaurantRepository: IRestaurantRepository
     ) {}

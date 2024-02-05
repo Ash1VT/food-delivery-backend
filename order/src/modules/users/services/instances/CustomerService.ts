@@ -8,7 +8,6 @@ import ICustomerService from "../interfaces/ICustomerService";
 export default class CustomerService implements ICustomerService {
 
     constructor(
-        protected customerGetMapper: ICustomerGetMapper,
         protected customerCreateMapper: ICustomerCreateMapper,
         protected customerRepository: ICustomerRepository
     ) {}

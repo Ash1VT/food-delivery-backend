@@ -9,7 +9,6 @@ import { PromocodeGetOutputDTO } from "../../dto/promocode";
 export default class PromotionService implements IPromotionService {
 
     constructor(
-        protected promotionGetMapper: IPromotionGetMapper,
         protected promotionCreateMapper: IPromotionCreateMapper,
         protected promotionRepository: IPromotionRepository
     ) {}

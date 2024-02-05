@@ -6,7 +6,6 @@ import IMenuItemService from "../interfaces/IMenuItemService";
 export default class MenuItemService implements IMenuItemService {
 
     constructor(
-        protected menuItemGetMapper: IMenuItemGetMapper,
         protected menuItemCreateMapper: IMenuItemCreateMapper,
         protected menuItemRepository: IMenuItemRepository
     ) {}

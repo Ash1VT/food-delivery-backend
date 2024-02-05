@@ -8,7 +8,6 @@ import { mapManyModels } from "@src/utils/mapManyModels";
 export default class CourierService implements ICourierService {
 
     constructor(
-        protected courierGetMapper: ICourierGetMapper,
         protected courierCreateMapper: ICourierCreateMapper,
         protected courierRepository: ICourierRepository
     ) {}
