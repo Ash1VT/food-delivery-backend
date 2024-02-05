@@ -6,7 +6,7 @@ export class PromotionGetMapper implements IPromotionGetMapper {
 
     toDto(dbModel: PromotionModel): PromotionGetOutputDTO {
         return {
-            id: Number(dbModel.id)
+            id: Number(dbModel.id),
         }
     }
 
