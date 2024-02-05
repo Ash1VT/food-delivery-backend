@@ -98,6 +98,8 @@ export function generatePromocodeUpdateInputDto(): PromocodeUpdateInputDTO {
         }),
         validFrom: faker.date.recent().toString(),
         validUntil: faker.date.soon().toString(),
-        maxUsageCount: Number.MAX_SAFE_INTEGER
+        maxUsageCount: faker.number.int({
+            max: 10000
+        })
     }
 }
