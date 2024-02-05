@@ -2,11 +2,11 @@ interface RestaurantManagerBaseDTO {
     id: number
 }
 
-interface RestaurantManagerBaseOutputDTO extends RestaurantManagerBaseDTO {
+interface RestaurantManagerBaseOutputDTO extends RestaurantManagerBaseDTO {}
+
+export interface RestaurantManagerGetOutputDTO extends RestaurantManagerBaseOutputDTO {
     restaurantId?: number
 }
-
-export interface RestaurantManagerGetOutputDTO extends RestaurantManagerBaseOutputDTO {}
 
 export interface RestaurantManagerCreateInputDTO extends RestaurantManagerBaseDTO {}
 
