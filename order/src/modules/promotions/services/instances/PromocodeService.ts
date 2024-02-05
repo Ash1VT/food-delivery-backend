@@ -1,7 +1,7 @@
 import { PermissionDeniedError } from './../../../users/errors/permissions';
 import { RestaurantManagerModel } from './../../../users/models/restaurantManager';
 import { PromocodeGetOutputDTO, PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
-import { PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "../../errors/promocode";
+import { PromocodeMaximumUsageError, PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "../../errors/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../../mappers/interfaces/promocode";
 import { PromocodeModel } from "../../models/promocode";
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
@@ -120,8 +120,8 @@ export default class PromocodeService implements IPromocodeService {
 
         const promocodeUpdateInput = this.promocodeUpdateMapper.toDbModel(promocodeData)
 
-        if (promocodeUpdateInput.maxUsageCount && promocodeUpdateInput.maxUsageCount > promocodeInstance.currentUsageCount) {
-            throw new PromocodeUsageError(promocodeId)
+        if (promocodeUpdateInput.maxUsageCount && promocodeInstance.currentUsageCount > promocodeUpdateInput.maxUsageCount) {
+            throw new PromocodeMaximumUsageError(promocodeId)
         }
 
         const promocodeUpdatedInstance = await this.promocodeRepository.update(promocodeId, promocodeUpdateInput) as PromocodeModel

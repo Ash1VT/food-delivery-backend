@@ -37,6 +37,16 @@ export class PromocodeUsageError extends AppError {
     }
 }
 
+export class PromocodeMaximumUsageError extends AppError {
+
+    constructor(id: number) {
+        super(`Cannot set maximum usage smaller than current usage count for Promocode with id=${id}`)
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+}
 
 export class PromocodeNotActiveError extends AppError {
 
