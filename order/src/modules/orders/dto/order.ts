@@ -10,6 +10,7 @@ interface OrderBaseOutputDTO extends OrderBaseDTO {
     courierId?: number
     promocodeName?: string
     promocodeDiscount?: number
+    promotionId?: number
     status: string
     createdAt: string
     deliveryAcceptedAt?: string

@@ -27,6 +27,7 @@ export type OrderCreateInput = {
     restaurantId: bigint
     promocodeName?: string
     promocodeDiscount?: number
+    promotionId?: bigint
     status?: OrderStatus
     createdAt?: Date
     deliveryAcceptedAt?: Date
