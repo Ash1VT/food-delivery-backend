@@ -2,7 +2,7 @@ import { PermissionDeniedError } from './../../../users/errors/permissions';
 import { PromocodeAlreadyExistsWithNameError } from "./../../errors/promocode";
 import { RestaurantManagerModel } from './../../../users/models/restaurantManager';
 import { PromocodeGetOutputDTO, PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
-import { PromocodeMaximumUsageError, PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "../../errors/promocode";
+import { PromocodeMaximumUsageError, PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError } from "../../errors/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../../mappers/interfaces/promocode";
 import { PromocodeModel } from "../../models/promocode";
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";

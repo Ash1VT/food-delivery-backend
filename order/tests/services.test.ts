@@ -1,4 +1,4 @@
-import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeUsageError } from './../src/modules/promotions/errors/promocode';
+import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from './../src/modules/promotions/errors/promocode';
 import { RestaurantManagerOwnershipError } from './../src/modules/users/errors/restaurantManager';
 import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from './../src/modules/promotions/mappers/instances/promocode';
 import { MenuItem, PrismaClient } from "@prisma/client"
@@ -381,6 +381,8 @@ describe("Tests for Services", () => {
 
             const expectedResult = {
                 ...promocodeCreateInputDto,
+                validFrom: promocodeCreateInputDto.validFrom.toISOString(),
+                validUntil: promocodeCreateInputDto.validUntil.toISOString(),
                 currentUsageCount: 0,
                 isActive: true
             }
@@ -404,8 +406,8 @@ describe("Tests for Services", () => {
                 ...promocodeInstance,
                 id: undefined,
                 restaurantId: promocodeInstance?.restaurantId,
-                validFrom: promocodeInstance?.validFrom.toString(),
-                validUntil: promocodeInstance?.validUntil.toString(),
+                validFrom: promocodeInstance?.validFrom.toISOString(),
+                validUntil: promocodeInstance?.validUntil.toISOString(),
             }
 
             expect(instanceResult).toEqual(expectedResult)
@@ -487,7 +489,9 @@ describe("Tests for Services", () => {
             const promocodeUpdateInputDto = generatePromocodeUpdateInputDto()
 
             const expectedResult = {
-                ...promocodeUpdateInputDto
+                ...promocodeUpdateInputDto,
+                validFrom: promocodeUpdateInputDto.validFrom.toISOString(),
+                validUntil: promocodeUpdateInputDto.validUntil.toISOString(),
             }
             
             const promocodeUpdateOutputDto = await promocodeService.update(promocode.id, promocodeUpdateInputDto)
@@ -512,8 +516,8 @@ describe("Tests for Services", () => {
             const instanceResult = {
                 discountPercentage: promocodeInstance?.discountPercentage,
                 maxUsageCount: promocodeInstance?.maxUsageCount,
-                validFrom: promocodeInstance?.validFrom.toString(),
-                validUntil: promocodeInstance?.validUntil.toString(),
+                validFrom: promocodeInstance?.validFrom.toISOString(),
+                validUntil: promocodeInstance?.validUntil.toISOString(),
             }
 
             expect(instanceResult).toEqual(expectedResult)
@@ -1036,12 +1040,12 @@ describe("Tests for Services", () => {
                 courierId: order.courierId,
                 customerId: order.customerId,
                 promotionId: undefined,
-                createdAt: order.createdAt.toString(),
+                createdAt: order.createdAt.toISOString(),
                 actualDeliveryTime: undefined,
                 deliveryAcceptedAt: undefined,
                 deliveryFinishedAt: undefined,
                 id: order.id,
-                supposedDeliveryTime: order.supposedDeliveryTime.toString(),
+                supposedDeliveryTime: order.supposedDeliveryTime.toISOString(),
                 restaurantId: order.restaurantId,
             }
 
@@ -1270,7 +1274,7 @@ describe("Tests for Services", () => {
         test("should create order", async () => {
             const customer = await createCustomer(prismaClient)
             const restaurant = await createRestaurant(prismaClient)
-            const promocode = await createPromocode(prismaClient, restaurant.id)
+            const promocode = await createPromocode(prismaClient, restaurant.id, true)
 
             const menuItems = await Promise.all(Array.from({length: manyCount}, async () => await createMenuItem(prismaClient, restaurant.id)))
             const menuItemIds = menuItems.map((menuItem) => menuItem.id)
@@ -1508,7 +1512,67 @@ describe("Tests for Services", () => {
                 await orderService.makeOrder(orderCreateInputDto)
             }
 
-            expect(serviceCall).rejects.toThrow(PromocodeUsageError)
+            expect(serviceCall).rejects.toThrow(PromocodeAmountUsageError)
+        })
+
+        test("should not create order, due to the fact that promocode have not started yet", async () => {
+            const customer = await createCustomer(prismaClient)
+            const restaurant = await createRestaurant(prismaClient)
+            const promocode = await createPromocode(prismaClient, restaurant.id)
+
+            const menuItems = await Promise.all(Array.from({length: manyCount}, async () => await createMenuItem(prismaClient, restaurant.id)))
+
+            const menuItemIds = menuItems.map((menuItem) => menuItem.id)
+
+            await prismaClient.promocode.update({
+                where: {
+                    id: promocode.id,
+                },
+                data: {
+                    validFrom: faker.date.future(),
+                    validUntil: faker.date.future()
+                }
+            })
+            
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
+
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+
+            const serviceCall = async () => {
+                await orderService.makeOrder(orderCreateInputDto)
+            }
+
+            expect(serviceCall).rejects.toThrow(PromocodeNotStartUsageError)
+        })
+
+        test("should not create order, due to the fact that promocode is expired", async () => {
+            const customer = await createCustomer(prismaClient)
+            const restaurant = await createRestaurant(prismaClient)
+            const promocode = await createPromocode(prismaClient, restaurant.id)
+
+            const menuItems = await Promise.all(Array.from({length: manyCount}, async () => await createMenuItem(prismaClient, restaurant.id)))
+
+            const menuItemIds = menuItems.map((menuItem) => menuItem.id)
+
+            await prismaClient.promocode.update({
+                where: {
+                    id: promocode.id,
+                },
+                data: {
+                    validFrom: faker.date.recent(),
+                    validUntil: faker.date.recent()
+                }
+            })
+            
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
+
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+
+            const serviceCall = async () => {
+                await orderService.makeOrder(orderCreateInputDto)
+            }
+
+            expect(serviceCall).rejects.toThrow(PromocodeExpiredUsageError)
         })
 
         test("should take order for delivery", async () => {

@@ -17,11 +17,11 @@ export class OrderGetMapper implements IOrderGetMapper {
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
             promotionId: dbModel.promotionId ? dbModel.promotionId : undefined,
-            createdAt: dbModel.createdAt.toString(),
-            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toString(),
-            supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
-            actualDeliveryTime: dbModel.actualDeliveryTime?.toString(),
-            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
+            createdAt: dbModel.createdAt.toISOString(),
+            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
+            supposedDeliveryTime: dbModel.supposedDeliveryTime.toISOString(),
+            actualDeliveryTime: dbModel.actualDeliveryTime?.toISOString(),
+            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString(),
             items: dbModel.items?.map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
         }
     }
@@ -41,11 +41,11 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
             promotionId: dbModel.promotionId ? dbModel.promotionId : undefined,
-            createdAt: dbModel.createdAt.toString(),
-            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toString(),
-            supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
-            actualDeliveryTime: dbModel.actualDeliveryTime?.toString(),
-            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
+            createdAt: dbModel.createdAt.toISOString(),
+            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
+            supposedDeliveryTime: dbModel.supposedDeliveryTime.toISOString(),
+            actualDeliveryTime: dbModel.actualDeliveryTime?.toISOString(),
+            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString(),
             items: dbModel.items?.map((orderItem) => this.orderItemCreateMapper.toDto(orderItem))
         }
     }

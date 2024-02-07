@@ -34,7 +34,7 @@ export class PromocodeAlreadyExistsWithNameError extends DatabaseInstanceAlready
 
 }
 
-export class PromocodeUsageError extends AppError {
+export class PromocodeAmountUsageError extends AppError {
 
     constructor(promocodeId: bigint) {
         super(`Promocode with id=${promocodeId} has maximum amount of usages`)
@@ -49,6 +49,28 @@ export class PromocodeMaximumUsageError extends AppError {
 
     constructor(promocodeId: bigint) {
         super(`Cannot set maximum usage smaller than current usage count for Promocode with id=${promocodeId}`)
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+}
+
+export class PromocodeExpiredUsageError extends AppError {
+
+    constructor(promocodeId: bigint) {
+        super(`Promocode with id=${promocodeId} is expired`)
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+}
+
+export class PromocodeNotStartUsageError extends AppError {
+
+    constructor(promocodeId: bigint) {
+        super(`Promocode with id=${promocodeId} has not started yet`)
     }
 
     public get statusCode(): number {

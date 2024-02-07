@@ -7,8 +7,8 @@ export class PromocodeGetMapper implements IPromocodeGetMapper {
     toDto(dbModel: PromocodeModel): PromocodeGetOutputDTO {
         return {
             ...dbModel,
-            validFrom: dbModel.validFrom.toString(),
-            validUntil: dbModel.validUntil.toString(),
+            validFrom: dbModel.validFrom.toISOString(),
+            validUntil: dbModel.validUntil.toISOString(),
         }
     }
 
@@ -19,16 +19,14 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
     toDto(dbModel: PromocodeModel): PromocodeCreateOutputDTO {
         return {
             ...dbModel,
-            validFrom: dbModel.validFrom.toString(),
-            validUntil: dbModel.validUntil.toString(),
+            validFrom: dbModel.validFrom.toISOString(),
+            validUntil: dbModel.validUntil.toISOString(),
         }
     }
 
     toDbModel(dtoModel: PromocodeCreateInputDTO): PromocodeCreateInput {
         return {
             ...dtoModel,
-            validFrom: new Date(dtoModel.validFrom),
-            validUntil: new Date(dtoModel.validUntil),
         }
     }
 
@@ -39,16 +37,14 @@ export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
     toDto(dbModel: PromocodeModel): PromocodeUpdateOutputDTO {
         return {
             ...dbModel,
-            validFrom: dbModel.validFrom.toString(),
-            validUntil: dbModel.validUntil.toString(),
+            validFrom: dbModel.validFrom.toISOString(),
+            validUntil: dbModel.validUntil.toISOString(),
         }
     }
     
     toDbModel(dtoModel: PromocodeUpdateInputDTO): PromocodeUpdateInput {
         return {
             ...dtoModel,
-            validFrom: new Date(dtoModel.validFrom),
-            validUntil: new Date(dtoModel.validUntil),
         }
     }
     
