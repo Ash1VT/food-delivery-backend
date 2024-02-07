@@ -156,21 +156,10 @@ export default class OrderService implements IOrderService {
             const orderItem = orderItems[index]
             return acc + menuItem.price * orderItem.quantity
         }, 0)
-        
-        // Construct order input
-        const orderInput = this.orderCreateMapper.toDbModel(orderData, {
-            customerId: this.customer.id,
-            supposedDeliveryTime: new Date(Date.now()),
-            totalPrice: totalPrice,
-            decountedPrice: totalPrice,
-            items: menuItems.map((menuItem) => {
-                return {
-                    menuItemName: menuItem.name,
-                    menuItemImageUrl: menuItem.imageUrl,
-                    menuItemPrice: menuItem.price
-                }
-            })
-        })
+
+        let promocodeName: string | undefined = undefined
+        let promocodeDiscount: number | undefined = undefined
+        let decountedPrice = totalPrice
 
         // If order has promocode check it and apply
         if (orderData.promocode){
@@ -202,9 +191,9 @@ export default class OrderService implements IOrderService {
                 throw new PromocodeExpiredUsageError(promocodeInstance.id)
             }
             
-            orderInput.promocodeName = promocodeInstance.nameIdentifier
-            orderInput.promocodeDiscount = promocodeInstance.discountPercentage
-            orderInput.decountedPrice = Number((orderInput.totalPrice * (1 - promocodeInstance.discountPercentage / 100)).toFixed(2))
+            promocodeName = promocodeInstance.nameIdentifier
+            promocodeDiscount = promocodeInstance.discountPercentage
+            decountedPrice = totalPrice * (1 - promocodeInstance.discountPercentage / 100)
 
             await this.promocodeRepository.update(promocodeInstance.id, {
                 ...promocodeInstance,
@@ -213,6 +202,23 @@ export default class OrderService implements IOrderService {
 
         }
 
+        // Construct order input
+        const orderInput = this.orderCreateMapper.toDbModel(orderData, {
+            customerId: this.customer.id,
+            supposedDeliveryTime: new Date(Date.now()),
+            promocodeName,
+            promocodeDiscount,
+            totalPrice: totalPrice,
+            decountedPrice,
+            items: menuItems.map((menuItem) => {
+                return {
+                    menuItemName: menuItem.name,
+                    menuItemImageUrl: menuItem.imageUrl,
+                    menuItemPrice: menuItem.price
+                }
+            })
+        })
+        
         const orderInstance = await this.orderRepository.create(orderInput)
         return this.orderCreateMapper.toDto(orderInstance)
     }
