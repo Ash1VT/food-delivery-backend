@@ -33,14 +33,14 @@ export function generateOrderModel(customerId: bigint, restaurantId: bigint, sta
         promocodeName,
         promocodeDiscount,
         promotionId,
-        totalPrice: faker.number.float({
+        totalPrice: Number(faker.number.float({
             min: 2,
             max: 50
-        }),
-        decountedPrice: faker.number.float({
+        }).toFixed(2)),
+        decountedPrice: Number(faker.number.float({
             min: 2,
             max: 50
-        }),
+        }).toFixed(2)),
         items: itemsCount ? Array.from({length: itemsCount}, () => generateOrderItemModel(orderId)) : undefined
     }
 }
@@ -60,14 +60,14 @@ export function generateOrderCreateInputModel(customerId: bigint, restaurantId: 
             min: 10,
             max: 100
         }),
-        totalPrice: faker.number.float({
+        totalPrice: Number(faker.number.float({
             min: 2,
             max: 50
-        }),
-        decountedPrice: faker.number.float({
+        }).toFixed(2)),
+        decountedPrice: Number(faker.number.float({
             min: 2,
             max: 50
-        }),
+        }).toFixed(2)),
         items: {
             create: items
         }

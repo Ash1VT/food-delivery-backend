@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { faker } from "@faker-js/faker"
 import { PromocodeCreateInputDTO, PromocodeUpdateInputDTO } from "@src/modules/promotions/dto/promocode"
 import { PromocodeModel, PromocodeCreateInput, PromocodeUpdateInput } from "@src/modules/promotions/models/promocode"
-import { getUniqueBigIntId } from '@tests/utils/unique';
+import { getUniqueBigIntId, getUniqueWord } from '@tests/utils/unique';
 
 // Models
 
@@ -17,7 +17,7 @@ export function generatePromocodeModel(restaurantId: bigint): PromocodeModel {
 
     return {
         id: getUniqueBigIntId(),
-        nameIdentifier: faker.lorem.word(5),
+        nameIdentifier: getUniqueWord(5),
         discountPercentage: faker.number.int({
             min: 10,
             max: 100
@@ -33,7 +33,7 @@ export function generatePromocodeModel(restaurantId: bigint): PromocodeModel {
 
 export function generatePromocodeCreateInputModel(restaurantId: bigint): PromocodeCreateInput {
     return {
-        nameIdentifier: faker.lorem.word(5),
+        nameIdentifier: getUniqueWord(5),
         discountPercentage: faker.number.int({
             min: 10,
             max: 100
@@ -49,7 +49,7 @@ export function generatePromocodeCreateInputModel(restaurantId: bigint): Promoco
 
 export function generatePromocodeUpdateInputModel(restaurantId?: bigint): PromocodeUpdateInput {
     return {
-        nameIdentifier: faker.lorem.word(5),
+        nameIdentifier: getUniqueWord(5),
         discountPercentage: faker.number.int({
             min: 10,
             max: 100
@@ -76,7 +76,7 @@ export async function createPromocode(client: PrismaClient, restaurantId: bigint
 
 export function generatePromocodeCreateInputDto(restaurantId: number): PromocodeCreateInputDTO {
     return {
-        nameIdentifier: faker.lorem.word(5),
+        nameIdentifier: getUniqueWord(5),
         discountPercentage: faker.number.int({
             min: 10,
             max: 100
