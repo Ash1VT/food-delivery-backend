@@ -1,11 +1,11 @@
-import { RestaurantManagerOwnershipError } from './../../../users/errors/restaurantManager';
+import { RestaurantManagerOwnershipError } from '@src/modules/users/errors/restaurantManager';
 import { OrderGetOutputDTO, OrderCreateInputDTO, OrderCreateOutputDTO } from "../../dto/order";
 import { OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from "../../errors/order";
 import { IOrderCreateMapper, IOrderGetMapper } from "../../mappers/interfaces/order";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
 import IOrderService from "../interfaces/IOrderService";
 import { OrderStatus } from "../../models/orderStatus";
-import { PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "@src/modules/promotions/errors/promocode";
+import { PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError } from "@src/modules/promotions/errors/promocode";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions";
 import IPromocodeRepository from "@src/modules/promotions/repositories/interfaces/IPromocodeRepository";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
@@ -189,7 +189,13 @@ export default class OrderService implements IOrderService {
             }
 
             if (promocodeInstance.currentUsageCount >= promocodeInstance.maxUsageCount) {
-                throw new PromocodeUsageError(promocodeInstance.id)
+                throw new PromocodeAmountUsageError(promocodeInstance.id)
+            }
+
+            const currentDate = new Date(Date.now())
+
+            if (promocodeInstance.validFrom <= currentDate && currentDate <= promocodeInstance.validUntil) {
+                throw new PromocodeExpiredUsageError(promocodeInstance.id)
             }
             
             orderInput.promocodeName = promocodeInstance.nameIdentifier
