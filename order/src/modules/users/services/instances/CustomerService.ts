@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { CustomerGetOutputDTO, CustomerCreateInputDTO, CustomerCreateOutputDTO } from "../../dto/customer";
 import { CustomerNotFoundWithIdError } from "../../errors/customer";
 import { ICustomerGetMapper, ICustomerCreateMapper } from "../../mappers/interfaces/customer";

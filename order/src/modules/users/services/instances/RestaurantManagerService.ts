@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { RestaurantManagerGetOutputDTO, RestaurantManagerCreateInputDTO, RestaurantManagerCreateOutputDTO } from "../../dto/restaurantManager";
 import { RestaurantManagerNotFoundWithIdError } from "../../errors/restaurantManager";
 import { IRestaurantManagerGetMapper, IRestaurantManagerCreateMapper } from "../../mappers/interfaces/restaurantManager";

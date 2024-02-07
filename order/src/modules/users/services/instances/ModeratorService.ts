@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { ModeratorGetOutputDTO, ModeratorCreateInputDTO, ModeratorCreateOutputDTO } from "../../dto/moderator";
 import { ModeratorNotFoundWithIdError } from "../../errors/moderator";
 import { IModeratorGetMapper, IModeratorCreateMapper } from "../../mappers/interfaces/moderator";

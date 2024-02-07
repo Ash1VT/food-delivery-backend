@@ -1,7 +1,5 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
-import { RestaurantGetOutputDTO, RestaurantCreateInputDTO, RestaurantCreateOutputDTO } from "../../dto/restaurant";
-import { RestaurantNotFoundWithIdError } from "../../errors/restaurant";
-import { IRestaurantGetMapper, IRestaurantCreateMapper } from "../../mappers/interfaces/restaurant";
+import { RestaurantCreateInputDTO, RestaurantCreateOutputDTO } from "../../dto/restaurant";
+import { IRestaurantCreateMapper } from "../../mappers/interfaces/restaurant";
 import IRestaurantRepository from "../../repositories/interfaces/IRestaurantRepository";
 import IRestaurantService from "../interfaces/IRestaurantService";
 

@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { PromotionGetOutputDTO, PromotionCreateInputDTO, PromotionCreateOutputDTO } from "../../dto/promotion";
 import { PromotionNotFoundWithIdError } from "../../errors/promotion";
 import { IPromotionGetMapper, IPromotionCreateMapper } from "../../mappers/interfaces/promotion";
