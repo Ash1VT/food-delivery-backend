@@ -5,7 +5,7 @@ import { IOrderCreateMapper, IOrderGetMapper } from "../../mappers/interfaces/or
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
 import IOrderService from "../interfaces/IOrderService";
 import { OrderStatus } from "../../models/orderStatus";
-import { PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError } from "@src/modules/promotions/errors/promocode";
+import { PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from "@src/modules/promotions/errors/promocode";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions";
 import IPromocodeRepository from "@src/modules/promotions/repositories/interfaces/IPromocodeRepository";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
@@ -194,7 +194,11 @@ export default class OrderService implements IOrderService {
 
             const currentDate = new Date(Date.now())
 
-            if (promocodeInstance.validFrom <= currentDate && currentDate <= promocodeInstance.validUntil) {
+            if (currentDate < promocodeInstance.validFrom) {
+                throw new PromocodeNotStartUsageError(promocodeInstance.id)
+            }
+
+            if (currentDate > promocodeInstance.validUntil) {
                 throw new PromocodeExpiredUsageError(promocodeInstance.id)
             }
             

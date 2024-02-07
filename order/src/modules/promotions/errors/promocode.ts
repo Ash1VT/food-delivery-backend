@@ -67,6 +67,17 @@ export class PromocodeExpiredUsageError extends AppError {
     }
 }
 
+export class PromocodeNotStartUsageError extends AppError {
+
+    constructor(promocodeId: bigint) {
+        super(`Promocode with id=${promocodeId} has not started yet`)
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+}
+
 export class PromocodeNotActiveError extends AppError {
 
     constructor(promocodeId: bigint) {
