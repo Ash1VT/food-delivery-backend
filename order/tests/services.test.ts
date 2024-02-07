@@ -1,4 +1,4 @@
-import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError } from './../src/modules/promotions/errors/promocode';
+import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from './../src/modules/promotions/errors/promocode';
 import { RestaurantManagerOwnershipError } from './../src/modules/users/errors/restaurantManager';
 import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from './../src/modules/promotions/mappers/instances/promocode';
 import { MenuItem, PrismaClient } from "@prisma/client"
@@ -1509,6 +1509,66 @@ describe("Tests for Services", () => {
             }
 
             expect(serviceCall).rejects.toThrow(PromocodeAmountUsageError)
+        })
+
+        test("should not create order, due to the fact that promocode have not started yet", async () => {
+            const customer = await createCustomer(prismaClient)
+            const restaurant = await createRestaurant(prismaClient)
+            const promocode = await createPromocode(prismaClient, restaurant.id)
+
+            const menuItems = await Promise.all(Array.from({length: manyCount}, async () => await createMenuItem(prismaClient, restaurant.id)))
+
+            const menuItemIds = menuItems.map((menuItem) => menuItem.id)
+
+            await prismaClient.promocode.update({
+                where: {
+                    id: promocode.id,
+                },
+                data: {
+                    validFrom: faker.date.future(),
+                    validUntil: faker.date.future()
+                }
+            })
+            
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
+
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+
+            const serviceCall = async () => {
+                await orderService.makeOrder(orderCreateInputDto)
+            }
+
+            expect(serviceCall).rejects.toThrow(PromocodeNotStartUsageError)
+        })
+
+        test("should not create order, due to the fact that promocode is expired", async () => {
+            const customer = await createCustomer(prismaClient)
+            const restaurant = await createRestaurant(prismaClient)
+            const promocode = await createPromocode(prismaClient, restaurant.id)
+
+            const menuItems = await Promise.all(Array.from({length: manyCount}, async () => await createMenuItem(prismaClient, restaurant.id)))
+
+            const menuItemIds = menuItems.map((menuItem) => menuItem.id)
+
+            await prismaClient.promocode.update({
+                where: {
+                    id: promocode.id,
+                },
+                data: {
+                    validFrom: faker.date.recent(),
+                    validUntil: faker.date.recent()
+                }
+            })
+            
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
+
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+
+            const serviceCall = async () => {
+                await orderService.makeOrder(orderCreateInputDto)
+            }
+
+            expect(serviceCall).rejects.toThrow(PromocodeExpiredUsageError)
         })
 
         test("should take order for delivery", async () => {
