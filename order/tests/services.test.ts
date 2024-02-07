@@ -1,4 +1,4 @@
-import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeUsageError } from './../src/modules/promotions/errors/promocode';
+import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError } from './../src/modules/promotions/errors/promocode';
 import { RestaurantManagerOwnershipError } from './../src/modules/users/errors/restaurantManager';
 import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from './../src/modules/promotions/mappers/instances/promocode';
 import { MenuItem, PrismaClient } from "@prisma/client"
@@ -1508,7 +1508,7 @@ describe("Tests for Services", () => {
                 await orderService.makeOrder(orderCreateInputDto)
             }
 
-            expect(serviceCall).rejects.toThrow(PromocodeUsageError)
+            expect(serviceCall).rejects.toThrow(PromocodeAmountUsageError)
         })
 
         test("should take order for delivery", async () => {
