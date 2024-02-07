@@ -1,9 +1,9 @@
 import { Settings } from "@src/config/Settings";
 
 
-type SettingsCache = Settings
+export type SettingsCache = Settings
 
-type SettingsWrapperFunction = () => SettingsCache;
+export type SettingsWrapperFunction = () => SettingsCache;
 
 let cache: SettingsCache | undefined;
 
@@ -19,4 +19,12 @@ export default function settingsCache(func: SettingsWrapperFunction): SettingsWr
     };
 
     return wrapper;
+}
+
+export function clearCache() {
+    cache = undefined
+}
+
+export function getCache(): SettingsCache | undefined {
+    return cache
 }

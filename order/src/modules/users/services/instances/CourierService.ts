@@ -3,12 +3,10 @@ import { ICourierGetMapper, ICourierCreateMapper } from "../../mappers/interface
 import ICourierRepository from "../../repositories/interfaces/ICourierRepository";
 import ICourierService from "../interfaces/ICourierService";
 import { CourierNotFoundWithIdError } from "../../errors/courier";
-import { mapManyModels } from "@src/utils/mapManyModels";
 
 export default class CourierService implements ICourierService {
 
     constructor(
-        protected courierGetMapper: ICourierGetMapper,
         protected courierCreateMapper: ICourierCreateMapper,
         protected courierRepository: ICourierRepository
     ) {}

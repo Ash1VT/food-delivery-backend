@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { ModeratorGetOutputDTO, ModeratorCreateInputDTO, ModeratorCreateOutputDTO } from "../../dto/moderator";
 import { ModeratorNotFoundWithIdError } from "../../errors/moderator";
 import { IModeratorGetMapper, IModeratorCreateMapper } from "../../mappers/interfaces/moderator";
@@ -8,7 +7,6 @@ import IModeratorService from "../interfaces/IModeratorService";
 export default class ModeratorService implements IModeratorService {
     
     constructor(
-        protected moderatorGetMapper: IModeratorGetMapper,
         protected moderatorCreateMapper: IModeratorCreateMapper,
         protected moderatorRepository: IModeratorRepository
     ) {}

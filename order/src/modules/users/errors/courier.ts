@@ -20,7 +20,7 @@ export class CourierAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExis
 
 export class CourierOwnershipError extends AppError {
     
-    constructor(courierId: number, orderId: number) {
+    constructor(courierId: number | bigint, orderId: number | bigint) {
         super(`Courier with id=${courierId} is not delivering Order with id=${orderId}`)
     }
 

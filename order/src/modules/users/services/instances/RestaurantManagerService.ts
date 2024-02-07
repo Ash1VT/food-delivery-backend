@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { RestaurantManagerGetOutputDTO, RestaurantManagerCreateInputDTO, RestaurantManagerCreateOutputDTO } from "../../dto/restaurantManager";
 import { RestaurantManagerNotFoundWithIdError } from "../../errors/restaurantManager";
 import { IRestaurantManagerGetMapper, IRestaurantManagerCreateMapper } from "../../mappers/interfaces/restaurantManager";
@@ -7,7 +6,6 @@ import IRestaurantManagerService from "../interfaces/IRestaurantManagerService";
 
 export default class RestaurantManagerService implements IRestaurantManagerService {
     constructor(
-        protected restaurantManagerGetMapper: IRestaurantManagerGetMapper,
         protected restaurantManagerCreateMapper: IRestaurantManagerCreateMapper,
         protected restaurantManagerRepository: IRestaurantManagerRepository
     ) {}

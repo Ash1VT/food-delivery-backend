@@ -27,6 +27,7 @@ export type OrderCreateInput = {
     restaurantId: bigint
     promocodeName?: string
     promocodeDiscount?: number
+    promotionId?: bigint
     status?: OrderStatus
     createdAt?: Date
     deliveryAcceptedAt?: Date
@@ -35,8 +36,8 @@ export type OrderCreateInput = {
     deliveryFinishedAt?: Date
     totalPrice: number
     decountedPrice: number
-    create?: {
-        items: OrderItemWithOrderCreateInput[]
+    items?: {
+        create?: OrderItemWithOrderCreateInput[]
     }
 }
 

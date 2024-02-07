@@ -1,4 +1,3 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { PromotionGetOutputDTO, PromotionCreateInputDTO, PromotionCreateOutputDTO } from "../../dto/promotion";
 import { PromotionNotFoundWithIdError } from "../../errors/promotion";
 import { IPromotionGetMapper, IPromotionCreateMapper } from "../../mappers/interfaces/promotion";
@@ -9,7 +8,6 @@ import { PromocodeGetOutputDTO } from "../../dto/promocode";
 export default class PromotionService implements IPromotionService {
 
     constructor(
-        protected promotionGetMapper: IPromotionGetMapper,
         protected promotionCreateMapper: IPromotionCreateMapper,
         protected promotionRepository: IPromotionRepository
     ) {}

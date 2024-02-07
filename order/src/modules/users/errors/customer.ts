@@ -20,7 +20,7 @@ export class CustomerAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExi
 
 export class CustomerOwnershipError extends AppError {
     
-    constructor(customerId: number, orderId: number) {
+    constructor(customerId: number | bigint, orderId: number | bigint) {
         super(`Customer with id=${customerId} is not a creator of an 
                Order with id=${orderId} to perform this action`)
     }

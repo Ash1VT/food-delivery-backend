@@ -1,14 +1,14 @@
 import { PermissionDeniedError } from './../../../users/errors/permissions';
+import { PromocodeAlreadyExistsWithNameError } from "./../../errors/promocode";
 import { RestaurantManagerModel } from './../../../users/models/restaurantManager';
 import { PromocodeGetOutputDTO, PromocodeCreateInputDTO, PromocodeCreateOutputDTO, PromocodeUpdateInputDTO, PromocodeUpdateOutputDTO } from "../../dto/promocode";
-import { PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "../../errors/promocode";
+import { PromocodeMaximumUsageError, PromocodeNotFoundWithIdError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "../../errors/promocode";
 import { IPromocodeGetMapper, IPromocodeCreateMapper, IPromocodeUpdateMapper } from "../../mappers/interfaces/promocode";
 import { PromocodeModel } from "../../models/promocode";
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
 import IPromocodeRepository from "../../repositories/interfaces/IPromocodeRepository";
 import IPromocodeService from "../interfaces/IPromocodeService";
 import { RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant";
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { RestaurantManagerOwnershipError } from '@src/modules/users/errors/restaurantManager';
 
 export default class PromocodeService implements IPromocodeService {
@@ -77,13 +77,20 @@ export default class PromocodeService implements IPromocodeService {
         }
 
         const promocodeInstances = await this.promocodeRepository.getRestaurantPromocodes(restaurantId)
-        return mapManyModels(promocodeInstances, this.promocodeGetMapper.toDto)
+        return promocodeInstances.map((promocodeInstance) => this.promocodeGetMapper.toDto(promocodeInstance))
     }
 
+    // Add check for existence of promocode with such name
     public async create(promocodeData: PromocodeCreateInputDTO): Promise<PromocodeCreateOutputDTO> {
-        
+
         if (!this.restaurantManager) {
             throw new PermissionDeniedError()
+        }
+
+        const promocodeInstance = await this.promocodeRepository.getOneByName(promocodeData.nameIdentifier)
+
+        if (promocodeInstance) {
+            throw new PromocodeAlreadyExistsWithNameError(promocodeData.nameIdentifier)
         }
 
         const promocodeCreateInput = this.promocodeCreateMapper.toDbModel(promocodeData)
@@ -120,8 +127,8 @@ export default class PromocodeService implements IPromocodeService {
 
         const promocodeUpdateInput = this.promocodeUpdateMapper.toDbModel(promocodeData)
 
-        if (promocodeUpdateInput.maxUsageCount && promocodeUpdateInput.maxUsageCount > promocodeInstance.currentUsageCount) {
-            throw new PromocodeUsageError(promocodeId)
+        if (promocodeUpdateInput.maxUsageCount && promocodeInstance.currentUsageCount > promocodeUpdateInput.maxUsageCount) {
+            throw new PromocodeMaximumUsageError(promocodeId)
         }
 
         const promocodeUpdatedInstance = await this.promocodeRepository.update(promocodeId, promocodeUpdateInput) as PromocodeModel

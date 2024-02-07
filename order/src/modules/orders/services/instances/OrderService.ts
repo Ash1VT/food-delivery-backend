@@ -1,22 +1,22 @@
 import { RestaurantManagerOwnershipError } from './../../../users/errors/restaurantManager';
 import { OrderGetOutputDTO, OrderCreateInputDTO, OrderCreateOutputDTO } from "../../dto/order";
-import { OrderCourierOwnershipError, OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from "../../errors/order";
+import { OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from "../../errors/order";
 import { IOrderCreateMapper, IOrderGetMapper } from "../../mappers/interfaces/order";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
 import IOrderService from "../interfaces/IOrderService";
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { OrderStatus } from "../../models/orderStatus";
-import { PromocodeNotActiveError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "@src/modules/promotions/errors/promocode";
+import { PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeUsageError } from "@src/modules/promotions/errors/promocode";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions";
 import IPromocodeRepository from "@src/modules/promotions/repositories/interfaces/IPromocodeRepository";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
 import { RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant";
-import { MenuItemNotFoundWithIdError } from "@src/modules/menu/errors/menuItem";
+import { MenuItemAllNotInSameRestaurantError, MenuItemNotFoundWithIdError } from "@src/modules/menu/errors/menuItem";
 import { CourierModel } from "@src/modules/users/models/courier";
 import { CustomerModel } from "@src/modules/users/models/customer";
 import { RestaurantManagerModel } from "@src/modules/users/models/restaurantManager";
-import { RestaurantManagerMissingRestaurantError } from "@src/modules/users/errors/restaurantManager";
+import { CourierOwnershipError } from '@src/modules/users/errors/courier';
+import { ModeratorModel } from '@src/modules/users/models/moderator';
 
 export default class OrderService implements IOrderService {
 
@@ -29,27 +29,40 @@ export default class OrderService implements IOrderService {
         protected restaurantRepository: IRestaurantRepository,
         protected customer?: CustomerModel,
         protected courier?: CourierModel,
-        protected restaurantManager?: RestaurantManagerModel
+        protected restaurantManager?: RestaurantManagerModel,
+        protected moderator?: ModeratorModel
     ) {}
 
-    public async getOne(id: number): Promise<OrderGetOutputDTO> {
-        const orderInstance = await this.orderRepository.getOne(id)
+    // public async getOne(id: number): Promise<OrderGetOutputDTO> {
+    //     const orderInstance = await this.orderRepository.getOne(id)
 
-        if (!orderInstance) {
-            throw new OrderNotFoundWithIdError(id)
-        }
+    //     if (!orderInstance) {
+    //         throw new OrderNotFoundWithIdError(id)
+    //     }
 
-        return this.orderGetMapper.toDto(orderInstance)
-    }
+    //     return this.orderGetMapper.toDto(orderInstance)
+    // }
     
     public async getMany(status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
+
+        // Check if user is moderator
+        if (!this.moderator) {
+            throw new PermissionDeniedError()
+        }
+        
         const orderInstances = await this.orderRepository.getMany(true, status)
-        return mapManyModels(orderInstances, this.orderGetMapper.toDto)
+        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
     public async getReadyOrders(): Promise<OrderGetOutputDTO[]> {
+
+        // Check if user is courier
+        if (!this.courier) {
+            throw new PermissionDeniedError()
+        }
+
         const orderInstances = await this.orderRepository.getMany(true, "READY")
-        return mapManyModels(orderInstances, this.orderGetMapper.toDto)
+        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
     public async getCurrentCourierOrders(status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
@@ -62,7 +75,7 @@ export default class OrderService implements IOrderService {
         const courierId = Number(this.courier.id)
 
         const orderInstances = await this.orderRepository.getCourierOrders(courierId, true, status)
-        return mapManyModels(orderInstances, this.orderGetMapper.toDto)
+        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
     public async getCurrentCustomerOrders(status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
@@ -75,7 +88,7 @@ export default class OrderService implements IOrderService {
         const customerId = Number(this.customer.id)
 
         const orderInstances = await this.orderRepository.getCustomerOrders(customerId, true, status)
-        return mapManyModels(orderInstances, this.orderGetMapper.toDto)
+        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
     public async getRestaurantOrders(restaurantId: number, status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
@@ -85,18 +98,20 @@ export default class OrderService implements IOrderService {
             throw new PermissionDeniedError()
         }
 
-        // Check if restaurant manager has restaurant
-        // if(!this.restaurantManager.restaurantId){
-        //     throw new RestaurantManagerMissingRestaurantError()
-        // }
+        // Check restaurant for existence
+        const restaurantInstance = await this.restaurantRepository.getOne(restaurantId)
+
+        if (!restaurantInstance) {
+            throw new RestaurantNotFoundWithIdError(restaurantId)
+        }
 
         // Check if restaurant manager has ownership on restaurant
-        if(Number(this.restaurantManager.restaurantId) !== restaurantId) {
+        if(this.restaurantManager.restaurantId !== restaurantInstance.id) {
             throw new RestaurantManagerOwnershipError(this.restaurantManager.id, restaurantId)
         }
 
         const orderInstances = await this.orderRepository.getRestaurantOrders(restaurantId, true, status)
-        return mapManyModels(orderInstances, this.orderGetMapper.toDto)
+        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
     public async makeOrder(orderData: OrderCreateInputDTO): Promise<OrderCreateOutputDTO> {
@@ -107,7 +122,10 @@ export default class OrderService implements IOrderService {
         }
         
         // Check restaurant for existence
-        if (!this.restaurantRepository.exists(orderData.restaurantId)){
+
+        const restaurantInstance = await this.restaurantRepository.getOne(orderData.restaurantId)
+
+        if (!restaurantInstance){
             throw new RestaurantNotFoundWithIdError(orderData.restaurantId)
         }
         
@@ -126,16 +144,16 @@ export default class OrderService implements IOrderService {
         }))
 
         // Check if all menu items are from one restaurant
-        // const result = menuItems.every((menuItem, index, array) => {
-        //     if (index < array.length - 1) {
-        //         return menuItem.restaurantId === array[index + 1].restaurantId;
-        //     }
-        //     return true;
-        // });
+        const result = menuItems.every((menuItem, index, array) => {
+            if (index < array.length - 1) {
+                return menuItem.restaurantId === array[index + 1].restaurantId;
+            }
+            return true;
+        });
 
-        // if(!result) {
-
-        // }
+        if(!result) {
+            throw new MenuItemAllNotInSameRestaurantError()
+        }
         
         // Calculate total price of order
         const totalPrice = menuItems.reduce((acc, menuItem, index) => {
@@ -165,20 +183,24 @@ export default class OrderService implements IOrderService {
             if(!promocodeInstance) {
                 throw new PromocodeNotFoundWithNameError(orderData.promocode)
             }
-            
+
             const promocodeId = Number(promocodeInstance.id)
+
+            if (promocodeInstance.restaurantId !== restaurantInstance.id) {
+                throw new PromocodeNotBelongsToRestaurantError(promocodeId, restaurantInstance.id)
+            }
 
             if (!promocodeInstance.isActive) {
                 throw new PromocodeNotActiveError(promocodeId)
             }
 
-            if (promocodeInstance.maxUsageCount >= promocodeInstance.currentUsageCount) {
+            if (promocodeInstance.currentUsageCount >= promocodeInstance.maxUsageCount) {
                 throw new PromocodeUsageError(promocodeId)
             }
             
             orderInput.promocodeName = promocodeInstance.nameIdentifier
             orderInput.promocodeDiscount = promocodeInstance.discountPercentage
-            orderInput.decountedPrice = orderInput.totalPrice * (1 - promocodeInstance.discountPercentage / 100)
+            orderInput.decountedPrice = Number((orderInput.totalPrice * (1 - promocodeInstance.discountPercentage / 100)).toFixed(2))
 
             await this.promocodeRepository.update(promocodeId, {
                 ...promocodeInstance,
@@ -236,7 +258,7 @@ export default class OrderService implements IOrderService {
 
         // Check if courier has ownership on order
         if (orderInstance.courierId !== this.courier.id) {
-            throw new OrderCourierOwnershipError(orderId)
+            throw new CourierOwnershipError(this.courier.id, orderId)
         }
 
         await this.orderRepository.update(orderId, {

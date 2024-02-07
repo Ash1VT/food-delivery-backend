@@ -1,5 +1,5 @@
 import { MenuItemCreateInputDTO, MenuItemCreateOutputDTO, MenuItemGetOutputDTO, MenuItemUpdateInputDTO, MenuItemUpdateOutputDTO } from "../../dto/menuItem";
-import { MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
+import { MenuItemCreateInput, MenuItemModel, MenuItemUpdateInput } from "../../models/menuItem";
 import { IMenuItemGetMapper, IMenuItemCreateMapper, IMenuItemUpdateMapper } from "../interfaces/menuItem";
 
 export class MenuItemGetMapper implements IMenuItemGetMapper {
@@ -28,7 +28,7 @@ export class MenuItemCreateMapper implements IMenuItemCreateMapper {
         }
     }
 
-    toDbModel(dtoModel: MenuItemCreateInputDTO): MenuItemModel {
+    toDbModel(dtoModel: MenuItemCreateInputDTO): MenuItemCreateInput {
         return {
             id: BigInt(dtoModel.id),
             restaurantId: BigInt(dtoModel.restaurantId),

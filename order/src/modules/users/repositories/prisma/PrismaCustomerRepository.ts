@@ -5,8 +5,7 @@ import ICustomerRepository from "../interfaces/ICustomerRepository";
 import { CustomerDelegate } from "./delegates";
 
 
-export default class PrismaCustomerRepository extends PrismaBaseRepository<CustomerDelegate, CustomerModel, CustomerCreateInput, CustomerUpdateInput>
-                                              implements ICustomerRepository {
+export default class PrismaCustomerRepository extends PrismaBaseRepository<CustomerDelegate, CustomerModel, CustomerCreateInput, CustomerUpdateInput> implements ICustomerRepository {
 
     constructor(prisma: PrismaClient) {
         super(prisma.customer)
