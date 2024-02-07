@@ -12,7 +12,7 @@ export default abstract class PrismaBaseRepository<
         protected delegate: Delegate
     ) {}
 
-    public async getOne(id: number): Promise<Model | null> {
+    public async getOne(id: bigint): Promise<Model | null> {
         return await this.delegate.findFirst({
             where: {
                 id
@@ -30,7 +30,7 @@ export default abstract class PrismaBaseRepository<
         })
     }
 
-    public async update(id: number, data: UpdateInput): Promise<Model | null> {
+    public async update(id: bigint, data: UpdateInput): Promise<Model | null> {
         return await this.delegate.update({
             where: {
                 id
@@ -39,7 +39,7 @@ export default abstract class PrismaBaseRepository<
         })
     }
 
-    public async delete(id: number) {
+    public async delete(id: bigint) {
         await this.delegate.delete({
             where: {
                 id
@@ -47,7 +47,7 @@ export default abstract class PrismaBaseRepository<
         })
     }
 
-    public async exists(id: number): Promise<boolean> {
+    public async exists(id: bigint): Promise<boolean> {
         return await this.delegate.count({
             where: {
                 id

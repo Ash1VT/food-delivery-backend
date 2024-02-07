@@ -6,11 +6,7 @@ export class MenuItemGetMapper implements IMenuItemGetMapper {
 
     toDto(dbModel: MenuItemModel): MenuItemGetOutputDTO {
         return {
-            id: Number(dbModel.id),
-            name: dbModel.name,
-            imageUrl: dbModel.imageUrl,
-            price: dbModel.price,
-            restaurantId: Number(dbModel.restaurantId)
+           ...dbModel
         }
     }
 
@@ -20,21 +16,13 @@ export class MenuItemCreateMapper implements IMenuItemCreateMapper {
 
     toDto(dbModel: MenuItemModel): MenuItemCreateOutputDTO {
         return {
-            id: Number(dbModel.id),
-            name: dbModel.name,
-            imageUrl: dbModel.imageUrl,
-            price: dbModel.price,
-            restaurantId: Number(dbModel.restaurantId)
+            ...dbModel
         }
     }
 
     toDbModel(dtoModel: MenuItemCreateInputDTO): MenuItemCreateInput {
         return {
-            id: BigInt(dtoModel.id),
-            restaurantId: BigInt(dtoModel.restaurantId),
-            name: dtoModel.name,
-            imageUrl: dtoModel.imageUrl,
-            price: dtoModel.price
+            ...dtoModel
         }
     }
 
@@ -44,19 +32,13 @@ export class MenuItemUpdateMapper implements IMenuItemUpdateMapper {
 
     toDto(dbModel: MenuItemModel): MenuItemUpdateOutputDTO {
         return {
-            id: Number(dbModel.id),
-            name: dbModel.name,
-            imageUrl: dbModel.imageUrl,
-            price: dbModel.price,
-            restaurantId: Number(dbModel.restaurantId)
+            ...dbModel
         }
     }
 
     toDbModel(dtoModel: MenuItemUpdateInputDTO): MenuItemUpdateInput {
         return {
-            name: dtoModel.name,
-            imageUrl: dtoModel.imageUrl,
-            price: dtoModel.price
+            ...dtoModel
         }
     }
 

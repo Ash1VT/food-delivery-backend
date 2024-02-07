@@ -2,13 +2,13 @@ import { PrismaClient } from '@prisma/client';
 import { faker } from "@faker-js/faker"
 import { OrderItemCreateInputDTO } from "@src/modules/orders/dto/orderItem"
 import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "@src/modules/orders/models/orderItem"
-import { getUniqueBigIntId } from '@tests/utils/unique';
+import { getUniqueId } from '@tests/utils/unique';
 
 // Models
 
 export function generateOrderItemModel(orderId: bigint): OrderItemModel {
     return {
-        id: getUniqueBigIntId(),
+        id: getUniqueId(),
         menuItemName: faker.lorem.word({
             length: { 
                 min: 5, max: 10 
@@ -97,7 +97,7 @@ export async function createOrderItem(client: PrismaClient, orderId: bigint): Pr
 
 // DTOs
 
-export function generateOrderItemCreateInputDto(menuItemId: number): OrderItemCreateInputDTO {
+export function generateOrderItemCreateInputDto(menuItemId: bigint): OrderItemCreateInputDTO {
     return {
         menuItemId,
         quantity: faker.number.int({

@@ -5,15 +5,15 @@ interface MenuItemBaseDTO {
 }
 
 interface MenuItemBaseOutputDTO extends MenuItemBaseDTO {
-    id: number
-    restaurantId: number
+    id: bigint
+    restaurantId: bigint
 }
 
 export interface MenuItemGetOutputDTO extends MenuItemBaseOutputDTO {}
 
 export interface MenuItemCreateInputDTO extends MenuItemBaseDTO {
-    id: number
-    restaurantId: number
+    id: bigint
+    restaurantId: bigint
 }
 
 export interface MenuItemCreateOutputDTO extends MenuItemBaseOutputDTO {}

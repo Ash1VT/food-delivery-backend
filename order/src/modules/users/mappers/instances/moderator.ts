@@ -6,7 +6,7 @@ export class ModeratorGetMapper implements IModeratorGetMapper {
 
     toDto(dbModel: ModeratorModel): ModeratorGetOutputDTO {
         return {
-            id: Number(dbModel.id)
+            ...dbModel
         }
     }
 
@@ -16,13 +16,13 @@ export class ModeratorCreateMapper implements IModeratorCreateMapper {
 
     toDto(dbModel: ModeratorModel): ModeratorCreateOutputDTO {
         return {
-            id: Number(dbModel.id)
+            ...dbModel
         }
     }
 
     toDbModel(dtoModel: ModeratorCreateInputDTO): ModeratorCreateInput {
         return {
-            id: BigInt(dtoModel.id)
+            ...dtoModel
         }
     }
 

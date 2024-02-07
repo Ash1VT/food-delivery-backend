@@ -1,5 +1,5 @@
 interface RestaurantBaseDTO {
-    id: number
+    id: bigint
 }
 
 interface RestaurantBaseOutputDTO extends RestaurantBaseDTO {}

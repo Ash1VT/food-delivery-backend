@@ -17,14 +17,14 @@ export default interface IOrderService {
     getReadyOrders(): Promise<OrderGetOutputDTO[]>
 
     // Restaurant Manager
-    getRestaurantOrders(restaurantId: number, status?: OrderStatus): Promise<OrderGetOutputDTO[]>
+    getRestaurantOrders(restaurantId: bigint, status?: OrderStatus): Promise<OrderGetOutputDTO[]>
 
     // Customer
     makeOrder(orderData: OrderCreateInputDTO): Promise<OrderCreateOutputDTO>
 
     // Courier
-    takeOrder(orderId: number): Promise<void>
+    takeOrder(orderId: bigint): Promise<void>
     
     // Courier
-    finishOrderDelivery(orderId: number): Promise<void>
+    finishOrderDelivery(orderId: bigint): Promise<void>
 }

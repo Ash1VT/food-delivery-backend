@@ -1,11 +1,11 @@
 interface RestaurantManagerBaseDTO {
-    id: number
+    id: bigint
 }
 
 interface RestaurantManagerBaseOutputDTO extends RestaurantManagerBaseDTO {}
 
 export interface RestaurantManagerGetOutputDTO extends RestaurantManagerBaseOutputDTO {
-    restaurantId?: number
+    restaurantId?: bigint
 }
 
 export interface RestaurantManagerCreateInputDTO extends RestaurantManagerBaseDTO {}

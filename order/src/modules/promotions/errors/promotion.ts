@@ -3,16 +3,16 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class PromotionNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Promotion")
+    constructor(promocodeId: bigint) {
+        super("id", promocodeId.toString(), "Promotion")
     }
 
 }
 
 export class PromotionAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Promotion")
+    constructor(promocodeId: bigint) {
+        super("id", promocodeId.toString(), "Promotion")
     }
 
 }

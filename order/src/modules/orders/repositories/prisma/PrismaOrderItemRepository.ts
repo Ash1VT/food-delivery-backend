@@ -11,7 +11,7 @@ export default class OrderItemRepository extends PrismaBaseRepository<OrderItemD
         super(prisma.orderItem)
     }
 
-    public async getOrderItems(orderId: number): Promise<OrderItemModel[]> {
+    public async getOrderItems(orderId: bigint): Promise<OrderItemModel[]> {
         return await this.delegate.findMany({
             where: {
                 orderId

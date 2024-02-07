@@ -1,5 +1,5 @@
 interface CourierBaseDTO {
-    id: number
+    id: bigint
 }
 
 interface CourierBaseOutputDTO extends CourierBaseDTO {}

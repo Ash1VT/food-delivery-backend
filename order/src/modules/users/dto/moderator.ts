@@ -1,5 +1,5 @@
 interface ModeratorBaseDTO {
-    id: number
+    id: bigint
 }
 
 interface ModeratorBaseOutputDTO extends ModeratorBaseDTO {}

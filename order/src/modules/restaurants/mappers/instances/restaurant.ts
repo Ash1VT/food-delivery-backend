@@ -6,7 +6,7 @@ export class RestaurantGetMapper implements IRestaurantGetMapper {
 
     toDto(dbModel: RestaurantModel): RestaurantGetOutputDTO {
         return {
-            id: Number(dbModel.id)
+            ...dbModel
         }
     }
 
@@ -16,13 +16,13 @@ export class RestaurantCreateMapper implements IRestaurantCreateMapper {
 
     toDto(dbModel: RestaurantModel): RestaurantCreateOutputDTO {
         return {
-            id: Number(dbModel.id)
+            ...dbModel
         }
     }
     
     toDbModel(dtoModel: RestaurantCreateInputDTO): RestaurantModel {
         return {
-            id: BigInt(dtoModel.id)
+            ...dtoModel
         }
     }
 

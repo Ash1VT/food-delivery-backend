@@ -4,23 +4,23 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class CustomerNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Customer")
+    constructor(customerId: bigint) {
+        super("id", customerId.toString(), "Customer")
     }
 
 }
 
 export class CustomerAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Customer")
+    constructor(customerId: bigint) {
+        super("id", customerId.toString(), "Customer")
     }
 
 }
 
 export class CustomerOwnershipError extends AppError {
     
-    constructor(customerId: number | bigint, orderId: number | bigint) {
+    constructor(customerId: bigint, orderId: bigint) {
         super(`Customer with id=${customerId} is not a creator of an 
                Order with id=${orderId} to perform this action`)
     }

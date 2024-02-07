@@ -1,26 +1,25 @@
-import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client";
 import { CourierCreateInputDTO } from "@src/modules/users/dto/courier";
 import { CourierCreateInput, CourierModel, CourierUpdateInput } from "@src/modules/users/models/courier";
-import { getUniqueBigIntId, getUniqueNumberId } from "@tests/utils/unique";
+import { getUniqueId } from "@tests/utils/unique";
 
 // Models
 
 export function generateCourierModel(): CourierModel {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateCourierCreateInputModel(): CourierCreateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateCourierUpdateInputModel(): CourierUpdateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
@@ -43,6 +42,6 @@ export async function createCourier(client: PrismaClient): Promise<CourierModel>
 
 export function generateCourierCreateInputDto(): CourierCreateInputDTO {
     return {
-        id: getUniqueNumberId()
+        id: getUniqueId()
     }
 }

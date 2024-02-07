@@ -12,7 +12,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
     }
 
     
-    public async getOne(id: number, includeItems?: boolean): Promise<OrderModel | null> {
+    public async getOne(id: bigint, includeItems?: boolean): Promise<OrderModel | null> {
         return await this.delegate.findFirst({
             where: {
                 id
@@ -43,7 +43,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         })
     }
 
-    public async getCustomerOrders(customerId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getCustomerOrders(customerId: bigint, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 customerId,
@@ -55,7 +55,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         })
     }
 
-    public async getRestaurantOrders(restaurantId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getRestaurantOrders(restaurantId: bigint, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 restaurantId,
@@ -67,7 +67,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         })
     }
     
-    public async getCourierOrders(courierId: number, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getCourierOrders(courierId: bigint, includeItems?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 courierId,

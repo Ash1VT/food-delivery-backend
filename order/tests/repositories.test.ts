@@ -60,8 +60,7 @@ describe("Tests for Prisma Repositories", () => {
                               (createInstance: {(): Promise<Model>}, repository: Repository)
     {
         const instance = await createInstance()
-        const instanceId = Number(instance.id)
-        const instanceDb = await repository.getOne(instanceId)
+        const instanceDb = await repository.getOne(instance.id)
         
         expect(instanceDb).toEqual(instance)
     }
@@ -103,11 +102,10 @@ describe("Tests for Prisma Repositories", () => {
                               (createInstance: {(): Promise<Model>}, generateUpdateInput: {(): Promise<UpdateInput>}, compareWithUpdateInput: {(instance: Model, updateInput: UpdateInput): boolean}, repository: Repository) 
     {
         const instance = await createInstance()
-        const instanceId = Number(instance.id)
 
         const instanceUpdateInput = await generateUpdateInput()
 
-        const instanceDb = await repository.update(instanceId, instanceUpdateInput)
+        const instanceDb = await repository.update(instance.id, instanceUpdateInput)
 
         expect(instanceDb).not.toBe(null)
 
@@ -124,11 +122,10 @@ describe("Tests for Prisma Repositories", () => {
                               (createInstance: {(): Promise<Model>}, repository: Repository) 
     {
         const instance = await createInstance()
-        const instanceId = Number(instance.id)
         
-        await repository.delete(instanceId)
+        await repository.delete(instance.id)
 
-        const instanceDb = await repository.getOne(instanceId)
+        const instanceDb = await repository.getOne(instance.id)
 
         expect(instanceDb).toBe(null)
     }
@@ -468,13 +465,12 @@ describe("Tests for Prisma Repositories", () => {
 
         test('should get all restaurant promocodes', async () => {
             const restaurantInstance = await createRestaurant(prismaClient)
-            const restaurantId = Number(restaurantInstance.id)
 
             const promocodeInstances = await Promise.all(Array.from({length: manyCount}, async () => {
                 return await createPromocode(prismaClient, restaurantInstance.id)
             }))
 
-            const promocodeIntancesDb = await promocodePrismaRepository.getRestaurantPromocodes(restaurantId)
+            const promocodeIntancesDb = await promocodePrismaRepository.getRestaurantPromocodes(restaurantInstance.id)
             expect(promocodeIntancesDb).toEqual(expect.arrayContaining(promocodeInstances))
         })
     
@@ -552,9 +548,8 @@ describe("Tests for Prisma Repositories", () => {
             }).sort((a, b) => a.menuItemName.localeCompare(b.menuItemName))
 
             const orderInstance = await createOrder(prismaClient, customerInstance.id, restaurantInstance.id, orderItemInstances, courierInstance.id)
-            const orderInstanceId = Number(orderInstance.id)
 
-            const orderItemInstancesDb = (await orderItemPrismaRepository.getOrderItems(orderInstanceId)).sort((a, b) => a.menuItemName.localeCompare(b.menuItemName))
+            const orderItemInstancesDb = (await orderItemPrismaRepository.getOrderItems(orderInstance.id)).sort((a, b) => a.menuItemName.localeCompare(b.menuItemName))
 
             const equality = orderItemInstancesDb.every((orderItemInstanceDb, index) => compareOrderItemWithCreateInputWithOrder(orderItemInstanceDb, orderItemInstances[index]))
 
@@ -615,8 +610,7 @@ describe("Tests for Prisma Repositories", () => {
 
         test('should get one order with items', async () => {
             const orderInstance = await createFullOrder()
-            const orderInstanceId = Number(orderInstance.id)
-            const orderInstanceDb = await orderPrismaRepository.getOne(orderInstanceId, true)
+            const orderInstanceDb = await orderPrismaRepository.getOne(orderInstance.id, true)
 
             expect(orderInstanceDb?.items).not.toBe(undefined)
 
@@ -652,9 +646,8 @@ describe("Tests for Prisma Repositories", () => {
                 })
                 await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
             }
-            const customerId = Number(customer.id)
 
-            const orderInstancesDb = await orderPrismaRepository.getCustomerOrders(customerId)
+            const orderInstancesDb = await orderPrismaRepository.getCustomerOrders(customer.id)
 
             const ordersBelongToCustomer = orderInstancesDb.every((orderInstanceDb) => orderInstanceDb.customerId === customer.id)
             expect(ordersBelongToCustomer).toBe(true)
@@ -671,9 +664,8 @@ describe("Tests for Prisma Repositories", () => {
                 })
                 await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
             }
-            const courierId = Number(courier.id)
 
-            const orderInstancesDb = await orderPrismaRepository.getCourierOrders(courierId)
+            const orderInstancesDb = await orderPrismaRepository.getCourierOrders(courier.id)
 
             const ordersBelongToCourier = orderInstancesDb.every((orderInstanceDb) => orderInstanceDb.courierId === courier.id)
             expect(ordersBelongToCourier).toBe(true)
@@ -691,9 +683,8 @@ describe("Tests for Prisma Repositories", () => {
                 })
                 await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
             }
-            const restaurantId = Number(restaurant.id)
 
-            const orderInstancesDb = await orderPrismaRepository.getRestaurantOrders(restaurantId)
+            const orderInstancesDb = await orderPrismaRepository.getRestaurantOrders(restaurant.id)
 
             const ordersBelongToRestaurant = orderInstancesDb.every((orderInstanceDb) => orderInstanceDb.restaurantId === restaurant.id)
             expect(ordersBelongToRestaurant).toBe(true)

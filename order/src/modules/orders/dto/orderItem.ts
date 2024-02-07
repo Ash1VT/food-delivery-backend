@@ -3,20 +3,20 @@ interface OrderItemBaseDTO {
 }
 
 interface OrderItemBaseOutputDTO extends OrderItemBaseDTO {
-    id: number
+    id: bigint
     menuItemName: string
     menuItemImageUrl: string
     menuItemPrice: number
 }
     
 export interface OrderItemGetOutputDTO extends OrderItemBaseOutputDTO {
-    orderId: number
+    orderId: bigint
 }
 
 export interface OrderItemCreateInputDTO extends OrderItemBaseDTO {
-    menuItemId: number
+    menuItemId: bigint
 }
 
 export interface OrderItemCreateOutputDTO extends OrderItemBaseOutputDTO {
-    orderId: number
+    orderId: bigint
 }

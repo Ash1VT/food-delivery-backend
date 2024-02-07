@@ -3,16 +3,16 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class ModeratorNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Moderator")
+    constructor(moderatorId: bigint) {
+        super("id", moderatorId.toString(), "Moderator")
     }
 
 }
 
 export class ModeratorAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Moderator")
+    constructor(moderatorId: bigint) {
+        super("id", moderatorId.toString(), "Moderator")
     }
 
 }

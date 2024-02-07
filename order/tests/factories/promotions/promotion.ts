@@ -1,26 +1,25 @@
-import { faker } from "@faker-js/faker"
 import { Prisma, PrismaClient } from "@prisma/client"
 import { PromotionCreateInputDTO } from "@src/modules/promotions/dto/promotion"
 import { PromotionModel, PromotionCreateInput, PromotionUpdateInput } from "@src/modules/promotions/models/promotion"
-import { getUniqueBigIntId, getUniqueNumberId } from "@tests/utils/unique"
-type f = Prisma.OrderCreateInput
+import { getUniqueId } from "@tests/utils/unique"
+
 // Models
 
 export function generatePromotionModel(): PromotionModel {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generatePromotionCreateInputModel(): PromotionCreateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generatePromotionUpdateInputModel(): PromotionUpdateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
@@ -37,6 +36,6 @@ export async function createPromotion(client: PrismaClient): Promise<PromotionMo
 
 export function generatePromotionCreateInputDto(): PromotionCreateInputDTO {
     return {
-        id: getUniqueNumberId()
+        id: getUniqueId()
     }
 }

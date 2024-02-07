@@ -3,14 +3,14 @@ import { PrismaClient } from "@prisma/client"
 import { MenuItemCreateInputDTO, MenuItemUpdateInputDTO } from "@src/modules/menu/dto/menuItem"
 import { MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput } from "@src/modules/menu/models/menuItem"
 import { createRestaurant, generateRestaurantModel } from "../restaurants/restaurant"
-import { getUniqueBigIntId, getUniqueNumberId } from "@tests/utils/unique"
+import { getUniqueId } from "@tests/utils/unique"
 
 // Models
 
 export function generateMenuItemModel(restaurantId: bigint): MenuItemModel {
 
     return {
-        id: getUniqueBigIntId(),
+        id: getUniqueId(),
         name: faker.lorem.word({
             length: { 
                 min: 5, max: 10 
@@ -29,7 +29,7 @@ export function generateMenuItemModel(restaurantId: bigint): MenuItemModel {
 export function generateMenuItemCreateInputModel(restaurantId: bigint): MenuItemCreateInput {
     
     return {
-        id: getUniqueBigIntId(),
+        id: getUniqueId(),
         name: faker.lorem.word({
             length: { 
                 min: 5, max: 10 
@@ -48,7 +48,7 @@ export function generateMenuItemCreateInputModel(restaurantId: bigint): MenuItem
 export function generateMenuItemUpdateInputModel(restaurantId?: bigint): MenuItemUpdateInput {
 
     return {
-        id: getUniqueBigIntId(),
+        id: getUniqueId(),
         name: faker.lorem.word({
             length: { 
                 min: 5, max: 10 
@@ -82,9 +82,9 @@ export async function createMenuItem(client: PrismaClient, restaurantId: bigint)
 
 // DTOs
 
-export function generateMenuItemCreateInputDto(restaurantId: number): MenuItemCreateInputDTO {
+export function generateMenuItemCreateInputDto(restaurantId: bigint): MenuItemCreateInputDTO {
     return {
-        id: getUniqueNumberId(),
+        id: getUniqueId(),
         name: faker.lorem.word({
             length: { 
                 min: 5, max: 10 

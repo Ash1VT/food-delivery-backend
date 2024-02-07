@@ -6,7 +6,7 @@ export class PromotionGetMapper implements IPromotionGetMapper {
 
     toDto(dbModel: PromotionModel): PromotionGetOutputDTO {
         return {
-            id: Number(dbModel.id),
+            ...dbModel
         }
     }
 
@@ -16,13 +16,13 @@ export class PromotionCreateMapper implements IPromotionCreateMapper {
 
     toDto(dbModel: PromotionModel): PromotionCreateOutputDTO {
         return {
-            id: Number(dbModel.id)
+            ...dbModel
         }
     }
     
     toDbModel(dtoModel: PromotionCreateInputDTO): PromotionModel {
         return {
-            id: BigInt(dtoModel.id)
+            ...dtoModel
         }
     }
 

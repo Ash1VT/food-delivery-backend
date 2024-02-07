@@ -3,12 +3,12 @@ import { faker } from "@faker-js/faker"
 const usedIds: BigInt[] = []
 const usedStrings: string[] = []
 
-export function getUniqueBigIntId(): bigint {
-    let id = BigInt(faker.number.int())
+export function getUniqueId(): bigint {
+    let id = faker.number.bigInt()
 
     while (true) {
         if (usedIds.includes(id)) {
-            id = BigInt(faker.number.int())
+            id = faker.number.bigInt()
         } 
         else {
             usedIds.push(id)
@@ -17,10 +17,6 @@ export function getUniqueBigIntId(): bigint {
     }
 
     return id
-}
-
-export function getUniqueNumberId(): number {
-    return Number(getUniqueBigIntId())
 }
 
 export function getUniqueWord(length: number): string {

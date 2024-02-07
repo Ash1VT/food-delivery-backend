@@ -1,26 +1,25 @@
-import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
 import { ModeratorCreateInputDTO } from "@src/modules/users/dto/moderator"
 import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "@src/modules/users/models/moderator"
-import { getUniqueBigIntId, getUniqueNumberId } from "@tests/utils/unique"
+import { getUniqueId } from "@tests/utils/unique"
 
 // Models
 
 export function generateModeratorModel(): ModeratorModel {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateModeratorCreateInputModel(): ModeratorCreateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateModeratorUpdateInputModel(): ModeratorUpdateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
@@ -43,6 +42,6 @@ export async function createModerator(client: PrismaClient): Promise<ModeratorMo
 
 export function generateModeratorCreateInputDto(): ModeratorCreateInputDTO {
     return {
-        id: getUniqueNumberId()
+        id: getUniqueId()
     }
 }
