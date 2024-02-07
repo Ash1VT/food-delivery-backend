@@ -21,7 +21,8 @@ export function generateOrderItemModel(orderId: bigint): OrderItemModel {
             fractionDigits: 2
         }),
         quantity: faker.number.int({
-            max: 10
+            min: 1,
+            max: 100
         }),
         orderId
     }
@@ -41,7 +42,8 @@ export function generateOrderItemCreateInputModel(orderId: bigint): OrderItemCre
             fractionDigits: 2
         }),
         quantity: faker.number.int({
-            max: 10
+            min: 1,
+            max: 100
         }),
         orderId
     }
@@ -61,7 +63,8 @@ export function generateOrderItemWithOrderCreateInputModel(): OrderItemWithOrder
             fractionDigits: 2
         }),
         quantity: faker.number.int({
-            max: 10
+            min: 1,
+            max: 100
         })
     }
 }
@@ -80,7 +83,8 @@ export function generateOrderItemUpdateInputModel(orderId?: bigint): OrderItemUp
             fractionDigits: 2
         }),
         quantity: faker.number.int({
-            max: 10
+            min: 1,
+            max: 100
         }),
         orderId
     }
@@ -101,7 +105,8 @@ export function generateOrderItemCreateInputDto(menuItemId: bigint): OrderItemCr
     return {
         menuItemId,
         quantity: faker.number.int({
-            max: 10
+            min: 1,
+            max: 100
         }),
     }
 }
