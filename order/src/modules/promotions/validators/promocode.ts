@@ -11,7 +11,7 @@ const promocodeNameValidator = z.string().
     })
 
 const promocodeDiscountPercentageValidator = z.coerce.number().
-    min(1, {
+    min(5, {
         message: "Discount percentage is too small. Minimum value is 1"
     }).
     max(100, {
@@ -20,7 +20,7 @@ const promocodeDiscountPercentageValidator = z.coerce.number().
 
 const promocodeMaxUsageCountValidator = z.coerce.number().
     min(1, {
-        message: "Name is too small. Minimum value is 1"
+        message: "Maximum amount of promocode usages is too small. Minimum value is 1"
     })
 
 
@@ -33,7 +33,7 @@ export const promocodeCreateValidator = z.object({
     maxUsageCount: promocodeMaxUsageCountValidator
 }).refine((promocode) => promocode.validFrom < promocode.validUntil, {
     message: "Valid from must be earlier than valid until"
-}).refine((promocode) => promocode.validFrom > new Date(Date.now()), {
+}).refine((promocode) => promocode.validFrom >= new Date(Date.now()), {
     message: "Valid from cannot be earlier than current date"
 })
 
@@ -45,6 +45,6 @@ export const promocodeUpdateValidator = z.object({
     maxUsageCount: promocodeMaxUsageCountValidator
 }).refine((promocode) => promocode.validFrom < promocode.validUntil, {
     message: "Valid from must be earlier than valid until"
-}).refine((promocode) => promocode.validFrom > new Date(Date.now()), {
+}).refine((promocode) => promocode.validFrom >= new Date(Date.now()), {
     message: "Valid from cannot be earlier than current date"
 })
