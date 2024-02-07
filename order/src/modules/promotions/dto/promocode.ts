@@ -6,17 +6,17 @@ interface PromocodeBaseDTO {
 }
 
 interface PromocodeBaseOutputDTO extends PromocodeBaseDTO {
-    id: number
+    id: bigint
     nameIdentifier: string
     currentUsageCount: number
-    restaurantId: number
+    restaurantId: bigint
     isActive: boolean
 }
 
 export interface PromocodeGetOutputDTO extends PromocodeBaseOutputDTO {}
 
 export interface PromocodeCreateInputDTO extends PromocodeBaseDTO {
-    restaurantId: number
+    restaurantId: bigint
     nameIdentifier: string
 }
 

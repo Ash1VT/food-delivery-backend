@@ -4,24 +4,24 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class OrderNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Order")
+    constructor(orderId: bigint) {
+        super("id", orderId.toString(), "Order")
     }
 
 }
 
 export class OrderAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Order")
+    constructor(orderId: bigint) {
+        super("id", orderId.toString(), "Order")
     }
 
 }
 
 export class OrderNotReadyError extends AppError {
 
-    constructor(id: number | bigint) {
-        super(`Order with id=${id} is not in 'Ready' status`)        
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} is not in 'Ready' status`)        
     }
 
     public get statusCode(): number {
@@ -32,8 +32,8 @@ export class OrderNotReadyError extends AppError {
 
 export class OrderNotDeliveringError extends AppError {
 
-    constructor(id: number | bigint) {
-        super(`Order with id=${id} is not in 'Delivering' status`)        
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} is not in 'Delivering' status`)        
     }
 
     public get statusCode(): number {

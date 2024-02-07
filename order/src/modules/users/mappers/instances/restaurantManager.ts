@@ -6,8 +6,8 @@ export class RestaurantManagerGetMapper implements IRestaurantManagerGetMapper {
 
     toDto(dbModel: RestaurantManagerModel): RestaurantManagerGetOutputDTO {
         return {
-            id: Number(dbModel.id),
-            restaurantId: dbModel.restaurantId ? Number(dbModel.restaurantId) : undefined
+            id: dbModel.id,
+            restaurantId: dbModel.restaurantId ? dbModel.restaurantId : undefined
         }
     }
 
@@ -17,13 +17,13 @@ export class RestaurantManagerCreateMapper implements IRestaurantManagerCreateMa
 
     toDto(dbModel: RestaurantManagerModel): RestaurantManagerCreateOutputDTO {
         return {
-            id: Number(dbModel.id)
+            id: dbModel.id
         }
     }
 
     toDbModel(dtoModel: RestaurantManagerCreateInputDTO): RestaurantManagerCreateInput {
         return {
-            id: BigInt(dtoModel.id)
+            id: dtoModel.id
         }
     }
 

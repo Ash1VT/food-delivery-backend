@@ -56,7 +56,7 @@ export class OrderItemService implements IOrderItemService {
     //     return this.orderItemGetMapper.toDto(orderItemInstance)
     // }
     
-    public async getOrderItems(orderId: number): Promise<OrderItemGetOutputDTO[]> {
+    public async getOrderItems(orderId: bigint): Promise<OrderItemGetOutputDTO[]> {
 
         // Check if user is customer or courier
         if (!(this.customer || this.courier)) {
@@ -85,7 +85,7 @@ export class OrderItemService implements IOrderItemService {
         return (orderInstance.items as OrderItemModel[]).map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
     }
     
-    public async addOrderItem(orderId: number, orderItemData: OrderItemCreateInputDTO): Promise<OrderItemCreateOutputDTO> {
+    public async addOrderItem(orderId: bigint, orderItemData: OrderItemCreateInputDTO): Promise<OrderItemCreateOutputDTO> {
 
         // Check if user is customer
         if (!this.customer) {

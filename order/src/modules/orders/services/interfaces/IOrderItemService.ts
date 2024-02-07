@@ -4,8 +4,8 @@ export default interface IOrderItemService {
     // getOne(id: number): Promise<OrderItemGetOutputDTO>
 
     // Customer or courier
-    getOrderItems(orderId: number): Promise<OrderItemGetOutputDTO[]>
+    getOrderItems(orderId: bigint): Promise<OrderItemGetOutputDTO[]>
     
     // Customer
-    addOrderItem(orderId: number, orderItemData: OrderItemCreateInputDTO): Promise<OrderItemCreateOutputDTO>
+    addOrderItem(orderId: bigint, orderItemData: OrderItemCreateInputDTO): Promise<OrderItemCreateOutputDTO>
 }

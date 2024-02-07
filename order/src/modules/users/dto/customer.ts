@@ -1,5 +1,5 @@
 interface CustomerBaseDTO {
-    id: number
+    id: bigint
 }
 
 interface CustomerBaseOutputDTO extends CustomerBaseDTO {}

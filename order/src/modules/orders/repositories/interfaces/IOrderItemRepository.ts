@@ -2,5 +2,5 @@ import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput } from "../.
 import IBaseRepository from "@src/core/repositories/interfaces/IBaseRepository";
 
 export default interface IOrderItemRepository extends IBaseRepository<OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput> {
-    getOrderItems(orderId: number): Promise<OrderItemModel[]>
+    getOrderItems(orderId: bigint): Promise<OrderItemModel[]>
 }

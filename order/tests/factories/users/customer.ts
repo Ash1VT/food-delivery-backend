@@ -1,26 +1,25 @@
-import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
 import { CustomerCreateInputDTO } from "@src/modules/users/dto/customer"
 import { CustomerModel, CustomerCreateInput, CustomerUpdateInput } from "@src/modules/users/models/customer"
-import { getUniqueBigIntId, getUniqueNumberId } from "@tests/utils/unique"
+import { getUniqueId } from "@tests/utils/unique"
 
 // Models
 
 export function generateCustomerModel(): CustomerModel {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateCustomerCreateInputModel(): CustomerCreateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateCustomerUpdateInputModel(): CustomerUpdateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
@@ -43,6 +42,6 @@ export async function createCustomer(client: PrismaClient): Promise<CustomerMode
 
 export function generateCustomerCreateInputDto(): CustomerCreateInputDTO {
     return {
-        id: getUniqueNumberId()
+        id: getUniqueId()
     }
 }

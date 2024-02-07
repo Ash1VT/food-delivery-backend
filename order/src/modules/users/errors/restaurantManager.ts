@@ -4,23 +4,23 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class RestaurantManagerNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "RestaurantManager")
+    constructor(restaurantManagerId: bigint) {
+        super("id", restaurantManagerId.toString(), "RestaurantManager")
     }
 
 }
 
 export class RestaurantManagerAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "RestaurantManager")
+    constructor(restaurantManagerId: bigint) {
+        super("id", restaurantManagerId.toString(), "RestaurantManager")
     }
 
 }
 
 export class RestaurantManagerOwnershipError extends AppError {
     
-    constructor(restaurantManagerId: number | bigint, restaurantId: number | bigint) {
+    constructor(restaurantManagerId: bigint, restaurantId: bigint) {
         super(`Restaurant Manager with id=${restaurantManagerId} doesn't own
                Restaurant with id=${restaurantId} to perform this action`)
     }

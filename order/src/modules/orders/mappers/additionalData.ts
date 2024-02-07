@@ -2,7 +2,7 @@ export type OrderItemAdditionalData = {
     menuItemName: string
     menuItemImageUrl: string
     menuItemPrice: number
-    orderId: number
+    orderId: bigint
 }
 
 export type OrderItemWithOrderAdditionalData = {
@@ -18,5 +18,5 @@ export type OrderAdditionalData = {
     supposedDeliveryTime: Date,
     totalPrice: number,
     decountedPrice: number
-    itemsAdditionalData: OrderItemWithOrderAdditionalData[]
+    items: OrderItemWithOrderAdditionalData[]
 }

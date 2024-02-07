@@ -3,16 +3,16 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class OrderItemNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "OrderItem")
+    constructor(orderId: bigint) {
+        super("id", orderId.toString(), "OrderItem")
     }
 
 }
 
 export class OrderItemAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "OrderItem")
+    constructor(orderId: bigint) {
+        super("id", orderId.toString(), "OrderItem")
     }
 
 }

@@ -1,26 +1,25 @@
-import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
 import { RestaurantCreateInputDTO } from "@src/modules/restaurants/dto/restaurant"
 import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "@src/modules/restaurants/models/restaurant"
-import { getUniqueBigIntId, getUniqueNumberId } from "@tests/utils/unique"
+import { getUniqueId } from "@tests/utils/unique"
 
 // Models
 
 export function generateRestaurantModel(): RestaurantModel {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateRestaurantCreateInputModel(): RestaurantCreateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
 export function generateRestaurantUpdateInputModel(): RestaurantUpdateInput {
     return {
-        id: getUniqueBigIntId()
+        id: getUniqueId()
     }
 }
 
@@ -43,6 +42,6 @@ export async function createRestaurant(client: PrismaClient): Promise<Restaurant
 
 export function generateRestaurantCreateInputDto(): RestaurantCreateInputDTO {
     return {
-        id: getUniqueNumberId()
+        id: getUniqueId()
     }
 }

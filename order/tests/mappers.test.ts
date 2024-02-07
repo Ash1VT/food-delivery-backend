@@ -80,7 +80,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (courierInstance: CourierModel): object => {
                 return {
-                    id: Number(courierInstance.id)
+                    id: courierInstance.id
                 }
             }
 
@@ -96,13 +96,13 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDbResult = (courierDto: CourierCreateInputDTO): object => {
                 return {
-                    id: BigInt(courierDto.id)
+                    id: courierDto.id
                 }
             }
 
             const getExpectedDtoResult = (courierInstance: CourierModel): object => {
                 return {
-                    id: Number(courierInstance.id)
+                    id: courierInstance.id
                 }
             }
 
@@ -127,7 +127,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (customerInstance: CustomerModel): object => {
                 return {
-                    id: Number(customerInstance.id)
+                    id: customerInstance.id
                 }
             }
 
@@ -143,13 +143,13 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDbResult = (courierDto: CustomerCreateInputDTO): object => {
                 return {
-                    id: BigInt(courierDto.id)
+                    id: courierDto.id
                 }
             }
 
             const getExpectedDtoResult = (courierInstance: CustomerModel): object => {
                 return {
-                    id: Number(courierInstance.id)
+                    id: courierInstance.id
                 }
             }
 
@@ -174,7 +174,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
                 return {
-                    id: Number(moderatorInstance.id)
+                    id: moderatorInstance.id
                 }
             }
 
@@ -190,13 +190,13 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDbResult = (moderatorDto: ModeratorCreateInputDTO): object => {
                 return {
-                    id: BigInt(moderatorDto.id)
+                    id: moderatorDto.id
                 }
             }
 
             const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
                 return {
-                    id: Number(moderatorInstance.id)
+                    id: moderatorInstance.id
                 }
             }
 
@@ -217,7 +217,7 @@ describe("Tests for Data Mappers", () => {
     describe("Tests for Restaurant Manager Mappers", () => {
 
         const generateFullRestaurantManagerModel = (): RestaurantManagerModel => {
-            const restaurantId = BigInt(faker.number.int())
+            const restaurantId = faker.number.bigInt()
             return generateRestaurantManagerModel(restaurantId)
         }
 
@@ -227,8 +227,8 @@ describe("Tests for Data Mappers", () => {
     
             const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
                 return {
-                    id: Number(restaurantManagerInstance.id),
-                    restaurantId: restaurantManagerInstance.restaurantId ? Number(restaurantManagerInstance.restaurantId) : undefined
+                    id: restaurantManagerInstance.id,
+                    restaurantId: restaurantManagerInstance.restaurantId ? restaurantManagerInstance.restaurantId : undefined
                 }
             }
 
@@ -248,13 +248,13 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDbResult = (restaurantManagerDto: RestaurantManagerCreateInputDTO): object => {
                 return {
-                    id: BigInt(restaurantManagerDto.id)
+                    id: restaurantManagerDto.id
                 }
             }
 
             const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
                 return {
-                    id: Number(restaurantManagerInstance.id)
+                    id: restaurantManagerInstance.id
                 }
             }
             
@@ -280,7 +280,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: Number(restaurantInstance.id)
+                    id: restaurantInstance.id
                 }
             }
 
@@ -296,13 +296,13 @@ describe("Tests for Data Mappers", () => {
     
             const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDTO): object => {
                 return {
-                    id: BigInt(restaurantDto.id)
+                    id: restaurantDto.id
                 }
             }
 
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: Number(restaurantInstance.id)
+                    id: restaurantInstance.id
                 }
             }
             
@@ -323,7 +323,7 @@ describe("Tests for Data Mappers", () => {
     describe("Tests for Menu Item Mappers", () => {
 
         const generateFullMenuItemModel = (): MenuItemModel => {
-            const restaurantId = BigInt(faker.number.int())
+            const restaurantId = faker.number.bigInt()
             return generateMenuItemModel(restaurantId)
         }
 
@@ -333,11 +333,11 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
                 return {
-                    id: Number(menuItemInstance.id),
+                    id: menuItemInstance.id,
                     name: menuItemInstance.name,
                     imageUrl: menuItemInstance.imageUrl,
                     price: menuItemInstance.price,
-                    restaurantId: Number(menuItemInstance.restaurantId)
+                    restaurantId: menuItemInstance.restaurantId
                 }
             }
 
@@ -352,27 +352,27 @@ describe("Tests for Data Mappers", () => {
             const menuItemCreateMapper = new MenuItemCreateMapper()
 
             const generateFullMenuItemDto = (): MenuItemCreateInputDTO => {
-                const restaurantId = faker.number.int()
+                const restaurantId = faker.number.bigInt()
                 return generateMenuItemCreateInputDto(restaurantId)
             }
 
             const getExpectedDbResult = (menuItemDto: MenuItemCreateInputDTO): object => {
                 return {
-                    id: BigInt(menuItemDto.id),
+                    id: menuItemDto.id,
                     name: menuItemDto.name,
                     imageUrl: menuItemDto.imageUrl,
                     price: menuItemDto.price,
-                    restaurantId: BigInt(menuItemDto.restaurantId)
+                    restaurantId: menuItemDto.restaurantId
                 }
             }
 
             const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
                 return {
-                    id: Number(menuItemInstance.id),
+                    id: menuItemInstance.id,
                     name: menuItemInstance.name,
                     imageUrl: menuItemInstance.imageUrl,
                     price: menuItemInstance.price,
-                    restaurantId: Number(menuItemInstance.restaurantId)
+                    restaurantId: menuItemInstance.restaurantId
                 }
             }
             
@@ -401,11 +401,11 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
                 return {
-                    id: Number(menuItemInstance.id),
+                    id: menuItemInstance.id,
                     name: menuItemInstance.name,
                     imageUrl: menuItemInstance.imageUrl,
                     price: menuItemInstance.price,
-                    restaurantId: Number(menuItemInstance.restaurantId)
+                    restaurantId: menuItemInstance.restaurantId
                 }
             }
 
@@ -431,7 +431,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promotionInstance: PromotionModel): object => {
                 return {
-                    id: Number(promotionInstance.id)
+                    id: promotionInstance.id
                 }
             }
 
@@ -447,13 +447,13 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDbResult = (promotionDto: PromotionCreateInputDTO): object => {
                 return {
-                    id: BigInt(promotionDto.id)
+                    id: promotionDto.id
                 }
             }
 
             const getExpectedDtoResult = (promotionInstance: PromotionModel): object => {
                 return {
-                    id: Number(promotionInstance.id)
+                    id: promotionInstance.id
                 }
             }
 
@@ -474,7 +474,7 @@ describe("Tests for Data Mappers", () => {
     describe("Tests for Promocode Mappers", () => {
 
         const generateFullPromocodeModel = (): PromocodeModel => {
-            const restaurantId = BigInt(faker.number.int())
+            const restaurantId = faker.number.bigInt()
             return generatePromocodeModel(restaurantId)
         }
 
@@ -484,14 +484,14 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promocodeInstance: PromocodeModel): object => {
                 return {
-                    id: Number(promocodeInstance.id),
+                    id: promocodeInstance.id,
                     nameIdentifier: promocodeInstance.nameIdentifier,
                     discountPercentage: promocodeInstance.discountPercentage,
                     validFrom: promocodeInstance.validFrom.toString(),
                     validUntil: promocodeInstance.validUntil.toString(),
                     maxUsageCount: promocodeInstance.maxUsageCount,
                     currentUsageCount: promocodeInstance.currentUsageCount,
-                    restaurantId: Number(promocodeInstance.restaurantId),
+                    restaurantId: promocodeInstance.restaurantId,
                     isActive: promocodeInstance.isActive
                 }
             }
@@ -507,7 +507,7 @@ describe("Tests for Data Mappers", () => {
             const promocodeCreateMapper = new PromocodeCreateMapper()
 
             const generateFullPromocodeDto = (): PromocodeCreateInputDTO => {
-                const restaurantId = faker.number.int()
+                const restaurantId = faker.number.bigInt()
                 return generatePromocodeCreateInputDto(restaurantId)
             }
 
@@ -518,20 +518,20 @@ describe("Tests for Data Mappers", () => {
                     validFrom: new Date(promocodeDto.validFrom),
                     validUntil: new Date(promocodeDto.validUntil),
                     maxUsageCount: promocodeDto.maxUsageCount,
-                    restaurantId: BigInt(promocodeDto.restaurantId)
+                    restaurantId: promocodeDto.restaurantId
                 }
             }
 
             const getExpectedDtoResult = (promocodeInstance: PromocodeModel): object => {
                 return {
-                    id: Number(promocodeInstance.id),
+                    id: promocodeInstance.id,
                     nameIdentifier: promocodeInstance.nameIdentifier,
                     discountPercentage: promocodeInstance.discountPercentage,
                     validFrom: promocodeInstance.validFrom.toString(),
                     validUntil: promocodeInstance.validUntil.toString(),
                     maxUsageCount: promocodeInstance.maxUsageCount,
                     currentUsageCount: promocodeInstance.currentUsageCount,
-                    restaurantId: Number(promocodeInstance.restaurantId),
+                    restaurantId: promocodeInstance.restaurantId,
                     isActive: promocodeInstance.isActive
                 }
             }
@@ -561,14 +561,14 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promocodeInstance: PromocodeModel): object => {
                 return {
-                    id: Number(promocodeInstance.id),
+                    id: promocodeInstance.id,
                     nameIdentifier: promocodeInstance.nameIdentifier,
                     discountPercentage: promocodeInstance.discountPercentage,
                     validFrom: promocodeInstance.validFrom.toString(),
                     validUntil: promocodeInstance.validUntil.toString(),
                     maxUsageCount: promocodeInstance.maxUsageCount,
                     currentUsageCount: promocodeInstance.currentUsageCount,
-                    restaurantId: Number(promocodeInstance.restaurantId),
+                    restaurantId: promocodeInstance.restaurantId,
                     isActive: promocodeInstance.isActive
                 }
             }
@@ -590,7 +590,7 @@ describe("Tests for Data Mappers", () => {
     describe("Tests for Order Item Mappers", () => {
 
         const generateFullOrderItemModel = (): OrderItemModel => {
-            const orderId = BigInt(faker.number.int())
+            const orderId = faker.number.bigInt()
             return generateOrderItemModel(orderId)
         }
 
@@ -600,8 +600,8 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (orderItemInstance: OrderItemModel): object => {
                 return {
-                    id: Number(orderItemInstance.id),
-                    orderId: Number(orderItemInstance.orderId),
+                    id: orderItemInstance.id,
+                    orderId: orderItemInstance.orderId,
                     menuItemName: orderItemInstance.menuItemName,
                     menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                     menuItemPrice: orderItemInstance.menuItemPrice,
@@ -620,7 +620,7 @@ describe("Tests for Data Mappers", () => {
             const orderItemCreateMapper = new OrderItemCreateMapper()
 
             const generateFullOrderItemDto = (): OrderItemCreateInputDTO => {
-                const menuItemId = faker.number.int()
+                const menuItemId = faker.number.bigInt()
                 return generateOrderItemCreateInputDto(menuItemId)
             }
 
@@ -630,7 +630,7 @@ describe("Tests for Data Mappers", () => {
                     menuItemName: orderItemInstance.menuItemName,
                     menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                     menuItemPrice: orderItemInstance.menuItemPrice,
-                    orderId: Number(orderItemInstance.orderId)
+                    orderId: orderItemInstance.orderId
                 }
             }
             
@@ -648,7 +648,7 @@ describe("Tests for Data Mappers", () => {
                     menuItemName: additionalData.menuItemName,
                     menuItemImageUrl: additionalData.menuItemImageUrl,
                     menuItemPrice: additionalData.menuItemPrice,
-                    orderId: BigInt(additionalData.orderId),
+                    orderId: additionalData.orderId,
                     quantity: orderItemDto.quantity
                 }
             }
@@ -664,8 +664,8 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (orderItemInstance: OrderItemModel): object => {
                 return {
-                    id: Number(orderItemInstance.id),
-                    orderId: Number(orderItemInstance.orderId),
+                    id: orderItemInstance.id,
+                    orderId: orderItemInstance.orderId,
                     menuItemName: orderItemInstance.menuItemName,
                     menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                     menuItemPrice: orderItemInstance.menuItemPrice,
@@ -706,10 +706,10 @@ describe("Tests for Data Mappers", () => {
     describe("Tests for Order Mappers", () => {
 
         const generateFullOrderModel = (): OrderModel => {
-            const customerId = BigInt(faker.number.int())
-            const restaurantId = BigInt(faker.number.int())
-            const courierId = BigInt(faker.number.int())
-            const promotionId = BigInt(faker.number.int())
+            const customerId = faker.number.bigInt()
+            const restaurantId = faker.number.bigInt()
+            const courierId = faker.number.bigInt()
+            const promotionId = faker.number.bigInt()
             const promocodeName = faker.lorem.word(5)
             const promocodeDiscount = faker.number.int({
                 min: 10,
@@ -723,8 +723,8 @@ describe("Tests for Data Mappers", () => {
         }
 
         const generateMinimumOrderModel = (): OrderModel => {
-            const customerId = BigInt(faker.number.int())
-            const restaurantId = BigInt(faker.number.int())
+            const customerId = faker.number.bigInt()
+            const restaurantId = faker.number.bigInt()
             return generateOrderModel(customerId, restaurantId, "READY", 0)
         }
 
@@ -736,8 +736,8 @@ describe("Tests for Data Mappers", () => {
             const getExpectedDtoResult = (orderInstance: OrderModel): object => {
                 const orderItems = orderInstance.items?.map((orderItemInstance) => {
                     return {
-                        id: Number(orderItemInstance.id),
-                        orderId: Number(orderItemInstance.orderId),
+                        id: orderItemInstance.id,
+                        orderId: orderItemInstance.orderId,
                         menuItemName: orderItemInstance.menuItemName,
                         menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                         menuItemPrice: orderItemInstance.menuItemPrice,
@@ -746,14 +746,14 @@ describe("Tests for Data Mappers", () => {
                 })
 
                 return {
-                    id: Number(orderInstance.id),
-                    customerId: Number(orderInstance.customerId),
-                    courierId: orderInstance.courierId ? Number(orderInstance.courierId) : undefined,
-                    restaurantId: Number(orderInstance.restaurantId),
+                    id: orderInstance.id,
+                    customerId: orderInstance.customerId,
+                    courierId: orderInstance.courierId ? orderInstance.courierId : undefined,
+                    restaurantId: orderInstance.restaurantId,
                     status: orderInstance.status,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
-                    promotionId: orderInstance.promotionId ? Number(orderInstance.promotionId) : undefined,
+                    promotionId: orderInstance.promotionId ? orderInstance.promotionId : undefined,
                     createdAt: orderInstance.createdAt.toString(),
                     deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toString(),
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime.toString(),
@@ -781,10 +781,10 @@ describe("Tests for Data Mappers", () => {
             const orderCreateMapper = new OrderCreateMapper(orderItemCreateMapper)
 
             const generateFullOrderDto = (): OrderCreateInputDTO => {
-                const restaurantId = faker.number.int()
+                const restaurantId = faker.number.bigInt()
                 const promocode = faker.lorem.word(5)
-                const promotionId = faker.number.int()
-                const menuItemIds = Array.from({length: manyCount}, () => (faker.number.int()))
+                const promotionId = faker.number.bigInt()
+                const menuItemIds = Array.from({length: manyCount}, () => (faker.number.bigInt()))
                 return generateOrderCreateInputDto(restaurantId, menuItemIds, promocode, promotionId)
             }
 
@@ -811,12 +811,12 @@ describe("Tests for Data Mappers", () => {
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime,
                     totalPrice: orderInstance.totalPrice,
                     decountedPrice: orderInstance.decountedPrice,
-                    itemsAdditionalData: orderItemsAdditionalData
+                    items: orderItemsAdditionalData
                 }
             }
 
             const getExpectedDbResult = (orderDto: OrderCreateInputDTO, additionalData: OrderAdditionalData): object => {
-                const orderItems = additionalData.itemsAdditionalData.map((orderItemAdditionalData, index) => {
+                const orderItems = additionalData.items.map((orderItemAdditionalData, index) => {
                     return {
                         menuItemName: orderItemAdditionalData.menuItemName,
                         menuItemImageUrl: orderItemAdditionalData.menuItemImageUrl,
@@ -826,11 +826,11 @@ describe("Tests for Data Mappers", () => {
                 })
                 
                 return {
-                    customerId: BigInt(additionalData.customerId),
-                    restaurantId: BigInt(orderDto.restaurantId),
+                    customerId: additionalData.customerId,
+                    restaurantId: orderDto.restaurantId,
                     promocodeName: additionalData.promocodeName,
                     promocodeDiscount: additionalData.promocodeDiscount,
-                    promotionId: orderDto.promotionId ? BigInt(orderDto.promotionId) : undefined,
+                    promotionId: orderDto.promotionId ? orderDto.promotionId : undefined,
                     supposedDeliveryTime: additionalData.supposedDeliveryTime,
                     totalPrice: Number(additionalData.totalPrice.toFixed(2)),
                     decountedPrice: Number(additionalData.decountedPrice.toFixed(2)),
@@ -843,8 +843,8 @@ describe("Tests for Data Mappers", () => {
             const getExpectedDtoResult = (orderInstance: OrderModel): object => {
                 const orderItems = orderInstance.items?.map((orderItemInstance) => {
                     return {
-                        id: Number(orderItemInstance.id),
-                        orderId: Number(orderItemInstance.orderId),
+                        id: orderItemInstance.id,
+                        orderId: orderItemInstance.orderId,
                         menuItemName: orderItemInstance.menuItemName,
                         menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                         menuItemPrice: orderItemInstance.menuItemPrice,
@@ -853,14 +853,14 @@ describe("Tests for Data Mappers", () => {
                 })
 
                 return {
-                    id: Number(orderInstance.id),
-                    customerId: Number(orderInstance.customerId),
-                    courierId: orderInstance.courierId ? Number(orderInstance.courierId) : undefined,
-                    restaurantId: Number(orderInstance.restaurantId),
+                    id: (orderInstance.id),
+                    customerId: orderInstance.customerId,
+                    courierId: orderInstance.courierId ? orderInstance.courierId : undefined,
+                    restaurantId: orderInstance.restaurantId,
                     status: orderInstance.status,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
-                    promotionId: orderInstance.promotionId ? Number(orderInstance.promotionId) : undefined,
+                    promotionId: orderInstance.promotionId ? orderInstance.promotionId : undefined,
                     createdAt: orderInstance.createdAt.toString(),
                     deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toString(),
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime.toString(),

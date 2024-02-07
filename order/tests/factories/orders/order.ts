@@ -7,7 +7,7 @@ import moment from "moment"
 import { OrderCreateInputDTO } from "@src/modules/orders/dto/order"
 import { OrderModel, OrderCreateInput, OrderUpdateInput } from "@src/modules/orders/models/order"
 import { generateOrderItemCreateInputDto, generateOrderItemModel } from './orderItem';
-import { getUniqueBigIntId } from '@tests/utils/unique';
+import { getUniqueId } from '@tests/utils/unique';
 
 // Models
 
@@ -15,7 +15,7 @@ export function generateOrderModel(customerId: bigint, restaurantId: bigint, sta
                                    itemsCount: number, promocodeName?: string, promocodeDiscount?: number, 
                                    actualDeliveryTime?: Date, deliveryAcceptedAt?: Date, deliveryFinishedAt?: Date, 
                                    courierId?: bigint, promotionId?: bigint): OrderModel {
-    const orderId = getUniqueBigIntId()
+    const orderId = getUniqueId()
     const createdAt = faker.date.recent()
     const supposedDeliveryTime = moment(createdAt).add(faker.number.int({ min: 1, max: 200 }), "m").toDate()
 
@@ -95,7 +95,7 @@ export async function createOrder(client: PrismaClient, customerId: bigint, rest
 
 // DTOs
 
-export function generateOrderCreateInputDto(restaurantId: number, menuItemsIds: number[], promocode?: string, promotionId?: number): OrderCreateInputDTO {
+export function generateOrderCreateInputDto(restaurantId: bigint, menuItemsIds: bigint[], promocode?: string, promotionId?: bigint): OrderCreateInputDTO {
     return {
         restaurantId,
         promotionId,

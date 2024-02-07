@@ -12,21 +12,16 @@ export class OrderGetMapper implements IOrderGetMapper {
 
     toDto(dbModel: OrderModel): OrderGetOutputDTO {
         return {
-            id: Number(dbModel.id),
-            customerId: Number(dbModel.customerId),
-            courierId: dbModel.courierId ? Number(dbModel.courierId) : undefined,
-            restaurantId: Number(dbModel.restaurantId),
+            ...dbModel,
+            courierId: dbModel.courierId ? dbModel.courierId : undefined,
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            promotionId: dbModel.promotionId ? Number(dbModel.promotionId) : undefined,
-            status: dbModel.status,
+            promotionId: dbModel.promotionId ? dbModel.promotionId : undefined,
             createdAt: dbModel.createdAt.toString(),
             deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toString(),
             supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
             actualDeliveryTime: dbModel.actualDeliveryTime?.toString(),
             deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
-            totalPrice: Number(dbModel.totalPrice.toFixed(2)),
-            decountedPrice: Number(dbModel.decountedPrice.toFixed(2)),
             items: dbModel.items?.map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
         }
     }
@@ -41,38 +36,33 @@ export class OrderCreateMapper implements IOrderCreateMapper {
 
     toDto(dbModel: OrderModel): OrderCreateOutputDTO {
         return {
-            id: Number(dbModel.id),
-            customerId: Number(dbModel.customerId),
-            courierId: dbModel.courierId ? Number(dbModel.courierId) : undefined,
-            restaurantId: Number(dbModel.restaurantId),
-            status: dbModel.status,
+            ...dbModel,
+            courierId: dbModel.courierId ? dbModel.courierId : undefined,
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            promotionId: dbModel.promotionId ? Number(dbModel.promotionId) : undefined,
+            promotionId: dbModel.promotionId ? dbModel.promotionId : undefined,
             createdAt: dbModel.createdAt.toString(),
             deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toString(),
             supposedDeliveryTime: dbModel.supposedDeliveryTime.toString(),
             actualDeliveryTime: dbModel.actualDeliveryTime?.toString(),
             deliveryFinishedAt: dbModel.deliveryFinishedAt?.toString(),
-            totalPrice: dbModel.totalPrice,
-            decountedPrice: dbModel.decountedPrice,
             items: dbModel.items?.map((orderItem) => this.orderItemCreateMapper.toDto(orderItem))
         }
     }
 
     toDbModel(dtoModel: OrderCreateInputDTO, additionalData: OrderAdditionalData): OrderCreateInput {
         return {
-            customerId: BigInt(additionalData.customerId),
-            restaurantId: BigInt(dtoModel.restaurantId),
+            customerId: additionalData.customerId,
+            restaurantId: dtoModel.restaurantId,
             promocodeName: additionalData.promocodeName,
             promocodeDiscount: additionalData.promocodeDiscount,
-            promotionId: dtoModel.promotionId ? BigInt(dtoModel.promotionId) : undefined,
+            promotionId: dtoModel.promotionId ? dtoModel.promotionId : undefined,
             supposedDeliveryTime: additionalData.supposedDeliveryTime,
             totalPrice: Number(additionalData.totalPrice.toFixed(2)),
             decountedPrice: Number(additionalData.decountedPrice.toFixed(2)),
             items: {
                 create: dtoModel.items.map((orderItem, index) => {
-                    const data = additionalData.itemsAdditionalData[index]
+                    const data = additionalData.items[index]
                     return this.orderItemCreateMapper.toDbModelWithOrder(orderItem, data)
                 })
             }

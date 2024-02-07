@@ -25,8 +25,8 @@ export default class RestaurantService implements IRestaurantService {
     //     return mapManyModels(restaurantInstances, this.restaurantGetMapper.toDto)
     // }
     
-    public async create(data: RestaurantCreateInputDTO): Promise<RestaurantCreateOutputDTO> {
-        const restaurantCreateInput = this.restaurantCreateMapper.toDbModel(data)
+    public async create(restaurantData: RestaurantCreateInputDTO): Promise<RestaurantCreateOutputDTO> {
+        const restaurantCreateInput = this.restaurantCreateMapper.toDbModel(restaurantData)
         const restaurantCreatedInstance = await this.restaurantRepository.create(restaurantCreateInput)
         return this.restaurantCreateMapper.toDto(restaurantCreatedInstance)
     }

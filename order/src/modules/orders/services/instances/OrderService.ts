@@ -72,9 +72,7 @@ export default class OrderService implements IOrderService {
             throw new PermissionDeniedError()
         }
 
-        const courierId = Number(this.courier.id)
-
-        const orderInstances = await this.orderRepository.getCourierOrders(courierId, true, status)
+        const orderInstances = await this.orderRepository.getCourierOrders(this.courier.id, true, status)
         return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
@@ -85,13 +83,11 @@ export default class OrderService implements IOrderService {
             throw new PermissionDeniedError()
         }
         
-        const customerId = Number(this.customer.id)
-
-        const orderInstances = await this.orderRepository.getCustomerOrders(customerId, true, status)
+        const orderInstances = await this.orderRepository.getCustomerOrders(this.customer.id, true, status)
         return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
     }
 
-    public async getRestaurantOrders(restaurantId: number, status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
+    public async getRestaurantOrders(restaurantId: bigint, status?: OrderStatus): Promise<OrderGetOutputDTO[]> {
         
         // Check if user is restaurant manager
         if(!this.restaurantManager) {
@@ -167,7 +163,7 @@ export default class OrderService implements IOrderService {
             supposedDeliveryTime: new Date(Date.now()),
             totalPrice: totalPrice,
             decountedPrice: totalPrice,
-            itemsAdditionalData: menuItems.map((menuItem) => {
+            items: menuItems.map((menuItem) => {
                 return {
                     menuItemName: menuItem.name,
                     menuItemImageUrl: menuItem.imageUrl,
@@ -184,25 +180,23 @@ export default class OrderService implements IOrderService {
                 throw new PromocodeNotFoundWithNameError(orderData.promocode)
             }
 
-            const promocodeId = Number(promocodeInstance.id)
-
             if (promocodeInstance.restaurantId !== restaurantInstance.id) {
-                throw new PromocodeNotBelongsToRestaurantError(promocodeId, restaurantInstance.id)
+                throw new PromocodeNotBelongsToRestaurantError(promocodeInstance.id, restaurantInstance.id)
             }
 
             if (!promocodeInstance.isActive) {
-                throw new PromocodeNotActiveError(promocodeId)
+                throw new PromocodeNotActiveError(promocodeInstance.id)
             }
 
             if (promocodeInstance.currentUsageCount >= promocodeInstance.maxUsageCount) {
-                throw new PromocodeUsageError(promocodeId)
+                throw new PromocodeUsageError(promocodeInstance.id)
             }
             
             orderInput.promocodeName = promocodeInstance.nameIdentifier
             orderInput.promocodeDiscount = promocodeInstance.discountPercentage
             orderInput.decountedPrice = Number((orderInput.totalPrice * (1 - promocodeInstance.discountPercentage / 100)).toFixed(2))
 
-            await this.promocodeRepository.update(promocodeId, {
+            await this.promocodeRepository.update(promocodeInstance.id, {
                 ...promocodeInstance,
                 maxUsageCount: promocodeInstance.maxUsageCount + 1
             })
@@ -213,7 +207,7 @@ export default class OrderService implements IOrderService {
         return this.orderCreateMapper.toDto(orderInstance)
     }
 
-    public async takeOrder(orderId: number): Promise<void> {
+    public async takeOrder(orderId: bigint): Promise<void> {
 
         // Check if user is courier
         if (!this.courier) {
@@ -238,7 +232,7 @@ export default class OrderService implements IOrderService {
         })
     }
 
-    public async finishOrderDelivery(orderId: number): Promise<void> {
+    public async finishOrderDelivery(orderId: bigint): Promise<void> {
 
         // Check if user is courier
         if (!this.courier) {

@@ -22,57 +22,13 @@ export default class PromocodeService implements IPromocodeService {
         protected restaurantManager?: RestaurantManagerModel
     ) {}
 
-
-    // public async getOne(promocodeId: number): Promise<PromocodeGetOutputDTO> {
-
-    //     if (!this.restaurantManager) {
-    //         throw new PermissionDeniedError()
-    //     }
-
-    //     const promocodeInstance = await this.promocodeRepository.getOne(promocodeId)
-
-    //     if (!promocodeInstance) {
-    //         throw new PromocodeNotFoundWithIdError(promocodeId)
-    //     }
-
-    //     if (promocodeInstance.restaurantId !== this.restaurantManager.restaurantId) {
-    //         throw new RestaurantManagerOwnershipError(this.restaurantManager.id, promocodeInstance.restaurantId)
-    //     }
-
-    //     return this.promocodeGetMapper.toDto(promocodeInstance)
-    // }
-
-    // public async getOneByName(promocodeName: string): Promise<PromocodeGetOutputDTO> {
-
-    //     if (!this.restaurantManager) {
-    //         throw new PermissionDeniedError()
-    //     }
-
-    //     const promocodeInstance = await this.promocodeRepository.getOneByName(promocodeName)
-
-    //     if (!promocodeInstance) {
-    //         throw new PromocodeNotFoundWithNameError(promocodeName)
-    //     }
-
-    //     if (promocodeInstance.restaurantId !== this.restaurantManager.restaurantId) {
-    //         throw new RestaurantManagerOwnershipError(this.restaurantManager.id, promocodeInstance.restaurantId)
-    //     }
-
-    //     return this.promocodeGetMapper.toDto(promocodeInstance)
-    // }
-
-    // public async getMany(): Promise<PromocodeGetOutputDTO[]> {
-    //     const promocodeInstances = await this.promocodeRepository.getMany()
-    //     return mapManyModels(promocodeInstances, this.promocodeGetMapper.toDto)
-    // }
-
-    public async getRestaurantPromocodes(restaurantId: number): Promise<PromocodeGetOutputDTO[]> {
+    public async getRestaurantPromocodes(restaurantId: bigint): Promise<PromocodeGetOutputDTO[]> {
 
         if (!this.restaurantManager) {
             throw new PermissionDeniedError()
         }
         
-        if (Number(this.restaurantManager.restaurantId) !== restaurantId) {
+        if (this.restaurantManager.restaurantId !== restaurantId) {
             throw new RestaurantManagerOwnershipError(this.restaurantManager.id, restaurantId)
         }
 
@@ -109,7 +65,7 @@ export default class PromocodeService implements IPromocodeService {
         return this.promocodeCreateMapper.toDto(promocodeCreatedInstance)
     }
 
-    public async update(promocodeId: number, promocodeData: PromocodeUpdateInputDTO): Promise<PromocodeUpdateOutputDTO> {
+    public async update(promocodeId: bigint, promocodeData: PromocodeUpdateInputDTO): Promise<PromocodeUpdateOutputDTO> {
 
         if (!this.restaurantManager) {
             throw new PermissionDeniedError()
@@ -135,7 +91,7 @@ export default class PromocodeService implements IPromocodeService {
         return this.promocodeUpdateMapper.toDto(promocodeUpdatedInstance)
     }
 
-    public async deactivate(promocodeId: number): Promise<void> {
+    public async deactivate(promocodeId: bigint): Promise<void> {
 
         if (!this.restaurantManager) {
             throw new PermissionDeniedError()
@@ -156,7 +112,7 @@ export default class PromocodeService implements IPromocodeService {
         })
     }
 
-    public async activate(promocodeId: number): Promise<void> {
+    public async activate(promocodeId: bigint): Promise<void> {
 
         if (!this.restaurantManager) {
             throw new PermissionDeniedError()

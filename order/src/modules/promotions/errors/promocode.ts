@@ -4,8 +4,8 @@ import DatabaseInstanceNotFoundError from "@src/core/errors/DatabaseInstanceNotF
 
 export class PromocodeNotFoundWithIdError extends DatabaseInstanceNotFoundError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Promocode")
+    constructor(promocodeId: bigint) {
+        super("id", promocodeId.toString(), "Promocode")
     }
 
 }
@@ -20,8 +20,8 @@ export class PromocodeNotFoundWithNameError extends DatabaseInstanceNotFoundErro
 
 export class PromocodeAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExistsError {
 
-    constructor(id: number) {
-        super("id", id.toString(), "Promocode")
+    constructor(promocodeId: bigint) {
+        super("id", promocodeId.toString(), "Promocode")
     }
 
 }
@@ -36,8 +36,8 @@ export class PromocodeAlreadyExistsWithNameError extends DatabaseInstanceAlready
 
 export class PromocodeUsageError extends AppError {
 
-    constructor(id: number) {
-        super(`Promocode with id=${id} has maximum amount of usages`)
+    constructor(promocodeId: bigint) {
+        super(`Promocode with id=${promocodeId} has maximum amount of usages`)
     }
 
     public get statusCode(): number {
@@ -47,8 +47,8 @@ export class PromocodeUsageError extends AppError {
 
 export class PromocodeMaximumUsageError extends AppError {
 
-    constructor(id: number) {
-        super(`Cannot set maximum usage smaller than current usage count for Promocode with id=${id}`)
+    constructor(promocodeId: bigint) {
+        super(`Cannot set maximum usage smaller than current usage count for Promocode with id=${promocodeId}`)
     }
 
     public get statusCode(): number {
@@ -58,8 +58,8 @@ export class PromocodeMaximumUsageError extends AppError {
 
 export class PromocodeNotActiveError extends AppError {
 
-    constructor(id: number) {
-        super(`Promocode with id=${id} is not active`)
+    constructor(promocodeId: bigint) {
+        super(`Promocode with id=${promocodeId} is not active`)
     }
 
     public get statusCode(): number {
@@ -69,7 +69,7 @@ export class PromocodeNotActiveError extends AppError {
 
 export class PromocodeNotBelongsToRestaurantError extends AppError {
 
-    constructor(promocodeId: number | bigint, restaurantId: number | bigint) {
+    constructor(promocodeId: bigint, restaurantId: bigint) {
         super(`Promocode with id=${promocodeId} is not belongs to restaurant with id=${restaurantId}`)
     }
 

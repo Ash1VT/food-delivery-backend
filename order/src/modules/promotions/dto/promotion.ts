@@ -1,5 +1,5 @@
 interface PromotionBaseDTO {
-    id: number
+    id: bigint
 }
 
 interface PromotionBaseOutputDTO extends PromotionBaseDTO {}
