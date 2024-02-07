@@ -20,7 +20,7 @@ export function getUniqueId(): bigint {
 }
 
 export function getUniqueWord(length: number): string {
-    let word = faker.lorem.word(length)
+    let word = faker.string.alpha(length)
 
     while (true) {
         if (usedStrings.includes(word)) {
