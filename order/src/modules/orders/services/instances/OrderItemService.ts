@@ -1,17 +1,18 @@
-import { mapManyModels } from "@src/utils/mapManyModels";
 import { OrderItemGetOutputDTO, OrderItemCreateInputDTO, OrderItemCreateOutputDTO } from "../../dto/orderItem";
 import { OrderItemNotFoundWithIdError } from "../../errors/orderItem";
 import { IOrderItemCreateMapper, IOrderItemGetMapper } from "../../mappers/interfaces/orderItem";
 import IOrderItemRepository from "../../repositories/interfaces/IOrderItemRepository";
 import IOrderItemService from "../interfaces/IOrderItemService";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
-import { MenuItemNotFoundWithIdError } from "@src/modules/menu/errors/menuItem";
+import { MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from "@src/modules/menu/errors/menuItem";
 import { CustomerModel } from "@src/modules/users/models/customer";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
-import { OrderCourierOwnershipError, OrderCustomerOwnershipError, OrderNotFoundWithIdError } from "../../errors/order";
+import { OrderNotFoundWithIdError } from "../../errors/order";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions";
 import { OrderItemModel } from "../../models/orderItem";
 import { CourierModel } from "@src/modules/users/models/courier";
+import { CourierOwnershipError } from "@src/modules/users/errors/courier";
+import { CustomerOwnershipError } from "@src/modules/users/errors/customer";
 
 export class OrderItemService implements IOrderItemService {
     
@@ -72,16 +73,16 @@ export class OrderItemService implements IOrderItemService {
         // Check that customer owns order
         if (this.customer)
             if (orderInstance.customerId !== this.customer.id) {
-                throw new OrderCustomerOwnershipError(orderId)
+                throw new CustomerOwnershipError(this.customer.id, orderId)
             }
         
         // Check that courier owns order
         if (this.courier)
             if (orderInstance.courierId !== this.courier.id) {
-                throw new OrderCourierOwnershipError(orderId)
+                throw new CourierOwnershipError(this.courier.id, orderId)
             }
         
-        return mapManyModels(orderInstance.items as OrderItemModel[], this.orderItemGetMapper.toDto)
+        return (orderInstance.items as OrderItemModel[]).map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
     }
     
     public async addOrderItem(orderId: number, orderItemData: OrderItemCreateInputDTO): Promise<OrderItemCreateOutputDTO> {
@@ -109,19 +110,21 @@ export class OrderItemService implements IOrderItemService {
 
         // Check that customer owns this order
         if (orderInstance.customerId !== this.customer.id) {
-            throw new OrderCustomerOwnershipError(orderId)
+            throw new CustomerOwnershipError(this.customer.id, orderId)
         }
 
         // Check that menu item is in same restaurant as order
         if (orderInstance.restaurantId !== menuItemInstance.restaurantId) {
-            // bla bla bla
+            throw new MenuItemNotInSameOrderRestaurantError(menuItemInstance.name, orderId)
         }
 
         // Check that menu item is not already in order
-        if (orderItemsInstances.find((orderItem) => orderItem.menuItemName === menuItemInstance.name && 
+        const orderItem = orderItemsInstances.find((orderItem) => orderItem.menuItemName === menuItemInstance.name && 
                                                     orderItem.menuItemImageUrl === menuItemInstance.imageUrl && 
-                                                    orderItem.menuItemPrice === menuItemInstance.price)) {
-            // bab bob
+                                                    orderItem.menuItemPrice === menuItemInstance.price)
+
+        if (orderItem) {
+            throw new MenuItemAlreadyInOrderError(orderItem.menuItemName, orderId)
         }
 
         const orderItemInput = this.orderItemCreateMapper.toDbModel(orderItemData, {
