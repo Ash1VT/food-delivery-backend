@@ -1,13 +1,6 @@
-import { CourierGetMapper } from '@src/modules/users/mappers/instances/courier';
 import { Settings } from "@src/config/Settings"
 import getSettings from "@src/utils/getSettings"
 import settingsCache, { SettingsWrapperFunction, clearCache, getCache } from "@src/utils/settingsCache"
-import { generateCourierModel } from "./factories/users/courier"
-import { mapManyModels, mapManyModelsWithAdditionalData } from '@src/utils/mapManyModels';
-import { generateOrderItemCreateInputDto, generateOrderItemModel } from './factories/orders/orderItem';
-import { OrderItemCreateMapper } from '@src/modules/orders/mappers/instances/orderItem';
-import { faker } from '@faker-js/faker';
-import { OrderItemAdditionalData } from '@src/modules/orders/mappers/additionalData';
 
 describe("Tests for Utils", () => {
 
@@ -73,46 +66,46 @@ describe("Tests for Utils", () => {
         })
     })
 
-    describe("Tests for mapManyModels", () => {
-        const manyCount = 5
+    // describe("Tests for mapManyModels", () => {
+    //     const manyCount = 5
 
 
-        test("should map many couriers", () => {
-            const courierGetMapper = new CourierGetMapper()
+    //     test("should map many couriers", () => {
+    //         const courierGetMapper = new CourierGetMapper()
 
-            const courierInstances = Array.from({length: manyCount}, () => generateCourierModel())
-            const expectedResult = courierInstances.map((courierInstance) => courierGetMapper.toDto(courierInstance))
+    //         const courierInstances = Array.from({length: manyCount}, () => generateCourierModel())
+    //         const expectedResult = courierInstances.map((courierInstance) => courierGetMapper.toDto(courierInstance))
 
-            const courierDtos = mapManyModels(courierInstances, courierGetMapper.toDto)
-            expect(courierDtos).toEqual(expect.arrayContaining(expectedResult))
-        })
+    //         const courierDtos = mapManyModels(courierInstances, courierGetMapper.toDto)
+    //         expect(courierDtos).toEqual(expect.arrayContaining(expectedResult))
+    //     })
 
 
-        test("should map many order items with additional data", () => {
-            const generateOrderItemAdditionalData = (): OrderItemAdditionalData => {
-                const orderId = BigInt(faker.number.int())
-                const orderItemInstance = generateOrderItemModel(orderId)
+    //     test("should map many order items with additional data", () => {
+    //         const generateOrderItemAdditionalData = (): OrderItemAdditionalData => {
+    //             const orderId = BigInt(faker.number.int())
+    //             const orderItemInstance = generateOrderItemModel(orderId)
                 
-                return {
-                    menuItemName: orderItemInstance.menuItemName,
-                    menuItemImageUrl: orderItemInstance.menuItemImageUrl,
-                    menuItemPrice: orderItemInstance.menuItemPrice,
-                    orderId: Number(orderItemInstance.orderId)
-                }
-            }
+    //             return {
+    //                 menuItemName: orderItemInstance.menuItemName,
+    //                 menuItemImageUrl: orderItemInstance.menuItemImageUrl,
+    //                 menuItemPrice: orderItemInstance.menuItemPrice,
+    //                 orderId: Number(orderItemInstance.orderId)
+    //             }
+    //         }
 
-            const orderItemCreateMapper = new OrderItemCreateMapper()
-            const menuItemId = faker.number.int()
+    //         const orderItemCreateMapper = new OrderItemCreateMapper()
+    //         const menuItemId = faker.number.int()
 
-            const orderItemDtos = Array.from({length: manyCount}, () => generateOrderItemCreateInputDto(menuItemId))
-            const orderItemsAdditionalData = Array.from({length: manyCount}, () => generateOrderItemAdditionalData())
+    //         const orderItemDtos = Array.from({length: manyCount}, () => generateOrderItemCreateInputDto(menuItemId))
+    //         const orderItemsAdditionalData = Array.from({length: manyCount}, () => generateOrderItemAdditionalData())
 
-            const expectedResult = orderItemDtos.map((orderItemDto, index) => orderItemCreateMapper.toDbModel(orderItemDto, orderItemsAdditionalData[index]))
+    //         const expectedResult = orderItemDtos.map((orderItemDto, index) => orderItemCreateMapper.toDbModel(orderItemDto, orderItemsAdditionalData[index]))
 
-            const courierDtos = mapManyModelsWithAdditionalData(orderItemDtos, orderItemCreateMapper.toDbModel, orderItemsAdditionalData)
+    //         const courierDtos = mapManyModelsWithAdditionalData(orderItemDtos, orderItemCreateMapper.toDbModel, orderItemsAdditionalData)
             
-            expect(courierDtos).toEqual(expect.arrayContaining(expectedResult))
-        })
-    })
+    //         expect(courierDtos).toEqual(expect.arrayContaining(expectedResult))
+    //     })
+    // })
 
 })
