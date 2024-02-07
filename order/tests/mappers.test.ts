@@ -709,7 +709,7 @@ describe("Tests for Data Mappers", () => {
             const customerId = BigInt(faker.number.int())
             const restaurantId = BigInt(faker.number.int())
             const courierId = BigInt(faker.number.int())
-            const promotiontId = BigInt(faker.number.int())
+            const promotionId = BigInt(faker.number.int())
             const promocodeName = faker.lorem.word(5)
             const promocodeDiscount = faker.number.int({
                 min: 10,
@@ -719,7 +719,7 @@ describe("Tests for Data Mappers", () => {
             const deliveryAcceptedTime = faker.date.future()
             const deliveryFinishedTime = faker.date.future()
 
-            return generateOrderModel(customerId, restaurantId, "READY", manyCount, promocodeName, promocodeDiscount, actualDeliveryTime, deliveryAcceptedTime, deliveryFinishedTime, courierId, promotiontId)
+            return generateOrderModel(customerId, restaurantId, "READY", manyCount, promocodeName, promocodeDiscount, actualDeliveryTime, deliveryAcceptedTime, deliveryFinishedTime, courierId, promotionId)
         }
 
         const generateMinimumOrderModel = (): OrderModel => {
@@ -753,6 +753,7 @@ describe("Tests for Data Mappers", () => {
                     status: orderInstance.status,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
+                    promotionId: orderInstance.promotionId ? Number(orderInstance.promotionId) : undefined,
                     createdAt: orderInstance.createdAt.toString(),
                     deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toString(),
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime.toString(),
@@ -782,9 +783,15 @@ describe("Tests for Data Mappers", () => {
             const generateFullOrderDto = (): OrderCreateInputDTO => {
                 const restaurantId = faker.number.int()
                 const promocode = faker.lorem.word(5)
-                const promotiontId = faker.number.int()
+                const promotionId = faker.number.int()
                 const menuItemIds = Array.from({length: manyCount}, () => (faker.number.int()))
-                return generateOrderCreateInputDto(restaurantId, menuItemIds, promocode, promotiontId)
+                return generateOrderCreateInputDto(restaurantId, menuItemIds, promocode, promotionId)
+            }
+
+            const generateMinimumOrderDto = (): OrderCreateInputDTO => {
+                const orderDto = generateFullOrderDto()
+                delete orderDto.promotionId
+                return orderDto
             }
 
             const generateOrderAdditionalData = (): OrderAdditionalData => {
@@ -823,9 +830,10 @@ describe("Tests for Data Mappers", () => {
                     restaurantId: BigInt(orderDto.restaurantId),
                     promocodeName: additionalData.promocodeName,
                     promocodeDiscount: additionalData.promocodeDiscount,
+                    promotionId: orderDto.promotionId ? BigInt(orderDto.promotionId) : undefined,
                     supposedDeliveryTime: additionalData.supposedDeliveryTime,
-                    totalPrice: additionalData.totalPrice,
-                    decountedPrice: additionalData.decountedPrice,
+                    totalPrice: Number(additionalData.totalPrice.toFixed(2)),
+                    decountedPrice: Number(additionalData.decountedPrice.toFixed(2)),
                     items: {
                         create: orderItems
                     }
@@ -852,6 +860,7 @@ describe("Tests for Data Mappers", () => {
                     status: orderInstance.status,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
+                    promotionId: orderInstance.promotionId ? Number(orderInstance.promotionId) : undefined,
                     createdAt: orderInstance.createdAt.toString(),
                     deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toString(),
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime.toString(),
@@ -872,6 +881,17 @@ describe("Tests for Data Mappers", () => {
                 
                 expect(result).toEqual(expectedResult)
             })
+
+            test("should map order create input dto model with only required attributes to create input database model", () => {
+                const orderDtoModel = generateMinimumOrderDto()
+                const additionalData = generateOrderAdditionalData()
+                const expectedResult = getExpectedDbResult(orderDtoModel, additionalData)
+
+                const result = orderCreateMapper.toDbModel(orderDtoModel, additionalData)
+                
+                expect(result).toEqual(expectedResult)
+            })
+    
     
             test("should map order database model to create output dto model", () => {
                 testDatabaseToDtoMapper(generateFullOrderModel, getExpectedDtoResult, orderCreateMapper)
