@@ -26,6 +26,14 @@ export class PromocodeAlreadyExistsWithIdError extends DatabaseInstanceAlreadyEx
 
 }
 
+export class PromocodeAlreadyExistsWithNameError extends DatabaseInstanceAlreadyExistsError {
+
+    constructor(name: string) {
+        super("name", name, "Promocode")
+    }
+
+}
+
 export class PromocodeUsageError extends AppError {
 
     constructor(id: number) {
@@ -52,6 +60,17 @@ export class PromocodeNotActiveError extends AppError {
 
     constructor(id: number) {
         super(`Promocode with id=${id} is not active`)
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+}
+
+export class PromocodeNotBelongsToRestaurantError extends AppError {
+
+    constructor(promocodeId: number | bigint, restaurantId: number | bigint) {
+        super(`Promocode with id=${promocodeId} is not belongs to restaurant with id=${restaurantId}`)
     }
 
     public get statusCode(): number {
