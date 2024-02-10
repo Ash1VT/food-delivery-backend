@@ -5,9 +5,9 @@ import { ZodError, z } from 'zod';
 import { faker } from '@faker-js/faker';
 import moment from 'moment';
 import { generateOrderItemCreateInputDto } from './factories/orders/orderItem';
-import { orderItemCreateValidator } from '@src/modules/orders/validators/orderItem';
+import { orderItemCreateValidator } from '@src/modules/orders/validators/orderItem.validators';
 import { generateOrderCreateInputDto } from './factories/orders/order';
-import { orderCreateValidator } from '@src/modules/orders/validators/order';
+import { orderCreateValidator } from '@src/modules/orders/validators/order.validators';
 
 describe("Tests for Validators", () => {
 

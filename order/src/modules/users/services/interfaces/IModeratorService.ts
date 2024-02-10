@@ -1,5 +1,5 @@
-import { ModeratorGetOutputDTO, ModeratorCreateInputDTO, ModeratorCreateOutputDTO } from "../../dto/moderator";
+import { ModeratorGetOutputDto, ModeratorCreateInputDto, ModeratorCreateOutputDto } from "../../dto/moderator.dto";
 
 export default interface IModeratorService {
-    create(moderatorData: ModeratorCreateInputDTO): Promise<ModeratorCreateOutputDTO>
+    create(moderatorData: ModeratorCreateInputDto): Promise<ModeratorCreateOutputDto>
 }

@@ -1,5 +1,5 @@
-import { CustomerGetOutputDTO, CustomerCreateInputDTO, CustomerCreateOutputDTO } from "../../dto/customer";
+import { CustomerGetOutputDto, CustomerCreateInputDto, CustomerCreateOutputDto } from "../../dto/customer.dto";
 
 export default interface ICustomerService {
-    create(customerData: CustomerCreateInputDTO): Promise<CustomerCreateOutputDTO>
+    create(customerData: CustomerCreateInputDto): Promise<CustomerCreateOutputDto>
 }

@@ -1,44 +1,44 @@
-import { MenuItemCreateInputDTO, MenuItemUpdateInputDTO } from '@src/modules/menu/dto/menuItem';
-import { CourierCreateInputDTO, CourierGetOutputDTO } from './../src/modules/users/dto/courier';
-import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/instances/courier"
+import { MenuItemCreateInputDto, MenuItemUpdateInputDto } from '@src/modules/menu/dto/menuItem.dto';
+import { CourierCreateInputDto, CourierGetOutputDto } from '../src/modules/users/dto/courier.dto';
+import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/implementations/courier.mappers"
 import { generateCourierCreateInputDto, generateCourierModel } from "./factories/users/courier"
-import { CustomerCreateMapper, CustomerGetMapper } from '@src/modules/users/mappers/instances/customer';
+import { CustomerCreateMapper, CustomerGetMapper } from '@src/modules/users/mappers/implementations/customer.mappers';
 import { generateCustomerCreateInputDto, generateCustomerModel } from './factories/users/customer';
-import { ModeratorGetMapper, ModeratorCreateMapper } from '@src/modules/users/mappers/instances/moderator';
+import { ModeratorGetMapper, ModeratorCreateMapper } from '@src/modules/users/mappers/implementations/moderator.mappers';
 import { generateModeratorModel, generateModeratorCreateInputDto } from './factories/users/moderator';
-import { RestaurantManagerGetMapper, RestaurantManagerCreateMapper } from '@src/modules/users/mappers/instances/restaurantManager';
+import { RestaurantManagerGetMapper, RestaurantManagerCreateMapper } from '@src/modules/users/mappers/implementations/restaurantManager.mappers';
 import { generateRestaurantManagerModel, generateRestaurantManagerCreateInputDto } from './factories/users/restaurantManager';
 import { generateRestaurantCreateInputDto, generateRestaurantModel } from './factories/restaurants/restaurant';
-import { MenuItemGetMapper, MenuItemCreateMapper, MenuItemUpdateMapper } from '@src/modules/menu/mappers/instances/menuItem';
-import { RestaurantGetMapper, RestaurantCreateMapper } from '@src/modules/restaurants/mappers/instances/restaurant';
+import { MenuItemGetMapper, MenuItemCreateMapper, MenuItemUpdateMapper } from '@src/modules/menu/mappers/implementations/menuItem.mappers';
+import { RestaurantGetMapper, RestaurantCreateMapper } from '@src/modules/restaurants/mappers/implementations/restaurant.mappers';
 import { generateMenuItemModel, generateMenuItemCreateInputDto, generateMenuItemUpdateInputDto, generateMenuItemCreateInputModel, generateMenuItemUpdateInputModel } from './factories/menu/menuItem';
 import { faker } from '@faker-js/faker';
-import { PromotionGetMapper, PromotionCreateMapper } from '@src/modules/promotions/mappers/instances/promotion';
+import { PromotionGetMapper, PromotionCreateMapper } from '@src/modules/promotions/mappers/implementations/promotion.mappers';
 import { generatePromotionModel, generatePromotionCreateInputDto } from './factories/promotions/promotion';
-import { CourierModel } from '@src/modules/users/models/courier';
-import { CustomerModel } from '@src/modules/users/models/customer';
-import { CustomerCreateInputDTO } from '@src/modules/users/dto/customer';
-import { ModeratorModel } from '@src/modules/users/models/moderator';
-import { ModeratorCreateInputDTO } from '@src/modules/users/dto/moderator';
-import { RestaurantManagerModel } from '@src/modules/users/models/restaurantManager';
-import { RestaurantManagerCreateInputDTO } from '@src/modules/users/dto/restaurantManager';
-import { RestaurantCreateInputDTO } from '@src/modules/restaurants/dto/restaurant';
-import { RestaurantModel } from '@src/modules/restaurants/models/restaurant';
-import { MenuItemModel } from '@src/modules/menu/models/menuItem';
-import { PromotionCreateInputDTO } from '@src/modules/promotions/dto/promotion';
-import { PromotionModel } from '@src/modules/promotions/models/promotion';
+import { CourierModel } from '@src/modules/users/models/courier.models';
+import { CustomerModel } from '@src/modules/users/models/customer.models';
+import { CustomerCreateInputDto } from '@src/modules/users/dto/customer.dto';
+import { ModeratorModel } from '@src/modules/users/models/moderator.models';
+import { ModeratorCreateInputDto } from '@src/modules/users/dto/moderator.dto';
+import { RestaurantManagerModel } from '@src/modules/users/models/restaurantManager.models';
+import { RestaurantManagerCreateInputDto } from '@src/modules/users/dto/restaurantManager.dto';
+import { RestaurantCreateInputDto } from '@src/modules/restaurants/dto/restaurant.dto';
+import { RestaurantModel } from '@src/modules/restaurants/models/restaurant.models';
+import { MenuItemModel } from '@src/modules/menu/models/menuItem.models';
+import { PromotionCreateInputDto } from '@src/modules/promotions/dto/promotion.dto';
+import { PromotionModel } from '@src/modules/promotions/models/promotion.models';
 import { generatePromocodeCreateInputDto, generatePromocodeModel, generatePromocodeUpdateInputDto } from './factories/promotions/promocode';
-import { PromocodeCreateInputDTO, PromocodeUpdateInputDTO } from '@src/modules/promotions/dto/promocode';
-import { PromocodeGetMapper, PromocodeCreateMapper, PromocodeUpdateMapper } from '@src/modules/promotions/mappers/instances/promocode';
-import { PromocodeModel } from '@src/modules/promotions/models/promocode';
-import { OrderItemCreateInputDTO } from '@src/modules/orders/dto/orderItem';
-import { OrderItemGetMapper, OrderItemCreateMapper } from '@src/modules/orders/mappers/instances/orderItem';
-import { OrderItemModel } from '@src/modules/orders/models/orderItem';
+import { PromocodeCreateInputDto, PromocodeUpdateInputDto } from '@src/modules/promotions/dto/promocode.dto';
+import { PromocodeGetMapper, PromocodeCreateMapper, PromocodeUpdateMapper } from '@src/modules/promotions/mappers/implementations/promocode.mappers';
+import { PromocodeModel } from '@src/modules/promotions/models/promocode.models';
+import { OrderItemCreateInputDto } from '@src/modules/orders/dto/orderItem.dto';
+import { OrderItemGetMapper, OrderItemCreateMapper } from '@src/modules/orders/mappers/implementations/orderItem.mappers';
+import { OrderItemModel } from '@src/modules/orders/models/orderItem.models';
 import { generateOrderItemModel, generateOrderItemCreateInputDto } from './factories/orders/orderItem';
 import { OrderAdditionalData, OrderItemAdditionalData, OrderItemWithOrderAdditionalData } from '@src/modules/orders/mappers/additionalData';
-import { OrderCreateInputDTO } from '@src/modules/orders/dto/order';
-import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/instances/order';
-import { OrderModel } from '@src/modules/orders/models/order';
+import { OrderCreateInputDto } from '@src/modules/orders/dto/order.dto';
+import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/implementations/order.mappers';
+import { OrderModel } from '@src/modules/orders/models/order.models';
 import { generateOrderModel, generateOrderCreateInputDto } from './factories/orders/order';
 
 describe("Tests for Data Mappers", () => {
@@ -94,7 +94,7 @@ describe("Tests for Data Mappers", () => {
     
             const courierCreateMapper = new CourierCreateMapper()
             
-            const getExpectedDbResult = (courierDto: CourierCreateInputDTO): object => {
+            const getExpectedDbResult = (courierDto: CourierCreateInputDto): object => {
                 return {
                     id: courierDto.id
                 }
@@ -141,7 +141,7 @@ describe("Tests for Data Mappers", () => {
     
             const customerCreateMapper = new CustomerCreateMapper()
             
-            const getExpectedDbResult = (courierDto: CustomerCreateInputDTO): object => {
+            const getExpectedDbResult = (courierDto: CustomerCreateInputDto): object => {
                 return {
                     id: courierDto.id
                 }
@@ -188,7 +188,7 @@ describe("Tests for Data Mappers", () => {
     
             const moderatorCreateMapper = new ModeratorCreateMapper()
             
-            const getExpectedDbResult = (moderatorDto: ModeratorCreateInputDTO): object => {
+            const getExpectedDbResult = (moderatorDto: ModeratorCreateInputDto): object => {
                 return {
                     id: moderatorDto.id
                 }
@@ -246,7 +246,7 @@ describe("Tests for Data Mappers", () => {
     
             const restaurantManagerCreateMapper = new RestaurantManagerCreateMapper()
             
-            const getExpectedDbResult = (restaurantManagerDto: RestaurantManagerCreateInputDTO): object => {
+            const getExpectedDbResult = (restaurantManagerDto: RestaurantManagerCreateInputDto): object => {
                 return {
                     id: restaurantManagerDto.id
                 }
@@ -294,7 +294,7 @@ describe("Tests for Data Mappers", () => {
     
             const restaurantCreateMapper = new RestaurantCreateMapper()
     
-            const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDTO): object => {
+            const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDto): object => {
                 return {
                     id: restaurantDto.id
                 }
@@ -351,12 +351,12 @@ describe("Tests for Data Mappers", () => {
     
             const menuItemCreateMapper = new MenuItemCreateMapper()
 
-            const generateFullMenuItemDto = (): MenuItemCreateInputDTO => {
+            const generateFullMenuItemDto = (): MenuItemCreateInputDto => {
                 const restaurantId = faker.number.bigInt()
                 return generateMenuItemCreateInputDto(restaurantId)
             }
 
-            const getExpectedDbResult = (menuItemDto: MenuItemCreateInputDTO): object => {
+            const getExpectedDbResult = (menuItemDto: MenuItemCreateInputDto): object => {
                 return {
                     id: menuItemDto.id,
                     name: menuItemDto.name,
@@ -391,7 +391,7 @@ describe("Tests for Data Mappers", () => {
     
             const menuItemUpdateMapper = new MenuItemUpdateMapper()
 
-            const getExpectedDbResult = (menuItemDto: MenuItemUpdateInputDTO): object => {
+            const getExpectedDbResult = (menuItemDto: MenuItemUpdateInputDto): object => {
                 return {
                     name: menuItemDto.name,
                     imageUrl: menuItemDto.imageUrl,
@@ -445,7 +445,7 @@ describe("Tests for Data Mappers", () => {
     
             const promotionCreateMapper = new PromotionCreateMapper()
             
-            const getExpectedDbResult = (promotionDto: PromotionCreateInputDTO): object => {
+            const getExpectedDbResult = (promotionDto: PromotionCreateInputDto): object => {
                 return {
                     id: promotionDto.id
                 }
@@ -506,12 +506,12 @@ describe("Tests for Data Mappers", () => {
     
             const promocodeCreateMapper = new PromocodeCreateMapper()
 
-            const generateFullPromocodeDto = (): PromocodeCreateInputDTO => {
+            const generateFullPromocodeDto = (): PromocodeCreateInputDto => {
                 const restaurantId = faker.number.bigInt()
                 return generatePromocodeCreateInputDto(restaurantId)
             }
 
-            const getExpectedDbResult = (promocodeDto: PromocodeCreateInputDTO): object => {
+            const getExpectedDbResult = (promocodeDto: PromocodeCreateInputDto): object => {
                 return {
                     nameIdentifier: promocodeDto.nameIdentifier,
                     discountPercentage: promocodeDto.discountPercentage,
@@ -550,7 +550,7 @@ describe("Tests for Data Mappers", () => {
     
             const promocodeUpdateMapper = new PromocodeUpdateMapper()
 
-            const getExpectedDbResult = (promocodeDto: PromocodeUpdateInputDTO): object => {
+            const getExpectedDbResult = (promocodeDto: PromocodeUpdateInputDto): object => {
                 return {
                     discountPercentage: promocodeDto.discountPercentage,
                     validFrom: new Date(promocodeDto.validFrom),
@@ -619,7 +619,7 @@ describe("Tests for Data Mappers", () => {
     
             const orderItemCreateMapper = new OrderItemCreateMapper()
 
-            const generateFullOrderItemDto = (): OrderItemCreateInputDTO => {
+            const generateFullOrderItemDto = (): OrderItemCreateInputDto => {
                 const menuItemId = faker.number.bigInt()
                 return generateOrderItemCreateInputDto(menuItemId)
             }
@@ -643,7 +643,7 @@ describe("Tests for Data Mappers", () => {
                 }
             }
 
-            const getExpectedDbResult = (orderItemDto: OrderItemCreateInputDTO, additionalData: OrderItemAdditionalData): object => {
+            const getExpectedDbResult = (orderItemDto: OrderItemCreateInputDto, additionalData: OrderItemAdditionalData): object => {
                 return {
                     menuItemName: additionalData.menuItemName,
                     menuItemImageUrl: additionalData.menuItemImageUrl,
@@ -653,7 +653,7 @@ describe("Tests for Data Mappers", () => {
                 }
             }
 
-            const getExpectedDbResultWithOrder = (orderItemDto: OrderItemCreateInputDTO, additionalData: OrderItemWithOrderAdditionalData): object => {
+            const getExpectedDbResultWithOrder = (orderItemDto: OrderItemCreateInputDto, additionalData: OrderItemWithOrderAdditionalData): object => {
                 return {
                     menuItemName: additionalData.menuItemName,
                     menuItemImageUrl: additionalData.menuItemImageUrl,
@@ -780,7 +780,7 @@ describe("Tests for Data Mappers", () => {
             const orderItemCreateMapper = new OrderItemCreateMapper()
             const orderCreateMapper = new OrderCreateMapper(orderItemCreateMapper)
 
-            const generateFullOrderDto = (): OrderCreateInputDTO => {
+            const generateFullOrderDto = (): OrderCreateInputDto => {
                 const restaurantId = faker.number.bigInt()
                 const promocode = faker.lorem.word(5)
                 const promotionId = faker.number.bigInt()
@@ -788,7 +788,7 @@ describe("Tests for Data Mappers", () => {
                 return generateOrderCreateInputDto(restaurantId, menuItemIds, promocode, promotionId)
             }
 
-            const generateMinimumOrderDto = (): OrderCreateInputDTO => {
+            const generateMinimumOrderDto = (): OrderCreateInputDto => {
                 const orderDto = generateFullOrderDto()
                 delete orderDto.promotionId
                 return orderDto
@@ -815,7 +815,7 @@ describe("Tests for Data Mappers", () => {
                 }
             }
 
-            const getExpectedDbResult = (orderDto: OrderCreateInputDTO, additionalData: OrderAdditionalData): object => {
+            const getExpectedDbResult = (orderDto: OrderCreateInputDto, additionalData: OrderAdditionalData): object => {
                 const orderItems = additionalData.items.map((orderItemAdditionalData, index) => {
                     return {
                         menuItemName: orderItemAdditionalData.menuItemName,

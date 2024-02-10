@@ -1,5 +1,5 @@
-import { RestaurantGetOutputDTO, RestaurantCreateInputDTO, RestaurantCreateOutputDTO } from "../../dto/restaurant";
+import { RestaurantGetOutputDto, RestaurantCreateInputDto, RestaurantCreateOutputDto } from "../../dto/restaurant.dto";
 
 export default interface IRestaurantService {
-    create(restaurantData: RestaurantCreateInputDTO): Promise<RestaurantCreateOutputDTO>
+    create(restaurantData: RestaurantCreateInputDto): Promise<RestaurantCreateOutputDto>
 }

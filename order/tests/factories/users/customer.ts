@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
-import { CustomerCreateInputDTO } from "@src/modules/users/dto/customer"
-import { CustomerModel, CustomerCreateInput, CustomerUpdateInput } from "@src/modules/users/models/customer"
+import { CustomerCreateInputDto } from "@src/modules/users/dto/customer.dto"
+import { CustomerModel, CustomerCreateInput, CustomerUpdateInput } from "@src/modules/users/models/customer.models"
 import { getUniqueId } from "@tests/utils/unique"
 
 // Models
@@ -40,7 +40,7 @@ export async function createCustomer(client: PrismaClient): Promise<CustomerMode
 
 // DTOs
 
-export function generateCustomerCreateInputDto(): CustomerCreateInputDTO {
+export function generateCustomerCreateInputDto(): CustomerCreateInputDto {
     return {
         id: getUniqueId()
     }

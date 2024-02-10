@@ -1,5 +1,5 @@
-import { PromotionGetOutputDTO, PromotionCreateInputDTO, PromotionCreateOutputDTO } from "../../dto/promotion";
+import { PromotionGetOutputDto, PromotionCreateInputDto, PromotionCreateOutputDto } from "../../dto/promotion.dto";
 
 export default interface IPromotionService {
-    create(promotionData: PromotionCreateInputDTO): Promise<PromotionCreateOutputDTO>
+    create(promotionData: PromotionCreateInputDto): Promise<PromotionCreateOutputDto>
 }

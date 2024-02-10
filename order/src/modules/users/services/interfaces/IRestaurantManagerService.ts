@@ -1,5 +1,5 @@
-import { RestaurantManagerGetOutputDTO, RestaurantManagerCreateInputDTO, RestaurantManagerCreateOutputDTO } from "../../dto/restaurantManager";
+import { RestaurantManagerGetOutputDto, RestaurantManagerCreateInputDto, RestaurantManagerCreateOutputDto } from "../../dto/restaurantManager.dto";
 
 export default interface IRestaurantManagerService {
-    create(restaurantManagerData: RestaurantManagerCreateInputDTO): Promise<RestaurantManagerCreateOutputDTO>
+    create(restaurantManagerData: RestaurantManagerCreateInputDto): Promise<RestaurantManagerCreateOutputDto>
 }

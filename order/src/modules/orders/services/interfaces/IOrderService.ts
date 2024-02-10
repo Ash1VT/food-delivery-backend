@@ -1,26 +1,26 @@
-import { OrderGetOutputDTO, OrderCreateInputDTO, OrderCreateOutputDTO } from "../../dto/order";
-import { OrderStatus } from "../../models/orderStatus";
+import { OrderGetOutputDto, OrderCreateInputDto, OrderCreateOutputDto } from "../../dto/order.dto";
+import { OrderStatus } from "../../models/orderStatus.models";
 
 export default interface IOrderService {
     // cancel order
 
     // Moderator
-    getMany(status?: OrderStatus): Promise<OrderGetOutputDTO[]>
+    getMany(status?: OrderStatus): Promise<OrderGetOutputDto[]>
 
     // Courier
-    getCurrentCourierOrders(status?: OrderStatus): Promise<OrderGetOutputDTO[]>
+    getCurrentCourierOrders(status?: OrderStatus): Promise<OrderGetOutputDto[]>
 
     // Customer
-    getCurrentCustomerOrders(status?: OrderStatus): Promise<OrderGetOutputDTO[]>
+    getCurrentCustomerOrders(status?: OrderStatus): Promise<OrderGetOutputDto[]>
 
     // Courier
-    getReadyOrders(): Promise<OrderGetOutputDTO[]>
+    getReadyOrders(): Promise<OrderGetOutputDto[]>
 
     // Restaurant Manager
-    getRestaurantOrders(restaurantId: bigint, status?: OrderStatus): Promise<OrderGetOutputDTO[]>
+    getRestaurantOrders(restaurantId: bigint, status?: OrderStatus): Promise<OrderGetOutputDto[]>
 
     // Customer
-    makeOrder(orderData: OrderCreateInputDTO): Promise<OrderCreateOutputDTO>
+    makeOrder(orderData: OrderCreateInputDto): Promise<OrderCreateOutputDto>
 
     // Courier
     takeOrder(orderId: bigint): Promise<void>

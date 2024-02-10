@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from "@faker-js/faker"
-import { OrderItemCreateInputDTO } from "@src/modules/orders/dto/orderItem"
-import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "@src/modules/orders/models/orderItem"
+import { OrderItemCreateInputDto } from "@src/modules/orders/dto/orderItem.dto"
+import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "@src/modules/orders/models/orderItem.models"
 import { getUniqueId } from '@tests/utils/unique';
 
 // Models
@@ -101,7 +101,7 @@ export async function createOrderItem(client: PrismaClient, orderId: bigint): Pr
 
 // DTOs
 
-export function generateOrderItemCreateInputDto(menuItemId: bigint): OrderItemCreateInputDTO {
+export function generateOrderItemCreateInputDto(menuItemId: bigint): OrderItemCreateInputDto {
     return {
         menuItemId,
         quantity: faker.number.int({

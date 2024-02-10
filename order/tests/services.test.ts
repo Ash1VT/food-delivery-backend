@@ -1,54 +1,54 @@
-import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from './../src/modules/promotions/errors/promocode';
-import { RestaurantManagerOwnershipError } from './../src/modules/users/errors/restaurantManager';
-import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from './../src/modules/promotions/mappers/instances/promocode';
+import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from '../src/modules/promotions/errors/promocode.errors';
+import { RestaurantManagerOwnershipError } from '../src/modules/users/errors/restaurantManager.errors';
+import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from '../src/modules/promotions/mappers/implementations/promocode.mappers';
 import { MenuItem, PrismaClient } from "@prisma/client"
-import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/instances/courier"
-import PrismaCourierRepository from "@src/modules/users/repositories/prisma/PrismaCourierRepository"
-import CourierService from "@src/modules/users/services/instances/CourierService"
+import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/implementations/courier.mappers"
+import PrismaCourierRepository from "@src/modules/users/repositories/implementations/prisma/PrismaCourierRepository"
+import CourierService from "@src/modules/users/services/implementations/CourierService"
 import { createCourier, generateCourierCreateInputDto } from "./factories/users/courier"
-import { CustomerCreateMapper } from "@src/modules/users/mappers/instances/customer"
-import PrismaCustomerRepository from "@src/modules/users/repositories/prisma/PrismaCustomerRepository"
-import CustomerService from "@src/modules/users/services/instances/CustomerService"
+import { CustomerCreateMapper } from "@src/modules/users/mappers/implementations/customer.mappers"
+import PrismaCustomerRepository from "@src/modules/users/repositories/implementations/prisma/PrismaCustomerRepository"
+import CustomerService from "@src/modules/users/services/implementations/CustomerService"
 import { createCustomer, generateCustomerCreateInputDto } from "./factories/users/customer"
-import { ModeratorCreateMapper } from "@src/modules/users/mappers/instances/moderator"
-import PrismaModeratorRepository from "@src/modules/users/repositories/prisma/PrismaModeratorRepository"
+import { ModeratorCreateMapper } from "@src/modules/users/mappers/implementations/moderator.mappers"
+import PrismaModeratorRepository from "@src/modules/users/repositories/implementations/prisma/PrismaModeratorRepository"
 import { createModerator, generateModeratorCreateInputDto } from "./factories/users/moderator"
-import PrismaRestaurantManagerRepository from "@src/modules/users/repositories/prisma/PrismaRestaurantManagerRepository"
-import { RestaurantManagerCreateMapper } from "@src/modules/users/mappers/instances/restaurantManager"
-import RestaurantManagerService from "@src/modules/users/services/instances/RestaurantManagerService"
+import PrismaRestaurantManagerRepository from "@src/modules/users/repositories/implementations/prisma/PrismaRestaurantManagerRepository"
+import { RestaurantManagerCreateMapper } from "@src/modules/users/mappers/implementations/restaurantManager.mappers"
+import RestaurantManagerService from "@src/modules/users/services/implementations/RestaurantManagerService"
 import { createRestaurantManager, generateRestaurantManagerCreateInputDto } from "./factories/users/restaurantManager"
-import ModeratorService from "@src/modules/users/services/instances/ModeratorService"
-import { RestaurantCreateMapper } from "@src/modules/restaurants/mappers/instances/restaurant"
-import PrismaRestaurantRepository from "@src/modules/restaurants/repositories/prisma/PrismaRestaurantRepository"
-import RestaurantService from "@src/modules/restaurants/services/instances/RestaurantService"
+import ModeratorService from "@src/modules/users/services/implementations/ModeratorService"
+import { RestaurantCreateMapper } from "@src/modules/restaurants/mappers/implementations/restaurant.mappers"
+import PrismaRestaurantRepository from "@src/modules/restaurants/repositories/implementations/prisma/PrismaRestaurantRepository"
+import RestaurantService from "@src/modules/restaurants/services/implementations/RestaurantService"
 import { createRestaurant, generateRestaurantCreateInputDto } from "./factories/restaurants/restaurant"
-import { MenuItemCreateMapper } from "@src/modules/menu/mappers/instances/menuItem"
-import PrismaMenuItemRepository from "@src/modules/menu/repositories/prisma/PrismaMenuItemRepository"
-import MenuItemService from "@src/modules/menu/services/instances/MenuItemService"
+import { MenuItemCreateMapper } from "@src/modules/menu/mappers/implementations/menuItem.mappers"
+import PrismaMenuItemRepository from "@src/modules/menu/repositories/implementations/prisma/PrismaMenuItemRepository"
+import MenuItemService from "@src/modules/menu/services/implementations/MenuItemService"
 import { createMenuItem, generateMenuItemCreateInputDto } from "./factories/menu/menuItem"
-import { PromotionCreateMapper } from "@src/modules/promotions/mappers/instances/promotion"
-import PrismaPromotionRepository from "@src/modules/promotions/repositories/prisma/PrismaPromotionRepository"
-import PromotionService from "@src/modules/promotions/services/instances/PromotionService"
+import { PromotionCreateMapper } from "@src/modules/promotions/mappers/implementations/promotion.mappers"
+import PrismaPromotionRepository from "@src/modules/promotions/repositories/implementations/prisma/PrismaPromotionRepository"
+import PromotionService from "@src/modules/promotions/services/implementations/PromotionService"
 import { generatePromotionCreateInputDto } from "./factories/promotions/promotion"
-import PrismaPromocodeRepository from '@src/modules/promotions/repositories/prisma/PrismaPromocodeRepository';
-import PromocodeService from '@src/modules/promotions/services/instances/PromocodeService';
+import PrismaPromocodeRepository from '@src/modules/promotions/repositories/implementations/prisma/PrismaPromocodeRepository';
+import PromocodeService from '@src/modules/promotions/services/implementations/PromocodeService';
 import { createPromocode, generatePromocodeCreateInputDto, generatePromocodeUpdateInputDto } from './factories/promotions/promocode';
-import { PermissionDeniedError } from '@src/modules/users/errors/permissions';
+import { PermissionDeniedError } from '@src/modules/users/errors/permissions.errors';
 import { getUniqueId } from './utils/unique';
-import { RestaurantNotFoundWithIdError } from '@src/modules/restaurants/errors/restaurant';
-import { PromocodeNotFoundWithIdError } from '@src/modules/promotions/errors/promocode';
-import { OrderItemGetMapper, OrderItemCreateMapper } from '@src/modules/orders/mappers/instances/orderItem';
-import PrismaOrderItemRepository from '@src/modules/orders/repositories/prisma/PrismaOrderItemRepository';
-import PrismaOrderRepository from '@src/modules/orders/repositories/prisma/PrismaOrderRepository';
+import { RestaurantNotFoundWithIdError } from '@src/modules/restaurants/errors/restaurant.errors';
+import { PromocodeNotFoundWithIdError } from '@src/modules/promotions/errors/promocode.errors';
+import { OrderItemGetMapper, OrderItemCreateMapper } from '@src/modules/orders/mappers/implementations/orderItem.mappers';
+import PrismaOrderItemRepository from '@src/modules/orders/repositories/implementations/prisma/PrismaOrderItemRepository';
+import PrismaOrderRepository from '@src/modules/orders/repositories/implementations/prisma/PrismaOrderRepository';
 import { createOrder, generateOrderCreateInputDto, generateOrderModel } from './factories/orders/order';
 import { generateOrderItemCreateInputDto, generateOrderItemWithOrderCreateInputModel } from './factories/orders/orderItem';
-import OrderService from '@src/modules/orders/services/instances/OrderService';
-import { OrderItemService } from '@src/modules/orders/services/instances/OrderItemService';
-import { OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from '@src/modules/orders/errors/order';
-import { CustomerOwnershipError } from '@src/modules/users/errors/customer';
-import { CourierOwnershipError } from '@src/modules/users/errors/courier';
-import { MenuItemAllNotInSameRestaurantError, MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from '@src/modules/menu/errors/menuItem';
-import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/instances/order';
+import OrderService from '@src/modules/orders/services/implementations/OrderService';
+import { OrderItemService } from '@src/modules/orders/services/implementations/OrderItemService';
+import { OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from '@src/modules/orders/errors/order.errors';
+import { CustomerOwnershipError } from '@src/modules/users/errors/customer.errors';
+import { CourierOwnershipError } from '@src/modules/users/errors/courier.errors';
+import { MenuItemAllNotInSameRestaurantError, MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from '@src/modules/menu/errors/menuItem.errors';
+import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/implementations/order.mappers';
 import { fa, faker } from '@faker-js/faker';
 
 describe("Tests for Services", () => {
