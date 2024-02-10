@@ -37,7 +37,9 @@ describe("Tests for Utils", () => {
                 pgHost: 'localhost',
                 pgPort: '5432',
                 pgUser: 'myuser',
-                pgPassword: 'mypassword'
+                pgPassword: 'mypassword',
+                rolesGrpcServerHost: 'localhost',
+                rolesGrpcServerPort: 50000
             }
         }
 
