@@ -16,7 +16,9 @@ export class SettingsBuilder extends BaseSettingsBuilder {
             "pgPassword": EnvManager.getVariable("PG_PASSWORD"),
             "databaseURL": EnvManager.getVariable("DATABASE_URL"),
             "appHost": EnvManager.getVariable("APP_HOST"),
-            "appPort": Number.parseInt(EnvManager.getVariable("APP_PORT"))
+            "appPort": Number.parseInt(EnvManager.getVariable("APP_PORT")),
+            "rolesGrpcServerHost": EnvManager.getVariable("ROLES_GRPC_SERVER_HOST"),
+            "rolesGrpcServerPort": Number(EnvManager.getVariable("ROLES_GRPC_SERVER_PORT"))
         })
     }
 }
