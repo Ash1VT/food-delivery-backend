@@ -2,10 +2,11 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import grpc_files.generated.roles_pb2 as roles__pb2
+import grpc_files.generated.roles.roles_pb2 as roles__pb2
 
 
-class RolesStub(object):
+class RolesServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -14,13 +15,14 @@ class RolesStub(object):
             channel: A grpc.Channel.
         """
         self.GetUserRole = channel.unary_unary(
-                '/roles.Roles/GetUserRole',
+                '/roles.RolesService/GetUserRole',
                 request_serializer=roles__pb2.GetUserRoleRequest.SerializeToString,
                 response_deserializer=roles__pb2.GetUserRoleResponse.FromString,
                 )
 
 
-class RolesServicer(object):
+class RolesServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
 
     def GetUserRole(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -29,7 +31,7 @@ class RolesServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_RolesServicer_to_server(servicer, server):
+def add_RolesServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetUserRole': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUserRole,
@@ -38,12 +40,13 @@ def add_RolesServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'roles.Roles', rpc_method_handlers)
+            'roles.RolesService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class Roles(object):
+class RolesService(object):
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def GetUserRole(request,
@@ -56,7 +59,7 @@ class Roles(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/roles.Roles/GetUserRole',
+        return grpc.experimental.unary_unary(request, target, '/roles.RolesService/GetUserRole',
             roles__pb2.GetUserRoleRequest.SerializeToString,
             roles__pb2.GetUserRoleResponse.FromString,
             options, channel_credentials,
