@@ -53,4 +53,4 @@ class RolesServicer(pb2_grpc.RolesServiceServicer):
             case _:
                 role = pb2.UserRole.USER_ROLE_UNSPECIFIED
 
-        return pb2.GetUserRoleResponse(user_id=user.id, role=role)
+        return pb2.GetUserRoleResponse(user_id=str(user.id), role=role)

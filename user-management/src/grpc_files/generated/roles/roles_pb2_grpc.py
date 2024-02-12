@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import grpc_files.generated.roles.roles_pb2 as roles__pb2
+from roles import roles_pb2 as roles_dot_roles__pb2
 
 
 class RolesServiceStub(object):
@@ -16,8 +16,8 @@ class RolesServiceStub(object):
         """
         self.GetUserRole = channel.unary_unary(
                 '/roles.RolesService/GetUserRole',
-                request_serializer=roles__pb2.GetUserRoleRequest.SerializeToString,
-                response_deserializer=roles__pb2.GetUserRoleResponse.FromString,
+                request_serializer=roles_dot_roles__pb2.GetUserRoleRequest.SerializeToString,
+                response_deserializer=roles_dot_roles__pb2.GetUserRoleResponse.FromString,
                 )
 
 
@@ -35,8 +35,8 @@ def add_RolesServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetUserRole': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUserRole,
-                    request_deserializer=roles__pb2.GetUserRoleRequest.FromString,
-                    response_serializer=roles__pb2.GetUserRoleResponse.SerializeToString,
+                    request_deserializer=roles_dot_roles__pb2.GetUserRoleRequest.FromString,
+                    response_serializer=roles_dot_roles__pb2.GetUserRoleResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -60,7 +60,7 @@ class RolesService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/roles.RolesService/GetUserRole',
-            roles__pb2.GetUserRoleRequest.SerializeToString,
-            roles__pb2.GetUserRoleResponse.FromString,
+            roles_dot_roles__pb2.GetUserRoleRequest.SerializeToString,
+            roles_dot_roles__pb2.GetUserRoleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

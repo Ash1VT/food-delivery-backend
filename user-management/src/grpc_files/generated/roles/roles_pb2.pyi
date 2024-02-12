@@ -28,6 +28,6 @@ class GetUserRoleResponse(_message.Message):
     __slots__ = ["user_id", "role"]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
-    user_id: int
+    user_id: str
     role: UserRole
-    def __init__(self, user_id: _Optional[int] = ..., role: _Optional[_Union[UserRole, str]] = ...) -> None: ...
+    def __init__(self, user_id: _Optional[str] = ..., role: _Optional[_Union[UserRole, str]] = ...) -> None: ...
