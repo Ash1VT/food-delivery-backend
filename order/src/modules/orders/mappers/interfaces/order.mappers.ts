@@ -1,6 +1,7 @@
 import { OrderCreateOutputDto, OrderCreateInputDto, OrderGetOutputDto } from "../../dto/order.dto";
 import { OrderCreateInput, OrderModel } from "../../models/order.models";
 import { OrderAdditionalData } from "../additionalData";
+
 export interface IOrderGetMapper {
     toDto(dbModel: OrderModel): OrderGetOutputDto
 }
