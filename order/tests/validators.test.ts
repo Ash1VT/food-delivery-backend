@@ -1,4 +1,4 @@
-import { promocodeCreateValidator, promocodeUpdateValidator } from "@src/modules/promotions/validators/promocode"
+import { promocodeCreateValidator, promocodeUpdateValidator } from "@src/modules/promotions/validators/promocode.validators"
 import { generatePromocodeCreateInputDto, generatePromocodeUpdateInputDto } from "./factories/promotions/promocode"
 import { getUniqueId, getUniqueWord } from "./utils/unique"
 import { ZodError, z } from 'zod';

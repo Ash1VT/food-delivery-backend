@@ -1,6 +1,6 @@
 import { Settings } from "@src/config/Settings"
-import getSettings from "@src/utils/getSettings"
-import settingsCache, { SettingsWrapperFunction, clearCache, getCache } from "@src/utils/settingsCache"
+import getSettings from "@src/core/utils/getSettings"
+import settingsCache, { SettingsWrapperFunction, clearCache, getCache } from "@src/core/utils/settingsCache"
 
 describe("Tests for Utils", () => {
 
