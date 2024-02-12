@@ -20,6 +20,6 @@ message GetUserRoleRequest {
 }
 
 message GetUserRoleResponse {
-    int64 user_id = 1;
+    string user_id = 1;
     UserRole role = 2;
 }
