@@ -12,13 +12,10 @@ import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenu
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
 import { RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant.errors";
 import { MenuItemAllNotInSameRestaurantError, MenuItemNotFoundWithIdError } from "@src/modules/menu/errors/menuItem.errors";
-import { CourierModel } from "@src/modules/users/models/courier.models";
-import { CustomerModel } from "@src/modules/users/models/customer.models";
-import { RestaurantManagerModel } from "@src/modules/users/models/restaurantManager.models";
 import { CourierOwnershipError } from '@src/modules/users/errors/courier.errors';
-import { ModeratorModel } from '@src/modules/users/models/moderator.models';
+import BaseService from '@src/core/services/BaseService';
 
-export default class OrderService implements IOrderService {
+export default class OrderService extends BaseService implements IOrderService {
 
     constructor(
         protected orderGetMapper: IOrderGetMapper,
@@ -26,22 +23,10 @@ export default class OrderService implements IOrderService {
         protected orderRepository: IOrderRepository,
         protected promocodeRepository: IPromocodeRepository,
         protected menuItemRepository: IMenuItemRepository,
-        protected restaurantRepository: IRestaurantRepository,
-        protected customer?: CustomerModel,
-        protected courier?: CourierModel,
-        protected restaurantManager?: RestaurantManagerModel,
-        protected moderator?: ModeratorModel
-    ) {}
-
-    // public async getOne(id: number): Promise<OrderGetOutputDTO> {
-    //     const orderInstance = await this.orderRepository.getOne(id)
-
-    //     if (!orderInstance) {
-    //         throw new OrderNotFoundWithIdError(id)
-    //     }
-
-    //     return this.orderGetMapper.toDto(orderInstance)
-    // }
+        protected restaurantRepository: IRestaurantRepository
+    ) {
+        super()
+    }
     
     public async getMany(status?: OrderStatus): Promise<OrderGetOutputDto[]> {
 

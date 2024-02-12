@@ -1,61 +1,29 @@
 import { OrderItemGetOutputDto, OrderItemCreateInputDto, OrderItemCreateOutputDto } from "../../dto/orderItem.dto";
-import { OrderItemNotFoundWithIdError } from "../../errors/orderItem.errors";
 import { IOrderItemCreateMapper, IOrderItemGetMapper } from "../../mappers/interfaces/orderItem.mappers";
 import IOrderItemRepository from "../../repositories/interfaces/IOrderItemRepository";
 import IOrderItemService from "../interfaces/IOrderItemService";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
 import { MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from "@src/modules/menu/errors/menuItem.errors";
-import { CustomerModel } from "@src/modules/users/models/customer.models";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
 import { OrderNotFoundWithIdError } from "../../errors/order.errors";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions.errors";
 import { OrderItemModel } from "../../models/orderItem.models";
-import { CourierModel } from "@src/modules/users/models/courier.models";
 import { CourierOwnershipError } from "@src/modules/users/errors/courier.errors";
 import { CustomerOwnershipError } from "@src/modules/users/errors/customer.errors";
+import BaseService from "@src/core/services/BaseService";
 
-export class OrderItemService implements IOrderItemService {
+export class OrderItemService extends BaseService implements IOrderItemService {
     
     constructor(
         protected orderItemGetMapper: IOrderItemGetMapper,
         protected orderItemCreateMapper: IOrderItemCreateMapper,
         protected orderItemRepository: IOrderItemRepository,
         protected orderRepository: IOrderRepository,
-        protected menuItemRepository: IMenuItemRepository,
-        protected customer?: CustomerModel,
-        protected courier?: CourierModel
-    ) {}
+        protected menuItemRepository: IMenuItemRepository
+    ) {
+        super()
+    }
 
-    // public async getOne(id: number): Promise<OrderItemGetOutputDTO> {
-        
-    //     // Check if user is customer
-    //     if (!this.customer) {
-    //         throw new PermissionDeniedError()
-    //     }
-        
-    //     // Get order item instance
-    //     const orderItemInstance = await this.orderItemRepository.getOne(id)
-
-    //     if (!orderItemInstance) {
-    //         throw new OrderItemNotFoundWithIdError(id)
-    //     }
-
-    //     // Get order
-    //     const orderId = Number(orderItemInstance.id)
-    //     const orderInstance = await this.orderRepository.getOne(orderId)
-
-    //     if (!orderInstance) {
-    //         throw new OrderNotFoundWithIdError(orderId)
-    //     }
-
-    //     // Check that customer owns order
-    //     if (orderInstance.customerId !== this.customer.id) {
-    //         throw new OrderCustomerOwnershipError(orderId)
-    //     }
-
-    //     return this.orderItemGetMapper.toDto(orderItemInstance)
-    // }
-    
     public async getOrderItems(orderId: bigint): Promise<OrderItemGetOutputDto[]> {
 
         // Check if user is customer or courier
