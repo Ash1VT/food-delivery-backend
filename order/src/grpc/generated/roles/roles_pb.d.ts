@@ -1,5 +1,5 @@
 // package: roles
-// file: roles.proto
+// file: roles/roles.proto
 
 import * as jspb from "google-protobuf";
 
@@ -24,8 +24,8 @@ export namespace GetUserRoleRequest {
 }
 
 export class GetUserRoleResponse extends jspb.Message {
-  getUserId(): number;
-  setUserId(value: number): void;
+  getUserId(): string;
+  setUserId(value: string): void;
 
   getRole(): UserRoleMap[keyof UserRoleMap];
   setRole(value: UserRoleMap[keyof UserRoleMap]): void;
@@ -42,7 +42,7 @@ export class GetUserRoleResponse extends jspb.Message {
 
 export namespace GetUserRoleResponse {
   export type AsObject = {
-    userId: number,
+    userId: string,
     role: UserRoleMap[keyof UserRoleMap],
   }
 }
