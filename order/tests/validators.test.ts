@@ -1,13 +1,13 @@
-import { promocodeCreateValidator, promocodeUpdateValidator } from "@src/modules/promotions/validators/promocode"
+import { promocodeCreateValidator, promocodeUpdateValidator } from "@src/modules/promotions/validators/promocode.validators"
 import { generatePromocodeCreateInputDto, generatePromocodeUpdateInputDto } from "./factories/promotions/promocode"
 import { getUniqueId, getUniqueWord } from "./utils/unique"
 import { ZodError, z } from 'zod';
 import { faker } from '@faker-js/faker';
 import moment from 'moment';
 import { generateOrderItemCreateInputDto } from './factories/orders/orderItem';
-import { orderItemCreateValidator } from '@src/modules/orders/validators/orderItem';
+import { orderItemCreateValidator } from '@src/modules/orders/validators/orderItem.validators';
 import { generateOrderCreateInputDto } from './factories/orders/order';
-import { orderCreateValidator } from '@src/modules/orders/validators/order';
+import { orderCreateValidator } from '@src/modules/orders/validators/order.validators';
 
 describe("Tests for Validators", () => {
 

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
-import { RestaurantCreateInputDTO } from "@src/modules/restaurants/dto/restaurant"
-import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "@src/modules/restaurants/models/restaurant"
+import { RestaurantCreateInputDto } from "@src/modules/restaurants/dto/restaurant.dto"
+import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "@src/modules/restaurants/models/restaurant.models"
 import { getUniqueId } from "@tests/utils/unique"
 
 // Models
@@ -40,7 +40,7 @@ export async function createRestaurant(client: PrismaClient): Promise<Restaurant
 
 // DTOs
 
-export function generateRestaurantCreateInputDto(): RestaurantCreateInputDTO {
+export function generateRestaurantCreateInputDto(): RestaurantCreateInputDto {
     return {
         id: getUniqueId()
     }

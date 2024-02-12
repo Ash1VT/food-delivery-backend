@@ -7,7 +7,9 @@
     ],
     "collectCoverageFrom": [
         "<rootDir>/src/modules/**/(controllers|services|repositories|mappers|validators)/**/*.ts",
-        "<rootDir>/src/utils/**/*.ts"
+        "<rootDir>/src/utils/**/*.ts",
+        "!<rootDir>/src/modules/**/factories/**/*.ts",
+        "!<rootDir>/src/utils/**/grpc.ts"
     ],
     "moduleNameMapper": {
         "@src/(.*)": "<rootDir>/src/$1",

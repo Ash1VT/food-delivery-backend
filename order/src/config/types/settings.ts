@@ -7,4 +7,6 @@ export type SettingsOptions = {
     databaseURL: string
     appHost: string
     appPort: number
+    rolesGrpcServerHost: string
+    rolesGrpcServerPort: number
 }

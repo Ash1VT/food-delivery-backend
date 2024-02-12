@@ -1,13 +1,13 @@
-import { MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput } from "@src/modules/menu/models/menuItem"
-import { OrderModel, OrderCreateInput, OrderUpdateInput } from "@src/modules/orders/models/order"
-import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "@src/modules/orders/models/orderItem"
-import { PromocodeModel, PromocodeCreateInput, PromocodeUpdateInput } from "@src/modules/promotions/models/promocode"
-import { PromotionModel, PromotionCreateInput, PromotionUpdateInput } from "@src/modules/promotions/models/promotion"
-import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "@src/modules/restaurants/models/restaurant"
-import { CourierModel, CourierCreateInput, CourierUpdateInput } from "@src/modules/users/models/courier"
-import { CustomerModel, CustomerCreateInput, CustomerUpdateInput } from "@src/modules/users/models/customer"
-import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "@src/modules/users/models/moderator"
-import { RestaurantManagerModel, RestaurantManagerCreateInput, RestaurantManagerUpdateInput } from "@src/modules/users/models/restaurantManager"
+import { MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput } from "@src/modules/menu/models/menuItem.models"
+import { OrderModel, OrderCreateInput, OrderUpdateInput } from "@src/modules/orders/models/order.models"
+import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "@src/modules/orders/models/orderItem.models"
+import { PromocodeModel, PromocodeCreateInput, PromocodeUpdateInput } from "@src/modules/promotions/models/promocode.models"
+import { PromotionModel, PromotionCreateInput, PromotionUpdateInput } from "@src/modules/promotions/models/promotion.models"
+import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "@src/modules/restaurants/models/restaurant.models"
+import { CourierModel, CourierCreateInput, CourierUpdateInput } from "@src/modules/users/models/courier.models"
+import { CustomerModel, CustomerCreateInput, CustomerUpdateInput } from "@src/modules/users/models/customer.models"
+import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "@src/modules/users/models/moderator.models"
+import { RestaurantManagerModel, RestaurantManagerCreateInput, RestaurantManagerUpdateInput } from "@src/modules/users/models/restaurantManager.models"
 
 // COURIER
 

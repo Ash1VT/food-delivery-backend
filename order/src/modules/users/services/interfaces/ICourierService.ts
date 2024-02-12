@@ -1,5 +1,5 @@
-import { CourierCreateInputDTO, CourierCreateOutputDTO, CourierGetOutputDTO } from "../../dto/courier";
+import { CourierCreateInputDto, CourierCreateOutputDto, CourierGetOutputDto } from "../../dto/courier.dto";
 
 export default interface ICourierService {
-    create(courierData: CourierCreateInputDTO): Promise<CourierCreateOutputDTO>
+    create(courierData: CourierCreateInputDto): Promise<CourierCreateOutputDto>
 }

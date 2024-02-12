@@ -1,54 +1,54 @@
-import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from './../src/modules/promotions/errors/promocode';
-import { RestaurantManagerOwnershipError } from './../src/modules/users/errors/restaurantManager';
-import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from './../src/modules/promotions/mappers/instances/promocode';
+import { PromocodeAlreadyExistsWithNameError, PromocodeMaximumUsageError, PromocodeNotActiveError, PromocodeNotBelongsToRestaurantError, PromocodeNotFoundWithNameError, PromocodeAmountUsageError, PromocodeExpiredUsageError, PromocodeNotStartUsageError } from '../src/modules/promotions/errors/promocode.errors';
+import { RestaurantManagerOwnershipError } from '../src/modules/users/errors/restaurantManager.errors';
+import { PromocodeCreateMapper, PromocodeGetMapper, PromocodeUpdateMapper } from '../src/modules/promotions/mappers/implementations/promocode.mappers';
 import { MenuItem, PrismaClient } from "@prisma/client"
-import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/instances/courier"
-import PrismaCourierRepository from "@src/modules/users/repositories/prisma/PrismaCourierRepository"
-import CourierService from "@src/modules/users/services/instances/CourierService"
+import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/implementations/courier.mappers"
+import PrismaCourierRepository from "@src/modules/users/repositories/implementations/prisma/PrismaCourierRepository"
+import CourierService from "@src/modules/users/services/implementations/CourierService"
 import { createCourier, generateCourierCreateInputDto } from "./factories/users/courier"
-import { CustomerCreateMapper } from "@src/modules/users/mappers/instances/customer"
-import PrismaCustomerRepository from "@src/modules/users/repositories/prisma/PrismaCustomerRepository"
-import CustomerService from "@src/modules/users/services/instances/CustomerService"
+import { CustomerCreateMapper } from "@src/modules/users/mappers/implementations/customer.mappers"
+import PrismaCustomerRepository from "@src/modules/users/repositories/implementations/prisma/PrismaCustomerRepository"
+import CustomerService from "@src/modules/users/services/implementations/CustomerService"
 import { createCustomer, generateCustomerCreateInputDto } from "./factories/users/customer"
-import { ModeratorCreateMapper } from "@src/modules/users/mappers/instances/moderator"
-import PrismaModeratorRepository from "@src/modules/users/repositories/prisma/PrismaModeratorRepository"
+import { ModeratorCreateMapper } from "@src/modules/users/mappers/implementations/moderator.mappers"
+import PrismaModeratorRepository from "@src/modules/users/repositories/implementations/prisma/PrismaModeratorRepository"
 import { createModerator, generateModeratorCreateInputDto } from "./factories/users/moderator"
-import PrismaRestaurantManagerRepository from "@src/modules/users/repositories/prisma/PrismaRestaurantManagerRepository"
-import { RestaurantManagerCreateMapper } from "@src/modules/users/mappers/instances/restaurantManager"
-import RestaurantManagerService from "@src/modules/users/services/instances/RestaurantManagerService"
+import PrismaRestaurantManagerRepository from "@src/modules/users/repositories/implementations/prisma/PrismaRestaurantManagerRepository"
+import { RestaurantManagerCreateMapper } from "@src/modules/users/mappers/implementations/restaurantManager.mappers"
+import RestaurantManagerService from "@src/modules/users/services/implementations/RestaurantManagerService"
 import { createRestaurantManager, generateRestaurantManagerCreateInputDto } from "./factories/users/restaurantManager"
-import ModeratorService from "@src/modules/users/services/instances/ModeratorService"
-import { RestaurantCreateMapper } from "@src/modules/restaurants/mappers/instances/restaurant"
-import PrismaRestaurantRepository from "@src/modules/restaurants/repositories/prisma/PrismaRestaurantRepository"
-import RestaurantService from "@src/modules/restaurants/services/instances/RestaurantService"
+import ModeratorService from "@src/modules/users/services/implementations/ModeratorService"
+import { RestaurantCreateMapper } from "@src/modules/restaurants/mappers/implementations/restaurant.mappers"
+import PrismaRestaurantRepository from "@src/modules/restaurants/repositories/implementations/prisma/PrismaRestaurantRepository"
+import RestaurantService from "@src/modules/restaurants/services/implementations/RestaurantService"
 import { createRestaurant, generateRestaurantCreateInputDto } from "./factories/restaurants/restaurant"
-import { MenuItemCreateMapper } from "@src/modules/menu/mappers/instances/menuItem"
-import PrismaMenuItemRepository from "@src/modules/menu/repositories/prisma/PrismaMenuItemRepository"
-import MenuItemService from "@src/modules/menu/services/instances/MenuItemService"
+import { MenuItemCreateMapper } from "@src/modules/menu/mappers/implementations/menuItem.mappers"
+import PrismaMenuItemRepository from "@src/modules/menu/repositories/implementations/prisma/PrismaMenuItemRepository"
+import MenuItemService from "@src/modules/menu/services/implementations/MenuItemService"
 import { createMenuItem, generateMenuItemCreateInputDto } from "./factories/menu/menuItem"
-import { PromotionCreateMapper } from "@src/modules/promotions/mappers/instances/promotion"
-import PrismaPromotionRepository from "@src/modules/promotions/repositories/prisma/PrismaPromotionRepository"
-import PromotionService from "@src/modules/promotions/services/instances/PromotionService"
+import { PromotionCreateMapper } from "@src/modules/promotions/mappers/implementations/promotion.mappers"
+import PrismaPromotionRepository from "@src/modules/promotions/repositories/implementations/prisma/PrismaPromotionRepository"
+import PromotionService from "@src/modules/promotions/services/implementations/PromotionService"
 import { generatePromotionCreateInputDto } from "./factories/promotions/promotion"
-import PrismaPromocodeRepository from '@src/modules/promotions/repositories/prisma/PrismaPromocodeRepository';
-import PromocodeService from '@src/modules/promotions/services/instances/PromocodeService';
+import PrismaPromocodeRepository from '@src/modules/promotions/repositories/implementations/prisma/PrismaPromocodeRepository';
+import PromocodeService from '@src/modules/promotions/services/implementations/PromocodeService';
 import { createPromocode, generatePromocodeCreateInputDto, generatePromocodeUpdateInputDto } from './factories/promotions/promocode';
-import { PermissionDeniedError } from '@src/modules/users/errors/permissions';
+import { PermissionDeniedError } from '@src/modules/users/errors/permissions.errors';
 import { getUniqueId } from './utils/unique';
-import { RestaurantNotFoundWithIdError } from '@src/modules/restaurants/errors/restaurant';
-import { PromocodeNotFoundWithIdError } from '@src/modules/promotions/errors/promocode';
-import { OrderItemGetMapper, OrderItemCreateMapper } from '@src/modules/orders/mappers/instances/orderItem';
-import PrismaOrderItemRepository from '@src/modules/orders/repositories/prisma/PrismaOrderItemRepository';
-import PrismaOrderRepository from '@src/modules/orders/repositories/prisma/PrismaOrderRepository';
+import { RestaurantNotFoundWithIdError } from '@src/modules/restaurants/errors/restaurant.errors';
+import { PromocodeNotFoundWithIdError } from '@src/modules/promotions/errors/promocode.errors';
+import { OrderItemGetMapper, OrderItemCreateMapper } from '@src/modules/orders/mappers/implementations/orderItem.mappers';
+import PrismaOrderItemRepository from '@src/modules/orders/repositories/implementations/prisma/PrismaOrderItemRepository';
+import PrismaOrderRepository from '@src/modules/orders/repositories/implementations/prisma/PrismaOrderRepository';
 import { createOrder, generateOrderCreateInputDto, generateOrderModel } from './factories/orders/order';
 import { generateOrderItemCreateInputDto, generateOrderItemWithOrderCreateInputModel } from './factories/orders/orderItem';
-import OrderService from '@src/modules/orders/services/instances/OrderService';
-import { OrderItemService } from '@src/modules/orders/services/instances/OrderItemService';
-import { OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from '@src/modules/orders/errors/order';
-import { CustomerOwnershipError } from '@src/modules/users/errors/customer';
-import { CourierOwnershipError } from '@src/modules/users/errors/courier';
-import { MenuItemAllNotInSameRestaurantError, MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from '@src/modules/menu/errors/menuItem';
-import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/instances/order';
+import OrderService from '@src/modules/orders/services/implementations/OrderService';
+import { OrderItemService } from '@src/modules/orders/services/implementations/OrderItemService';
+import { OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotReadyError } from '@src/modules/orders/errors/order.errors';
+import { CustomerOwnershipError } from '@src/modules/users/errors/customer.errors';
+import { CourierOwnershipError } from '@src/modules/users/errors/courier.errors';
+import { MenuItemAllNotInSameRestaurantError, MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from '@src/modules/menu/errors/menuItem.errors';
+import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/implementations/order.mappers';
 import { fa, faker } from '@faker-js/faker';
 
 describe("Tests for Services", () => {
@@ -335,7 +335,8 @@ describe("Tests for Services", () => {
 
             const promocodeInstances = await Promise.all(Array.from({length: manyCount}, async () => await createPromocode(prismaClient, restaurant.id)))
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             const expectedResult = promocodeInstances.map((promocodeIntsance) => promocodeCreateMapper.toDto(promocodeIntsance))
 
@@ -361,7 +362,8 @@ describe("Tests for Services", () => {
 
             const restaurantManager = await createRestaurantManager(prismaClient)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             const serviceCall = async () => {
                 await promocodeService.getRestaurantPromocodes(restaurant.id)
@@ -375,7 +377,8 @@ describe("Tests for Services", () => {
 
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeCreateInputDto = generatePromocodeCreateInputDto(restaurant.id)
 
@@ -432,7 +435,8 @@ describe("Tests for Services", () => {
             const promocode = await createPromocode(prismaClient, restaurant.id)
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeCreateInputDto = generatePromocodeCreateInputDto(restaurant.id)
             
@@ -451,7 +455,8 @@ describe("Tests for Services", () => {
             
             const nonExistentRestaurantId = getUniqueId()
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeCreateInputDto = generatePromocodeCreateInputDto(nonExistentRestaurantId)
             
@@ -467,7 +472,8 @@ describe("Tests for Services", () => {
 
             const restaurantManager = await createRestaurantManager(prismaClient)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeCreateInputDto = generatePromocodeCreateInputDto(restaurant.id)
             
@@ -484,7 +490,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeUpdateInputDto = generatePromocodeUpdateInputDto()
 
@@ -544,7 +551,8 @@ describe("Tests for Services", () => {
 
             const nonExistentPromocodeId = getUniqueId()
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeUpdateInputDto = generatePromocodeUpdateInputDto()
             
@@ -560,7 +568,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeUpdateInputDto = generatePromocodeUpdateInputDto()
             
@@ -576,7 +585,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
             
             const promocodeUpdateInputDto = generatePromocodeUpdateInputDto()
             promocodeUpdateInputDto.maxUsageCount = promocode.currentUsageCount - 1
@@ -593,7 +603,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             await promocodeService.activate(promocode.id)
 
@@ -624,7 +635,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
             const nonExistentPromocodeId = getUniqueId()
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             const serviceCall = async () => {
                 await promocodeService.activate(nonExistentPromocodeId)
@@ -638,7 +650,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             const serviceCall = async () => {
                 await promocodeService.activate(promocode.id)
@@ -652,7 +665,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient, restaurant.id)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             await promocodeService.deactivate(promocode.id)
 
@@ -684,7 +698,8 @@ describe("Tests for Services", () => {
 
             const nonExistentPromocodeId = getUniqueId()
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             const serviceCall = async () => {
                 await promocodeService.deactivate(nonExistentPromocodeId)
@@ -698,7 +713,8 @@ describe("Tests for Services", () => {
             const restaurantManager = await createRestaurantManager(prismaClient)
             const promocode = await createPromocode(prismaClient, restaurant.id)
 
-            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository, restaurantManager)
+            const promocodeService = new PromocodeService(promocodeGetMapper, promocodeCreateMapper, promocodeUpdateMapper, promocodeRepository, restaurantRepository)
+            promocodeService.restaurantManager = restaurantManager
 
             const serviceCall = async () => {
                 await promocodeService.deactivate(promocode.id)
@@ -731,7 +747,9 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
+
 
             const orderItemsGetOutputs = await orderItemService.getOrderItems(order.id)
 
@@ -761,7 +779,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, undefined, courier)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.courier = courier
 
             const orderItemsGetOutputs = await orderItemService.getOrderItems(order.id)
 
@@ -796,7 +815,8 @@ describe("Tests for Services", () => {
 
             const nonExistentOrderId = getUniqueId()
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
 
             const serviceCall = async () => {
                 await orderItemService.getOrderItems(nonExistentOrderId)
@@ -813,7 +833,8 @@ describe("Tests for Services", () => {
 
             const anotherCustomer = await createCustomer(prismaClient)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, anotherCustomer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = anotherCustomer
 
             const serviceCall = async () => {
                 await orderItemService.getOrderItems(order.id)
@@ -831,7 +852,8 @@ describe("Tests for Services", () => {
 
             const anotherCourier = await createCustomer(prismaClient)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, undefined, anotherCourier)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.courier = anotherCourier
 
             const serviceCall = async () => {
                 await orderItemService.getOrderItems(order.id)
@@ -859,7 +881,8 @@ describe("Tests for Services", () => {
                 quantity: orderItemCreateInput.quantity
             }
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
 
             const orderItemCreateOutput = await orderItemService.addOrderItem(order.id, orderItemCreateInput)
 
@@ -914,7 +937,8 @@ describe("Tests for Services", () => {
 
             const orderItemCreateInput = generateOrderItemCreateInputDto(menuItem.id)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
 
             const serviceCall = async () => {
                 await orderItemService.addOrderItem(nonExistentOrderId, orderItemCreateInput)
@@ -933,7 +957,8 @@ describe("Tests for Services", () => {
 
             const orderItemCreateInput = generateOrderItemCreateInputDto(nonExistentMenuItemId)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
 
             const serviceCall = async () => {
                 await orderItemService.addOrderItem(order.id, orderItemCreateInput)
@@ -954,7 +979,8 @@ describe("Tests for Services", () => {
 
             const orderItemCreateInput = generateOrderItemCreateInputDto(menuItem.id)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, anotherCustomer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = anotherCustomer
 
             const serviceCall = async () => {
                 await orderItemService.addOrderItem(order.id, orderItemCreateInput)
@@ -975,8 +1001,9 @@ describe("Tests for Services", () => {
 
             const orderItemCreateInput = generateOrderItemCreateInputDto(menuItem.id)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
-
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
+            
             const serviceCall = async () => {
                 await orderItemService.addOrderItem(order.id, orderItemCreateInput)
             }
@@ -1005,7 +1032,8 @@ describe("Tests for Services", () => {
 
             const orderItemCreateInput = generateOrderItemCreateInputDto(menuItem.id)
 
-            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository, customer)
+            const orderItemService = new OrderItemService(orderItemGetMapper, orderItemCreateMapper, orderItemRepository, orderRepository, menuItemRepository)
+            orderItemService.customer = customer
 
             const serviceCall = async () => {
                 await orderItemService.addOrderItem(order.id, orderItemCreateInput)
@@ -1049,8 +1077,8 @@ describe("Tests for Services", () => {
                 restaurantId: order.restaurantId,
             }
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, undefined, undefined, moderator)
-
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.moderator = moderator
             const orderGetOutputs = await orderService.getMany()
 
             const result = orderGetOutputs.find((orderGetOutput) => orderGetOutput.id === order.id)
@@ -1091,7 +1119,8 @@ describe("Tests for Services", () => {
                 }
             })
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const orderGetOutputs = await orderService.getReadyOrders()
 
@@ -1132,7 +1161,8 @@ describe("Tests for Services", () => {
             const orderItemCreateInputs = Array.from({length: manyCount}, () => generateOrderItemWithOrderCreateInputModel())
             await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const orderGetOutputs = await orderService.getCurrentCustomerOrders()
 
@@ -1168,7 +1198,8 @@ describe("Tests for Services", () => {
             const orderItemCreateInputs = Array.from({length: manyCount}, () => generateOrderItemWithOrderCreateInputModel())
             await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const orderGetOutputs = await orderService.getCurrentCourierOrders()
 
@@ -1205,7 +1236,8 @@ describe("Tests for Services", () => {
             const orderItemCreateInputs = Array.from({length: manyCount}, () => generateOrderItemWithOrderCreateInputModel())
             await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, undefined, restaurantManager)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.restaurantManager = restaurantManager
 
             const orderGetOutputs = await orderService.getRestaurantOrders(restaurant.id)
 
@@ -1243,7 +1275,8 @@ describe("Tests for Services", () => {
 
             const nonExistentRestaurantId = getUniqueId()
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, undefined, restaurantManager)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.restaurantManager = restaurantManager
 
             const serviceCall = async () => {
                 await orderService.getRestaurantOrders(nonExistentRestaurantId)
@@ -1261,7 +1294,8 @@ describe("Tests for Services", () => {
 
             const anotherRestaurantManager = await createRestaurantManager(prismaClient)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, undefined, anotherRestaurantManager)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.restaurantManager = anotherRestaurantManager
 
             const serviceCall = async () => {
                 await orderService.getRestaurantOrders(restaurant.id)
@@ -1307,7 +1341,8 @@ describe("Tests for Services", () => {
                 })
             }
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const orderCreateOutputDto = await orderService.makeOrder(orderCreateInputDto)
 
@@ -1358,7 +1393,8 @@ describe("Tests for Services", () => {
 
             orderCreateInputDto.restaurantId = getUniqueId()
             
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1384,7 +1420,8 @@ describe("Tests for Services", () => {
                 })
             })
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1409,7 +1446,8 @@ describe("Tests for Services", () => {
             
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1428,7 +1466,8 @@ describe("Tests for Services", () => {
             const promocode = faker.lorem.word(5)
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1449,7 +1488,8 @@ describe("Tests for Services", () => {
 
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1477,7 +1517,8 @@ describe("Tests for Services", () => {
 
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1506,7 +1547,8 @@ describe("Tests for Services", () => {
             
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1536,7 +1578,8 @@ describe("Tests for Services", () => {
             
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1566,7 +1609,8 @@ describe("Tests for Services", () => {
             
             const orderCreateInputDto = generateOrderCreateInputDto(restaurant.id, menuItemIds, promocode.nameIdentifier)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, customer)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.customer = customer
 
             const serviceCall = async () => {
                 await orderService.makeOrder(orderCreateInputDto)
@@ -1583,7 +1627,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             await prismaClient.order.update({
                 where: {
@@ -1628,7 +1673,8 @@ describe("Tests for Services", () => {
 
             const nonExistentOrderId = getUniqueId()
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const serviceCall = async () => {
                 await orderService.takeOrder(nonExistentOrderId)
@@ -1646,7 +1692,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const serviceCall = async () => {
                 await orderService.takeOrder(order.id)
@@ -1663,7 +1710,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             await prismaClient.order.update({
                 where: {
@@ -1708,7 +1756,8 @@ describe("Tests for Services", () => {
 
             const nonExistentOrderId = getUniqueId()
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const serviceCall = async () => {
                 await orderService.finishOrderDelivery(nonExistentOrderId)
@@ -1725,7 +1774,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const serviceCall = async () => {
                 await orderService.finishOrderDelivery(order.id)
@@ -1742,7 +1792,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, courier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = courier
 
             const serviceCall = async () => {
                 await orderService.finishOrderDelivery(order.id)
@@ -1761,7 +1812,8 @@ describe("Tests for Services", () => {
 
             const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItemCreateInputs, courier.id)
 
-            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository, undefined, anotherCourier)
+            const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
+            orderService.courier = anotherCourier
 
             await prismaClient.order.update({
                 where: {

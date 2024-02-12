@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client"
-import { PromotionCreateInputDTO } from "@src/modules/promotions/dto/promotion"
-import { PromotionModel, PromotionCreateInput, PromotionUpdateInput } from "@src/modules/promotions/models/promotion"
+import { PromotionCreateInputDto } from "@src/modules/promotions/dto/promotion.dto"
+import { PromotionModel, PromotionCreateInput, PromotionUpdateInput } from "@src/modules/promotions/models/promotion.models"
 import { getUniqueId } from "@tests/utils/unique"
 
 // Models
@@ -34,7 +34,7 @@ export async function createPromotion(client: PrismaClient): Promise<PromotionMo
 
 // DTOs
 
-export function generatePromotionCreateInputDto(): PromotionCreateInputDTO {
+export function generatePromotionCreateInputDto(): PromotionCreateInputDto {
     return {
         id: getUniqueId()
     }

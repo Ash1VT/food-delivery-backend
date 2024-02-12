@@ -1,11 +1,11 @@
-import { OrderItemModel } from '@src/modules/orders/models/orderItem';
-import { OrderItemWithOrderCreateInput } from './../../../src/modules/orders/models/orderItem';
-import { OrderStatus } from '@src/modules/orders/models/orderStatus';
+import { OrderItemModel } from '@src/modules/orders/models/orderItem.models';
+import { OrderItemWithOrderCreateInput } from '../../../src/modules/orders/models/orderItem.models';
+import { OrderStatus } from '@src/modules/orders/models/orderStatus.models';
 import { faker } from "@faker-js/faker"
 import { PrismaClient } from '@prisma/client';
 import moment from "moment"
-import { OrderCreateInputDTO } from "@src/modules/orders/dto/order"
-import { OrderModel, OrderCreateInput, OrderUpdateInput } from "@src/modules/orders/models/order"
+import { OrderCreateInputDto } from "@src/modules/orders/dto/order.dto"
+import { OrderModel, OrderCreateInput, OrderUpdateInput } from "@src/modules/orders/models/order.models"
 import { generateOrderItemCreateInputDto, generateOrderItemModel } from './orderItem';
 import { getUniqueId } from '@tests/utils/unique';
 
@@ -95,7 +95,7 @@ export async function createOrder(client: PrismaClient, customerId: bigint, rest
 
 // DTOs
 
-export function generateOrderCreateInputDto(restaurantId: bigint, menuItemsIds: bigint[], promocode?: string, promotionId?: bigint): OrderCreateInputDTO {
+export function generateOrderCreateInputDto(restaurantId: bigint, menuItemsIds: bigint[], promocode?: string, promotionId?: bigint): OrderCreateInputDto {
     return {
         restaurantId,
         promotionId,

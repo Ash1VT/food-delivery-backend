@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
-import { ModeratorCreateInputDTO } from "@src/modules/users/dto/moderator"
-import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "@src/modules/users/models/moderator"
+import { ModeratorCreateInputDto } from "@src/modules/users/dto/moderator.dto"
+import { ModeratorModel, ModeratorCreateInput, ModeratorUpdateInput } from "@src/modules/users/models/moderator.models"
 import { getUniqueId } from "@tests/utils/unique"
 
 // Models
@@ -40,7 +40,7 @@ export async function createModerator(client: PrismaClient): Promise<ModeratorMo
 
 // DTOs
 
-export function generateModeratorCreateInputDto(): ModeratorCreateInputDTO {
+export function generateModeratorCreateInputDto(): ModeratorCreateInputDto {
     return {
         id: getUniqueId()
     }

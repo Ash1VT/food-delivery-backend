@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { fa, faker } from "@faker-js/faker"
-import { PromocodeCreateInputDTO, PromocodeUpdateInputDTO } from "@src/modules/promotions/dto/promocode"
-import { PromocodeModel, PromocodeCreateInput, PromocodeUpdateInput } from "@src/modules/promotions/models/promocode"
+import { PromocodeCreateInputDto, PromocodeUpdateInputDto } from "@src/modules/promotions/dto/promocode.dto"
+import { PromocodeModel, PromocodeCreateInput, PromocodeUpdateInput } from "@src/modules/promotions/models/promocode.models"
 import { getUniqueId, getUniqueWord } from '@tests/utils/unique';
 import moment from 'moment';
 
@@ -121,7 +121,7 @@ export async function createPromocode(client: PrismaClient, restaurantId: bigint
 
 // DTOs
 
-export function generatePromocodeCreateInputDto(restaurantId: bigint, activeByDate: boolean = false): PromocodeCreateInputDTO {
+export function generatePromocodeCreateInputDto(restaurantId: bigint, activeByDate: boolean = false): PromocodeCreateInputDto {
     let validFrom
     let validUntil
 
@@ -152,7 +152,7 @@ export function generatePromocodeCreateInputDto(restaurantId: bigint, activeByDa
     }
 }
 
-export function generatePromocodeUpdateInputDto(activeByDate: boolean = false): PromocodeUpdateInputDTO {
+export function generatePromocodeUpdateInputDto(activeByDate: boolean = false): PromocodeUpdateInputDto {
     let validFrom
     let validUntil
 

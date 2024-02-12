@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
-import { MenuItemCreateInputDTO, MenuItemUpdateInputDTO } from "@src/modules/menu/dto/menuItem"
-import { MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput } from "@src/modules/menu/models/menuItem"
+import { MenuItemCreateInputDto, MenuItemUpdateInputDto } from "@src/modules/menu/dto/menuItem.dto"
+import { MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput } from "@src/modules/menu/models/menuItem.models"
 import { createRestaurant, generateRestaurantModel } from "../restaurants/restaurant"
 import { getUniqueId } from "@tests/utils/unique"
 
@@ -82,7 +82,7 @@ export async function createMenuItem(client: PrismaClient, restaurantId: bigint)
 
 // DTOs
 
-export function generateMenuItemCreateInputDto(restaurantId: bigint): MenuItemCreateInputDTO {
+export function generateMenuItemCreateInputDto(restaurantId: bigint): MenuItemCreateInputDto {
     return {
         id: getUniqueId(),
         name: faker.lorem.word({
@@ -100,7 +100,7 @@ export function generateMenuItemCreateInputDto(restaurantId: bigint): MenuItemCr
     }
 }
 
-export function generateMenuItemUpdateInputDto(): MenuItemUpdateInputDTO {
+export function generateMenuItemUpdateInputDto(): MenuItemUpdateInputDto {
     return {
         name: faker.lorem.word({
             length: { 

@@ -1,5 +1,5 @@
-import { OrderStatus } from '../../models/orderStatus';
-import { OrderModel, OrderCreateInput, OrderUpdateInput } from "../../models/order";
+import { OrderStatus } from '../../models/orderStatus.models';
+import { OrderModel, OrderCreateInput, OrderUpdateInput } from "../../models/order.models";
 import IBaseRepository from "@src/core/repositories/interfaces/IBaseRepository";
 
 export default interface IOrderRepository extends IBaseRepository<OrderModel, OrderCreateInput, OrderUpdateInput> {
