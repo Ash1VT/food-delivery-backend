@@ -6,7 +6,8 @@
     "resolveJsonModule": true,
     "paths": {
       "@src/*": ["src/*"],
-      "@tests/*": ["tests/*"]
+      "@tests/*": ["tests/*"],
+      "@/*": ["./*"]
     },
     "outDir": "./dist",                            
     "esModuleInterop": true,
