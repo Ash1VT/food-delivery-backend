@@ -13,7 +13,7 @@ import PrismaUserServiceFactory from "./modules/users/services/factories/impleme
 import PrismaUserRepositoryFactory from "./modules/users/repositories/factories/implementations/prisma/PrismaUserRepositoryFactory";
 import { authenticate } from "./modules/authentication/utils/authenticate";
 import { appErrorResponder, grpcErrorResponder, genericErrorResponder, validationErrorResponder } from "./core/responders/errorResponders";
-import { createOrder, getAvailableForDeliveryOrders } from "./modules/orders/controllers/order.controllers";
+import { makeOrder, getAvailableForDeliveryOrders } from "./modules/orders/controllers/order.controllers";
 import bodyParser from "body-parser";
 
 const app = getExpressApp()
@@ -50,9 +50,9 @@ app.get('/error', asyncHandler(async (req, res: Response, next) => {
     throw new Error("AAAAA")
 }))
 
-app.post('/test', asyncHandler(createOrder))
+app.post('/test', asyncHandler(makeOrder))
 app.post('/get_orders', asyncHandler(getAvailableForDeliveryOrders))
-app.post('/test', asyncHandler(createOrder))
+app.post('/test', asyncHandler(makeOrder))
 
 app.use(validationErrorResponder)
 app.use(appErrorResponder)
