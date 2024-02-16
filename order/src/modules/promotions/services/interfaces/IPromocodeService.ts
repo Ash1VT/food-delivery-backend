@@ -1,6 +1,7 @@
+import IBaseService from "@src/core/services/IBaseService";
 import { PromocodeGetOutputDto, PromocodeCreateInputDto, PromocodeCreateOutputDto, PromocodeUpdateInputDto, PromocodeUpdateOutputDto } from "../../dto/promocode.dto";
 
-export default interface IPromocodeService {
+export default interface IPromocodeService extends IBaseService {
     // getOne(promocodeId: number): Promise<PromocodeGetOutputDTO>
     // getOneByName(promocodeName: string): Promise<PromocodeGetOutputDTO>
     getRestaurantPromocodes(restaurantId: bigint): Promise<PromocodeGetOutputDto[]>

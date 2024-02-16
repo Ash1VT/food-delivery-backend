@@ -1,7 +1,8 @@
+import IBaseService from "@src/core/services/IBaseService";
 import { OrderGetOutputDto, OrderCreateInputDto, OrderCreateOutputDto } from "../../dto/order.dto";
 import { OrderStatus } from "../../models/orderStatus.models";
 
-export default interface IOrderService {
+export default interface IOrderService extends IBaseService {
     // cancel order
 
     // Moderator

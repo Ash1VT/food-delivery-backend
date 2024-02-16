@@ -1,9 +1,9 @@
-import BaseService from '@src/core/services/BaseService';
+import IBaseService from '@src/core/services/IBaseService';
 import { UserRole } from '@src/grpc/generated/roles/roles_pb';
 import { GrpcUser } from '@src/grpc/user.type';
 import IUserRepositoryFactory from '@src/modules/users/repositories/factories/interfaces/IUserRepositoryFactory';
 
-export async function authenticateService(service: BaseService, userRepositoryFactory: IUserRepositoryFactory, user?: GrpcUser): Promise<void>  {
+export async function authenticateService(service: IBaseService, userRepositoryFactory: IUserRepositoryFactory, user?: GrpcUser): Promise<void>  {
     if (!user)
         return
 

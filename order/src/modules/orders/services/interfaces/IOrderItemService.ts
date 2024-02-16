@@ -1,6 +1,7 @@
+import IBaseService from '@src/core/services/IBaseService';
 import { OrderItemGetOutputDto, OrderItemCreateInputDto, OrderItemCreateOutputDto } from '../../dto/orderItem.dto';
 
-export default interface IOrderItemService {
+export default interface IOrderItemService extends IBaseService {
     // getOne(id: number): Promise<OrderItemGetOutputDTO>
 
     // Customer or courier
