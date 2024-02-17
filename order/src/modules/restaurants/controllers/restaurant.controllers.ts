@@ -10,7 +10,7 @@ export const getRestaurantOrders = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
     
     const orderStatus = orderStatusValidator.parse(req.query.status)
-    const restaurantId = idValidator.parse(req.params.id)
+    const restaurantId = idValidator.parse(req.params.restaurantId)
 
     const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
     const orderService = orderServiceFactory.createOrderService()

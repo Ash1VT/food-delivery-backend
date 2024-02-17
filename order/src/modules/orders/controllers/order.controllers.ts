@@ -78,27 +78,11 @@ export const getAvailableForDeliveryOrders = async (req: Request, res: Response)
     res.status(200).json(orderGetOutputDtos)
 }
 
-export const getRestaurantOrders = async (req: Request, res: Response) => {
-    const prismaClient = getPrismaClient()
-    
-    const orderStatus = orderStatusValidator.parse(req.query.status)
-    const restaurantId = idValidator.parse(req.params.id)
-
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
-    const orderService = orderServiceFactory.createOrderService()
-
-    await authenticateWithPrisma(req, prismaClient, orderService)
-
-    const orderGetOutputDtos = await orderService.getRestaurantOrders(restaurantId, orderStatus)
-    
-    res.status(200).json(orderGetOutputDtos)
-}
-
 
 export const takeOrder = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
 
-    const orderId = idValidator.parse(req.params.id)
+    const orderId = idValidator.parse(req.params.orderId)
 
     const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
     const orderService = orderServiceFactory.createOrderService()
@@ -113,7 +97,7 @@ export const takeOrder = async (req: Request, res: Response) => {
 export const finishOrderDelivery = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
 
-    const orderId = idValidator.parse(req.params.id)
+    const orderId = idValidator.parse(req.params.orderId)
     
     const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
     const orderService = orderServiceFactory.createOrderService()
