@@ -5,8 +5,8 @@ interface MenuItemBaseDto {
 }
 
 interface MenuItemBaseOutputDto extends MenuItemBaseDto {
-    id: bigint
-    restaurantId: bigint
+    id: string
+    restaurantId: string
 }
 
 export interface MenuItemGetOutputDto extends MenuItemBaseOutputDto {}

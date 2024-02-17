@@ -7,6 +7,8 @@ export class PromocodeGetMapper implements IPromocodeGetMapper {
     toDto(dbModel: PromocodeModel): PromocodeGetOutputDto {
         return {
             ...dbModel,
+            id: dbModel.id.toString(),
+            restaurantId: dbModel.restaurantId.toString(),
             validFrom: dbModel.validFrom.toISOString(),
             validUntil: dbModel.validUntil.toISOString(),
         }
@@ -19,6 +21,8 @@ export class PromocodeCreateMapper implements IPromocodeCreateMapper {
     toDto(dbModel: PromocodeModel): PromocodeCreateOutputDto {
         return {
             ...dbModel,
+            id: dbModel.id.toString(),
+            restaurantId: dbModel.restaurantId.toString(),
             validFrom: dbModel.validFrom.toISOString(),
             validUntil: dbModel.validUntil.toISOString(),
         }
@@ -37,6 +41,8 @@ export class PromocodeUpdateMapper implements IPromocodeUpdateMapper {
     toDto(dbModel: PromocodeModel): PromocodeUpdateOutputDto {
         return {
             ...dbModel,
+            id: dbModel.id.toString(),
+            restaurantId: dbModel.restaurantId.toString(),
             validFrom: dbModel.validFrom.toISOString(),
             validUntil: dbModel.validUntil.toISOString(),
         }

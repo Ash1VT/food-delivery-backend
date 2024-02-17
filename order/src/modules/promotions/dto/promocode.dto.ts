@@ -4,10 +4,10 @@ interface PromocodeBaseDto {
 }
 
 interface PromocodeBaseOutputDto extends PromocodeBaseDto {
-    id: bigint
+    id: string
     nameIdentifier: string
     currentUsageCount: number
-    restaurantId: bigint
+    restaurantId: string
     validFrom: string
     validUntil: string
     isActive: boolean

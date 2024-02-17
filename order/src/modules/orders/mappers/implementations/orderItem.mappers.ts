@@ -7,8 +7,8 @@ export class OrderItemGetMapper implements IOrderItemGetMapper {
 
     toDto(dbModel: OrderItemModel): OrderItemGetOutputDto {
         return {
-            id: dbModel.id,
-            orderId: dbModel.orderId,
+            id: dbModel.id.toString(),
+            orderId: dbModel.orderId.toString(),
             menuItemName: dbModel.menuItemName,
             menuItemImageUrl: dbModel.menuItemImageUrl,
             menuItemPrice: dbModel.menuItemPrice,
@@ -22,8 +22,8 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
 
     toDto(dbModel: OrderItemModel): OrderItemCreateOutputDto {
         return {
-            id: dbModel.id,
-            orderId: dbModel.orderId,
+            id: dbModel.id.toString(),
+            orderId: dbModel.orderId.toString(),
             menuItemName: dbModel.menuItemName,
             menuItemImageUrl: dbModel.menuItemImageUrl,
             menuItemPrice: dbModel.menuItemPrice,

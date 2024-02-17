@@ -6,7 +6,7 @@ export class CustomerGetMapper implements ICustomerGetMapper {
 
     toDto(dbModel: CustomerModel): CustomerGetOutputDto {
         return {
-            ...dbModel
+            id: dbModel.id.toString()
         }
     }
 
@@ -16,14 +16,14 @@ export class CustomerCreateMapper implements ICustomerCreateMapper {
 
     toDto(dbModel: CustomerModel): CustomerCreateOutputDto {
         return {
-            ...dbModel
+            id: dbModel.id.toString()
         }
     }
 
 
     toDbModel(dtoModel: CustomerCreateInputDto): CustomerCreateInput {
         return {
-            ...dtoModel
+            id: dtoModel.id
         }
     }
     
