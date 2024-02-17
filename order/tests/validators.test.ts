@@ -1,3 +1,4 @@
+import { OrderStatus } from './../src/modules/orders/models/orderStatus.models';
 import { promocodeCreateValidator, promocodeUpdateValidator } from "@src/modules/promotions/validators/promocode.validators"
 import { generatePromocodeCreateInputDto, generatePromocodeUpdateInputDto } from "./factories/promotions/promocode"
 import { getUniqueId, getUniqueWord } from "./utils/unique"
@@ -7,7 +8,7 @@ import moment from 'moment';
 import { generateOrderItemCreateInputDto } from './factories/orders/orderItem';
 import { orderItemCreateValidator } from '@src/modules/orders/validators/orderItem.validators';
 import { generateOrderCreateInputDto } from './factories/orders/order';
-import { orderCreateValidator } from '@src/modules/orders/validators/order.validators';
+import { orderCreateValidator, orderStatusValidator } from '@src/modules/orders/validators/order.validators';
 
 describe("Tests for Validators", () => {
 
@@ -300,6 +301,24 @@ describe("Tests for Validators", () => {
     })
 
     describe("Tests for Order Validators", () => {
+
+        test("should successfully validate order status", () => {
+            const orderStatus = "ready"
+            const validatedOrderStatus = orderStatusValidator.parse(orderStatus)
+
+            expect(validatedOrderStatus).toBe("READY")
+        })
+
+        test("should not successfully validate order status due to non existent order status", () => {
+            const orderStatus = "ready12"
+
+            const validationCall = () => {
+                orderStatusValidator.parse(orderStatus)
+            }
+
+            expect(validationCall).toThrow(ZodError)
+        })
+
 
         test("should successfully validate order create input dto", () => {
             const restaurantId = getUniqueId()

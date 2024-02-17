@@ -72,14 +72,14 @@ describe("Tests for Services", () => {
             const courierCreateOutputDto = await courierService.create(courierCreateInputDto)
 
             const result = {
-                ...courierCreateOutputDto
+                id: BigInt(courierCreateOutputDto.id)
             }
 
             expect(result).toEqual(expectedResult)
 
             const courierInstance = await prismaClient.courier.findFirst({
                 where: {
-                    id: courierCreateOutputDto.id
+                    id: BigInt(courierCreateOutputDto.id)
                 }
             })
 
@@ -109,14 +109,14 @@ describe("Tests for Services", () => {
             const customerCreateOutputDto = await customerService.create(customerCreateInputDto)
 
             const result = {
-                ...customerCreateOutputDto
+                id: BigInt(customerCreateOutputDto.id)
             }
 
             expect(result).toEqual(expectedResult)
 
             const customerInstance = await prismaClient.customer.findFirst({
                 where: {
-                    id: customerCreateOutputDto.id
+                    id: BigInt(customerCreateOutputDto.id)
                 }
             })
 
@@ -146,14 +146,14 @@ describe("Tests for Services", () => {
             const moderatorCreateOutputDto = await moderatorService.create(moderatorCreateInputDto)
 
             const result = {
-                ...moderatorCreateOutputDto
+                id: BigInt(moderatorCreateOutputDto.id)
             }
 
             expect(result).toEqual(expectedResult)
 
             const moderatorInstance = await prismaClient.moderator.findFirst({
                 where: {
-                    id: moderatorCreateOutputDto.id
+                    id: BigInt(moderatorCreateOutputDto.id)
                 }
             })
 
@@ -182,14 +182,14 @@ describe("Tests for Services", () => {
             const restaurantManagerCreateOutputDto = await restaurantManagerService.create(restaurantManagerCreateInputDto)
 
             const result = {
-                ...restaurantManagerCreateOutputDto
+                id: BigInt(restaurantManagerCreateOutputDto.id)
             }
 
             expect(result).toEqual(expectedResult)
 
             const restaurantManagerInstance = await prismaClient.restaurantManager.findFirst({
                 where: {
-                    id: restaurantManagerCreateOutputDto.id
+                    id: BigInt(restaurantManagerCreateOutputDto.id)
                 }
             })
 
@@ -218,14 +218,14 @@ describe("Tests for Services", () => {
             const restaurantCreateOutputDto = await restaurantService.create(restaurantCreateInputDto)
 
             const result = {
-                ...restaurantCreateOutputDto
+                id: BigInt(restaurantCreateOutputDto.id)
             }
 
             expect(result).toEqual(expectedResult)
 
             const restaurantInstance = await prismaClient.restaurant.findFirst({
                 where: {
-                    id: restaurantCreateOutputDto.id
+                    id: BigInt(restaurantCreateOutputDto.id)
                 }
             })
 
@@ -256,14 +256,16 @@ describe("Tests for Services", () => {
             const menuItemCreateOutputDto = await menuItemService.create(menuItemCreateInputDto)
 
             const result = {
-                ...menuItemCreateOutputDto
+                ...menuItemCreateOutputDto,
+                id: BigInt(menuItemCreateOutputDto.id),
+                restaurantId: BigInt(menuItemCreateOutputDto.restaurantId)
             }
 
             expect(result).toEqual(expectedResult)
 
             const menuItemInstance = await prismaClient.menuItem.findFirst({
                 where: {
-                    id: menuItemCreateOutputDto.id
+                    id: BigInt(menuItemCreateOutputDto.id)
                 }
             })
 
@@ -300,14 +302,14 @@ describe("Tests for Services", () => {
             const promotionCreateOutputDto = await promotionService.create(promotionCreateInputDto)
 
             const result = {
-                ...promotionCreateOutputDto
+                id: BigInt(promotionCreateOutputDto.id)
             }
 
             expect(result).toEqual(expectedResult)
 
             const promotionInstance = await prismaClient.promotion.findFirst({
                 where: {
-                    id: promotionCreateOutputDto.id
+                    id: BigInt(promotionCreateOutputDto.id)
                 }
             })
 
@@ -394,14 +396,15 @@ describe("Tests for Services", () => {
 
             const result = {
                 ...promocodeCreateOutputDto,
-                id: undefined
+                id: undefined,
+                restaurantId: BigInt(promocodeCreateOutputDto.restaurantId)
             }
 
             expect(result).toEqual(expectedResult)
 
             const promocodeInstance = await prismaClient.promocode.findFirst({
                 where: {
-                    id: promocodeCreateOutputDto.id
+                    id: BigInt(promocodeCreateOutputDto.id)
                 }
             })
 
@@ -888,14 +891,15 @@ describe("Tests for Services", () => {
 
             const result = {
                 ...orderItemCreateOutput,
-                id: undefined
+                id: undefined,
+                orderId: BigInt(orderItemCreateOutput.orderId)
             }
 
             expect(result).toEqual(expectedResult)
 
             const orderItemInstance = await prismaClient.orderItem.findFirst({
                 where: {
-                    id: orderItemCreateOutput.id
+                    id: BigInt(orderItemCreateOutput.id)
                 }
             }) 
 
@@ -1065,23 +1069,23 @@ describe("Tests for Services", () => {
 
             const expectedResult = {
                 ...order,
-                courierId: order.courierId,
-                customerId: order.customerId,
+                courierId: order.courierId?.toString(),
+                customerId: order.customerId.toString(),
                 promotionId: undefined,
                 createdAt: order.createdAt.toISOString(),
                 actualDeliveryTime: undefined,
                 deliveryAcceptedAt: undefined,
                 deliveryFinishedAt: undefined,
-                id: order.id,
+                id: order.id.toString(),
                 supposedDeliveryTime: order.supposedDeliveryTime.toISOString(),
-                restaurantId: order.restaurantId,
+                restaurantId: order.restaurantId.toString(),
             }
 
             const orderService = new OrderService(orderGetMapper, orderCreateMapper, orderRepository, promocodeRepository, menuItemRepository, restaurantRepository)
             orderService.moderator = moderator
             const orderGetOutputs = await orderService.getMany()
 
-            const result = orderGetOutputs.find((orderGetOutput) => orderGetOutput.id === order.id)
+            const result = orderGetOutputs.find((orderGetOutput) => orderGetOutput.id === order.id.toString())
 
             delete result?.items
 
@@ -1169,7 +1173,7 @@ describe("Tests for Services", () => {
             expect(orderGetOutputs.length).not.toBe(0)
 
             orderGetOutputs.forEach((orderGetOutput) => {
-                expect(orderGetOutput.customerId).toBe(customer.id)
+                expect(orderGetOutput.customerId).toBe(customer.id.toString())
             })
 
         })
@@ -1206,7 +1210,7 @@ describe("Tests for Services", () => {
             expect(orderGetOutputs.length).not.toBe(0)
 
             orderGetOutputs.forEach((orderGetOutput) => {
-                expect(orderGetOutput.courierId).toBe(courier.id)
+                expect(orderGetOutput.courierId).toBe(courier.id.toString())
             })
 
         })
@@ -1244,7 +1248,7 @@ describe("Tests for Services", () => {
             expect(orderGetOutputs.length).not.toBe(0)
 
             orderGetOutputs.forEach((orderGetOutput) => {
-                expect(orderGetOutput.restaurantId).toBe(restaurant.id)
+                expect(orderGetOutput.restaurantId).toBe(restaurant.id.toString())
             })
 
         })
@@ -1351,6 +1355,8 @@ describe("Tests for Services", () => {
                 supposedDeliveryTime: undefined,
                 createdAt: undefined,
                 id: undefined,
+                customerId: BigInt(orderCreateOutputDto.customerId),
+                restaurantId: BigInt(orderCreateOutputDto.restaurantId),
                 items: orderCreateOutputDto.items?.map((orderItemCreateOutputDto) => {
                     return {
                         ...orderItemCreateOutputDto,

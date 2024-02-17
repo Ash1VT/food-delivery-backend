@@ -80,7 +80,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (courierInstance: CourierModel): object => {
                 return {
-                    id: courierInstance.id
+                    id: courierInstance.id.toString()
                 }
             }
 
@@ -102,7 +102,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (courierInstance: CourierModel): object => {
                 return {
-                    id: courierInstance.id
+                    id: courierInstance.id.toString()
                 }
             }
 
@@ -127,7 +127,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (customerInstance: CustomerModel): object => {
                 return {
-                    id: customerInstance.id
+                    id: customerInstance.id.toString()
                 }
             }
 
@@ -149,7 +149,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (courierInstance: CustomerModel): object => {
                 return {
-                    id: courierInstance.id
+                    id: courierInstance.id.toString()
                 }
             }
 
@@ -174,7 +174,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
                 return {
-                    id: moderatorInstance.id
+                    id: moderatorInstance.id.toString()
                 }
             }
 
@@ -196,7 +196,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
                 return {
-                    id: moderatorInstance.id
+                    id: moderatorInstance.id.toString()
                 }
             }
 
@@ -227,8 +227,8 @@ describe("Tests for Data Mappers", () => {
     
             const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
                 return {
-                    id: restaurantManagerInstance.id,
-                    restaurantId: restaurantManagerInstance.restaurantId ? restaurantManagerInstance.restaurantId : undefined
+                    id: restaurantManagerInstance.id.toString(),
+                    restaurantId: restaurantManagerInstance.restaurantId ? restaurantManagerInstance.restaurantId.toString() : undefined
                 }
             }
 
@@ -254,7 +254,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
                 return {
-                    id: restaurantManagerInstance.id
+                    id: restaurantManagerInstance.id.toString()
                 }
             }
             
@@ -280,7 +280,7 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: restaurantInstance.id
+                    id: restaurantInstance.id.toString()
                 }
             }
 
@@ -302,7 +302,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: restaurantInstance.id
+                    id: restaurantInstance.id.toString()
                 }
             }
             
@@ -333,11 +333,11 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
                 return {
-                    id: menuItemInstance.id,
+                    id: menuItemInstance.id.toString(),
                     name: menuItemInstance.name,
                     imageUrl: menuItemInstance.imageUrl,
                     price: menuItemInstance.price,
-                    restaurantId: menuItemInstance.restaurantId
+                    restaurantId: menuItemInstance.restaurantId.toString()
                 }
             }
 
@@ -368,11 +368,11 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
                 return {
-                    id: menuItemInstance.id,
+                    id: menuItemInstance.id.toString(),
                     name: menuItemInstance.name,
                     imageUrl: menuItemInstance.imageUrl,
                     price: menuItemInstance.price,
-                    restaurantId: menuItemInstance.restaurantId
+                    restaurantId: menuItemInstance.restaurantId.toString()
                 }
             }
             
@@ -401,11 +401,11 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
                 return {
-                    id: menuItemInstance.id,
+                    id: menuItemInstance.id.toString(),
                     name: menuItemInstance.name,
                     imageUrl: menuItemInstance.imageUrl,
                     price: menuItemInstance.price,
-                    restaurantId: menuItemInstance.restaurantId
+                    restaurantId: menuItemInstance.restaurantId.toString()
                 }
             }
 
@@ -431,7 +431,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promotionInstance: PromotionModel): object => {
                 return {
-                    id: promotionInstance.id
+                    id: promotionInstance.id.toString()
                 }
             }
 
@@ -453,7 +453,7 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promotionInstance: PromotionModel): object => {
                 return {
-                    id: promotionInstance.id
+                    id: promotionInstance.id.toString()
                 }
             }
 
@@ -484,14 +484,14 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promocodeInstance: PromocodeModel): object => {
                 return {
-                    id: promocodeInstance.id,
+                    id: promocodeInstance.id.toString(),
                     nameIdentifier: promocodeInstance.nameIdentifier,
                     discountPercentage: promocodeInstance.discountPercentage,
                     validFrom: promocodeInstance.validFrom.toISOString(),
                     validUntil: promocodeInstance.validUntil.toISOString(),
                     maxUsageCount: promocodeInstance.maxUsageCount,
                     currentUsageCount: promocodeInstance.currentUsageCount,
-                    restaurantId: promocodeInstance.restaurantId,
+                    restaurantId: promocodeInstance.restaurantId.toString(),
                     isActive: promocodeInstance.isActive
                 }
             }
@@ -524,14 +524,14 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promocodeInstance: PromocodeModel): object => {
                 return {
-                    id: promocodeInstance.id,
+                    id: promocodeInstance.id.toString(),
                     nameIdentifier: promocodeInstance.nameIdentifier,
                     discountPercentage: promocodeInstance.discountPercentage,
                     validFrom: promocodeInstance.validFrom.toISOString(),
                     validUntil: promocodeInstance.validUntil.toISOString(),
                     maxUsageCount: promocodeInstance.maxUsageCount,
                     currentUsageCount: promocodeInstance.currentUsageCount,
-                    restaurantId: promocodeInstance.restaurantId,
+                    restaurantId: promocodeInstance.restaurantId.toString(),
                     isActive: promocodeInstance.isActive
                 }
             }
@@ -561,14 +561,14 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (promocodeInstance: PromocodeModel): object => {
                 return {
-                    id: promocodeInstance.id,
+                    id: promocodeInstance.id.toString(),
                     nameIdentifier: promocodeInstance.nameIdentifier,
                     discountPercentage: promocodeInstance.discountPercentage,
                     validFrom: promocodeInstance.validFrom.toISOString(),
                     validUntil: promocodeInstance.validUntil.toISOString(),
                     maxUsageCount: promocodeInstance.maxUsageCount,
                     currentUsageCount: promocodeInstance.currentUsageCount,
-                    restaurantId: promocodeInstance.restaurantId,
+                    restaurantId: promocodeInstance.restaurantId.toString(),
                     isActive: promocodeInstance.isActive
                 }
             }
@@ -600,8 +600,8 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (orderItemInstance: OrderItemModel): object => {
                 return {
-                    id: orderItemInstance.id,
-                    orderId: orderItemInstance.orderId,
+                    id: orderItemInstance.id.toString(),
+                    orderId: orderItemInstance.orderId.toString(),
                     menuItemName: orderItemInstance.menuItemName,
                     menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                     menuItemPrice: orderItemInstance.menuItemPrice,
@@ -664,8 +664,8 @@ describe("Tests for Data Mappers", () => {
 
             const getExpectedDtoResult = (orderItemInstance: OrderItemModel): object => {
                 return {
-                    id: orderItemInstance.id,
-                    orderId: orderItemInstance.orderId,
+                    id: orderItemInstance.id.toString(),
+                    orderId: orderItemInstance.orderId.toString(),
                     menuItemName: orderItemInstance.menuItemName,
                     menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                     menuItemPrice: orderItemInstance.menuItemPrice,
@@ -736,8 +736,8 @@ describe("Tests for Data Mappers", () => {
             const getExpectedDtoResult = (orderInstance: OrderModel): object => {
                 const orderItems = orderInstance.items?.map((orderItemInstance) => {
                     return {
-                        id: orderItemInstance.id,
-                        orderId: orderItemInstance.orderId,
+                        id: orderItemInstance.id.toString(),
+                        orderId: orderItemInstance.orderId.toString(),
                         menuItemName: orderItemInstance.menuItemName,
                         menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                         menuItemPrice: orderItemInstance.menuItemPrice,
@@ -746,14 +746,14 @@ describe("Tests for Data Mappers", () => {
                 })
 
                 return {
-                    id: orderInstance.id,
-                    customerId: orderInstance.customerId,
-                    courierId: orderInstance.courierId ? orderInstance.courierId : undefined,
-                    restaurantId: orderInstance.restaurantId,
+                    id: orderInstance.id.toString(),
+                    customerId: orderInstance.customerId.toString(),
+                    courierId: orderInstance.courierId ? orderInstance.courierId.toString() : undefined,
+                    restaurantId: orderInstance.restaurantId.toString(),
                     status: orderInstance.status,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
-                    promotionId: orderInstance.promotionId ? orderInstance.promotionId : undefined,
+                    promotionId: orderInstance.promotionId ? orderInstance.promotionId.toString() : undefined,
                     createdAt: orderInstance.createdAt.toISOString(),
                     deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toISOString(),
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime.toISOString(),
@@ -843,8 +843,8 @@ describe("Tests for Data Mappers", () => {
             const getExpectedDtoResult = (orderInstance: OrderModel): object => {
                 const orderItems = orderInstance.items?.map((orderItemInstance) => {
                     return {
-                        id: orderItemInstance.id,
-                        orderId: orderItemInstance.orderId,
+                        id: orderItemInstance.id.toString(),
+                        orderId: orderItemInstance.orderId.toString(),
                         menuItemName: orderItemInstance.menuItemName,
                         menuItemImageUrl: orderItemInstance.menuItemImageUrl,
                         menuItemPrice: orderItemInstance.menuItemPrice,
@@ -853,14 +853,14 @@ describe("Tests for Data Mappers", () => {
                 })
 
                 return {
-                    id: (orderInstance.id),
-                    customerId: orderInstance.customerId,
-                    courierId: orderInstance.courierId ? orderInstance.courierId : undefined,
-                    restaurantId: orderInstance.restaurantId,
+                    id: orderInstance.id.toString(),
+                    customerId: orderInstance.customerId.toString(),
+                    courierId: orderInstance.courierId ? orderInstance.courierId.toString() : undefined,
+                    restaurantId: orderInstance.restaurantId.toString(),
                     status: orderInstance.status,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
-                    promotionId: orderInstance.promotionId ? orderInstance.promotionId : undefined,
+                    promotionId: orderInstance.promotionId ? orderInstance.promotionId.toString() : undefined,
                     createdAt: orderInstance.createdAt.toISOString(),
                     deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toISOString(),
                     supposedDeliveryTime: orderInstance.supposedDeliveryTime.toISOString(),

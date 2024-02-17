@@ -6,7 +6,7 @@ export class PromotionGetMapper implements IPromotionGetMapper {
 
     toDto(dbModel: PromotionModel): PromotionGetOutputDto {
         return {
-            ...dbModel
+            id: dbModel.id.toString()
         }
     }
 
@@ -16,7 +16,7 @@ export class PromotionCreateMapper implements IPromotionCreateMapper {
 
     toDto(dbModel: PromotionModel): PromotionCreateOutputDto {
         return {
-            ...dbModel
+            id: dbModel.id.toString()
         }
     }
     

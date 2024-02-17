@@ -6,7 +6,7 @@ export class CourierGetMapper implements ICourierGetMapper {
 
     toDto(dbModel: CourierModel): CourierGetOutputDto {
         return {
-            ...dbModel
+            id: dbModel.id.toString()
         }
     }
 
@@ -16,13 +16,13 @@ export class CourierCreateMapper implements ICourierCreateMapper {
 
     toDto(dbModel: CourierModel): CourierCreateOutputDto {
         return {
-            ...dbModel
+            id: dbModel.id.toString()
         }
     }
     
     toDbModel(dtoModel: CourierCreateInputDto): CourierCreateInput {
         return {
-            ...dtoModel
+            id: dtoModel.id
         }
     }
 

@@ -13,10 +13,13 @@ export class OrderGetMapper implements IOrderGetMapper {
     toDto(dbModel: OrderModel): OrderGetOutputDto {
         return {
             ...dbModel,
-            courierId: dbModel.courierId ? dbModel.courierId : undefined,
+            id: dbModel.id.toString(),
+            customerId: dbModel.customerId.toString(),
+            courierId: dbModel.courierId ? dbModel.courierId.toString() : undefined,
+            restaurantId: dbModel.restaurantId.toString(),
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            promotionId: dbModel.promotionId ? dbModel.promotionId : undefined,
+            promotionId: dbModel.promotionId ? dbModel.promotionId.toString() : undefined,
             createdAt: dbModel.createdAt.toISOString(),
             deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
             supposedDeliveryTime: dbModel.supposedDeliveryTime.toISOString(),
@@ -37,10 +40,13 @@ export class OrderCreateMapper implements IOrderCreateMapper {
     toDto(dbModel: OrderModel): OrderCreateOutputDto {
         return {
             ...dbModel,
-            courierId: dbModel.courierId ? dbModel.courierId : undefined,
+            id: dbModel.id.toString(),
+            customerId: dbModel.customerId.toString(),
+            courierId: dbModel.courierId ? dbModel.courierId.toString() : undefined,
+            restaurantId: dbModel.restaurantId.toString(),
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            promotionId: dbModel.promotionId ? dbModel.promotionId : undefined,
+            promotionId: dbModel.promotionId ? dbModel.promotionId.toString() : undefined,
             createdAt: dbModel.createdAt.toISOString(),
             deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
             supposedDeliveryTime: dbModel.supposedDeliveryTime.toISOString(),

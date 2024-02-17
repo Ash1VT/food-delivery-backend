@@ -6,7 +6,9 @@ export class MenuItemGetMapper implements IMenuItemGetMapper {
 
     toDto(dbModel: MenuItemModel): MenuItemGetOutputDto {
         return {
-           ...dbModel
+            ...dbModel,
+            id: dbModel.id.toString(),
+            restaurantId: dbModel.restaurantId.toString()
         }
     }
 
@@ -16,7 +18,9 @@ export class MenuItemCreateMapper implements IMenuItemCreateMapper {
 
     toDto(dbModel: MenuItemModel): MenuItemCreateOutputDto {
         return {
-            ...dbModel
+            ...dbModel,
+            id: dbModel.id.toString(),
+            restaurantId: dbModel.restaurantId.toString()
         }
     }
 
@@ -32,7 +36,9 @@ export class MenuItemUpdateMapper implements IMenuItemUpdateMapper {
 
     toDto(dbModel: MenuItemModel): MenuItemUpdateOutputDto {
         return {
-            ...dbModel
+            ...dbModel,
+            id: dbModel.id.toString(),
+            restaurantId: dbModel.restaurantId.toString()
         }
     }
 
