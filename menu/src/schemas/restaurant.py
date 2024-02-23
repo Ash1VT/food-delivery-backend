@@ -54,6 +54,7 @@ class RestaurantCreateIn(RestaurantBase):
     """
 
     id: int = Field(ge=0)
+    is_active: bool
     restaurant_manager_id: int = Field(ge=0)
 
 
