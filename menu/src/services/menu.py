@@ -5,7 +5,7 @@ from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantNotActiveError, \
     RestaurantMissingCurrentMenuError
 from exceptions.permissions import PermissionDeniedError
-from roles import RestaurantManagerRole
+from user_roles import RestaurantManagerRole
 from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
