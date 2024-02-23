@@ -27,14 +27,13 @@ class Settings(BaseSettings):
     }
 
     kafka_producer_events_topics: Dict[str, Dict[str, str]] = {
-        'producer.events.RestaurantActivatedEvent': {
-            'menu_restaurant': 'producer.schemas.RestaurantActivatedSchema',
+        'producer.events.RestaurantCreatedEvent': {
+            'menu_restaurant': 'producer.schemas.RestaurantCreatedSchema',
+            'restaurant_order': 'producer.schemas.RestaurantCreatedSchema'
         },
-        'producer.events.RestaurantDeactivatedEvent': {
-            'menu_restaurant': 'producer.schemas.RestaurantDeactivatedSchema'
-        },
-        'producer.events.RestaurantApplicationConfirmedEvent': {
-            'menu_restaurant': 'producer.schemas.RestaurantApplicationConfirmedSchema'
+        'producer.events.RestaurantUpdatedEvent': {
+            'menu_restaurant': 'producer.schemas.RestaurantUpdatedSchema',
+            'restaurant_order': 'producer.schemas.RestaurantUpdatedSchema'
         },
     }
 
@@ -56,6 +55,7 @@ class TestSettings(Settings):
 
     model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.test')
 
+
 class ProductionSettings(Settings):
     reload: bool = False
     pg_host: str
@@ -65,6 +65,7 @@ class ProductionSettings(Settings):
     pg_password: str
 
     model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.prod')
+
 
 @config_cache
 def get_settings():
