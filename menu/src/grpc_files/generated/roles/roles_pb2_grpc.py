@@ -2,10 +2,10 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import grpc_files.generated.roles_pb2 as roles__pb2
+from grpc_files.generated.roles import roles_pb2 as roles_dot_roles__pb2
 
 
-class RolesStub(object):
+class RolesServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -15,13 +15,13 @@ class RolesStub(object):
             channel: A grpc.Channel.
         """
         self.GetUserRole = channel.unary_unary(
-                '/roles.Roles/GetUserRole',
-                request_serializer=roles__pb2.GetUserRoleRequest.SerializeToString,
-                response_deserializer=roles__pb2.GetUserRoleResponse.FromString,
+                '/roles.RolesService/GetUserRole',
+                request_serializer=roles_dot_roles__pb2.GetUserRoleRequest.SerializeToString,
+                response_deserializer=roles_dot_roles__pb2.GetUserRoleResponse.FromString,
                 )
 
 
-class RolesServicer(object):
+class RolesServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def GetUserRole(self, request, context):
@@ -31,21 +31,21 @@ class RolesServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_RolesServicer_to_server(servicer, server):
+def add_RolesServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetUserRole': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUserRole,
-                    request_deserializer=roles__pb2.GetUserRoleRequest.FromString,
-                    response_serializer=roles__pb2.GetUserRoleResponse.SerializeToString,
+                    request_deserializer=roles_dot_roles__pb2.GetUserRoleRequest.FromString,
+                    response_serializer=roles_dot_roles__pb2.GetUserRoleResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'roles.Roles', rpc_method_handlers)
+            'roles.RolesService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class Roles(object):
+class RolesService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -59,8 +59,8 @@ class Roles(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/roles.Roles/GetUserRole',
-            roles__pb2.GetUserRoleRequest.SerializeToString,
-            roles__pb2.GetUserRoleResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/roles.RolesService/GetUserRole',
+            roles_dot_roles__pb2.GetUserRoleRequest.SerializeToString,
+            roles_dot_roles__pb2.GetUserRoleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
