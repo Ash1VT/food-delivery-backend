@@ -33,7 +33,7 @@ class RestaurantManagerRole(UserRole):
 
     @property
     def grpc_role(self):
-        return GrpcUserRole.RESTAURANT_MANAGER
+        return GrpcUserRole.USER_ROLE_RESTAURANT_MANAGER
 
     def __str__(self):
         return "Restaurant Manager"
