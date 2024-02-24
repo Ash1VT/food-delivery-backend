@@ -14,15 +14,15 @@ import { ModeratorCreateMapper } from "@src/modules/users/mappers/implementation
 import PrismaModeratorRepository from "@src/modules/users/repositories/implementations/prisma/PrismaModeratorRepository"
 import { createModerator, generateModeratorCreateInputDto } from "./factories/users/moderator"
 import PrismaRestaurantManagerRepository from "@src/modules/users/repositories/implementations/prisma/PrismaRestaurantManagerRepository"
-import { RestaurantManagerCreateMapper } from "@src/modules/users/mappers/implementations/restaurantManager.mappers"
+import { RestaurantManagerCreateMapper, RestaurantManagerUpdateMapper } from "@src/modules/users/mappers/implementations/restaurantManager.mappers"
 import RestaurantManagerService from "@src/modules/users/services/implementations/RestaurantManagerService"
 import { createRestaurantManager, generateRestaurantManagerCreateInputDto } from "./factories/users/restaurantManager"
 import ModeratorService from "@src/modules/users/services/implementations/ModeratorService"
-import { RestaurantCreateMapper } from "@src/modules/restaurants/mappers/implementations/restaurant.mappers"
+import { RestaurantCreateMapper, RestaurantUpdateMapper } from "@src/modules/restaurants/mappers/implementations/restaurant.mappers"
 import PrismaRestaurantRepository from "@src/modules/restaurants/repositories/implementations/prisma/PrismaRestaurantRepository"
 import RestaurantService from "@src/modules/restaurants/services/implementations/RestaurantService"
 import { createRestaurant, generateRestaurantCreateInputDto } from "./factories/restaurants/restaurant"
-import { MenuItemCreateMapper } from "@src/modules/menu/mappers/implementations/menuItem.mappers"
+import { MenuItemCreateMapper, MenuItemUpdateMapper } from "@src/modules/menu/mappers/implementations/menuItem.mappers"
 import PrismaMenuItemRepository from "@src/modules/menu/repositories/implementations/prisma/PrismaMenuItemRepository"
 import MenuItemService from "@src/modules/menu/services/implementations/MenuItemService"
 import { createMenuItem, generateMenuItemCreateInputDto } from "./factories/menu/menuItem"
@@ -169,10 +169,11 @@ describe("Tests for Services", () => {
 
     describe('Tests for Restaurant Manager Service', () => {
         const restaurantManagerCreateMapper = new RestaurantManagerCreateMapper()
+        const restaurantManagerUpdateMapper = new RestaurantManagerUpdateMapper()
         const restaurantManagerRepository = new PrismaRestaurantManagerRepository(prismaClient)
 
         test("should create one restaurant manager", async () => {
-            const restaurantManagerService = new RestaurantManagerService(restaurantManagerCreateMapper, restaurantManagerRepository)
+            const restaurantManagerService = new RestaurantManagerService(restaurantManagerCreateMapper, restaurantManagerUpdateMapper, restaurantManagerRepository)
             const restaurantManagerCreateInputDto = generateRestaurantManagerCreateInputDto()
 
             const expectedResult = {
@@ -205,11 +206,14 @@ describe("Tests for Services", () => {
 
     describe('Tests for Restaurant Service', () => {
         const restaurantCreateMapper = new RestaurantCreateMapper()
+        const restaurantUpdateMapper = new RestaurantUpdateMapper()
         const restaurantRepository = new PrismaRestaurantRepository(prismaClient)
+        const restaurantManagerRepository = new PrismaRestaurantManagerRepository(prismaClient)
 
         test("should create one restaurant", async () => {
-            const restaurantService = new RestaurantService(restaurantCreateMapper, restaurantRepository)
-            const restaurantCreateInputDto = generateRestaurantCreateInputDto()
+            const restaurantService = new RestaurantService(restaurantCreateMapper, restaurantUpdateMapper, restaurantRepository, restaurantManagerRepository)
+            const restaurantManager = await createRestaurantManager(prismaClient)
+            const restaurantCreateInputDto = generateRestaurantCreateInputDto(restaurantManager.id)
 
             const expectedResult = {
                 ...restaurantCreateInputDto
@@ -241,10 +245,12 @@ describe("Tests for Services", () => {
 
     describe('Tests for Menu Item Service', () => {
         const menuItemCreateMapper = new MenuItemCreateMapper()
+        const menuItemUpdateMapper = new MenuItemUpdateMapper()
+
         const menuItemRepository = new PrismaMenuItemRepository(prismaClient)
 
         test("should create one menu item", async () => {
-            const menuItemService = new MenuItemService(menuItemCreateMapper, menuItemRepository)
+            const menuItemService = new MenuItemService(menuItemCreateMapper, menuItemUpdateMapper, menuItemRepository)
             const restaurant = await createRestaurant(prismaClient)
             
             const menuItemCreateInputDto = generateMenuItemCreateInputDto(restaurant.id)
