@@ -1,6 +1,7 @@
-import { IRestaurantGetMapper, IRestaurantCreateMapper } from "../../interfaces/restaurant.mappers";
+import { IRestaurantGetMapper, IRestaurantCreateMapper, IRestaurantUpdateMapper } from "../../interfaces/restaurant.mappers";
 
 export default interface IRestaurantMapperFactory {
     createRestaurantGetMapper(): IRestaurantGetMapper;
     createRestaurantCreateMapper(): IRestaurantCreateMapper;
+    createRestaurantUpdateMapper(): IRestaurantUpdateMapper;
 }
