@@ -10,7 +10,7 @@ import { PermissionDeniedError } from "@src/modules/users/errors/permissions.err
 import IPromocodeRepository from "@src/modules/promotions/repositories/interfaces/IPromocodeRepository";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository";
-import { RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant.errors";
+import { RestaurantNotActiveError, RestaurantNotFoundWithIdError } from "@src/modules/restaurants/errors/restaurant.errors";
 import { MenuItemAllNotInSameRestaurantError, MenuItemNotFoundWithIdError } from "@src/modules/menu/errors/menuItem.errors";
 import { CourierOwnershipError } from '@src/modules/users/errors/courier.errors';
 import BaseService from '@src/core/services/BaseService';
@@ -103,11 +103,15 @@ export default class OrderService extends BaseService implements IOrderService {
         }
         
         // Check restaurant for existence
-
         const restaurantInstance = await this.restaurantRepository.getOne(orderData.restaurantId)
 
         if (!restaurantInstance){
             throw new RestaurantNotFoundWithIdError(orderData.restaurantId)
+        }
+
+        // Check if restaurant is active
+        if (!restaurantInstance.isActive) {
+            throw new RestaurantNotActiveError(orderData.restaurantId)
         }
         
         // Get unique order items
