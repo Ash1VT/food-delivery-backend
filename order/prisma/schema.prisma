@@ -41,6 +41,7 @@ model RestaurantManager {
 model Restaurant {
   id                BigInt             @id
   restaurantManager RestaurantManager?
+  isActive          Boolean
 
   orders     Order[]
   menuItem   MenuItem[]
