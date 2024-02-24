@@ -39,7 +39,13 @@ describe("Tests for Utils", () => {
                 pgUser: 'myuser',
                 pgPassword: 'mypassword',
                 rolesGrpcServerHost: 'localhost',
-                rolesGrpcServerPort: 50000
+                rolesGrpcServerPort: 50000,
+                kafkaBootstrapServerHost: 'localhost',
+                kafkaBootstrapServerPort: 9092,
+                kafkaBrokerUser: 'myuser',
+                kafkaBrokerPassword: 'mypassword',
+                kafkaGroupConsumersCount: 1,
+                kafkaConsumerTopicsEvents: []
             }
         }
 
