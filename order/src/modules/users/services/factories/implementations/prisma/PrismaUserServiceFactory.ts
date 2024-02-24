@@ -35,9 +35,10 @@ export default class PrismaUserServiceFactory implements IUserServiceFactory {
         )
     }
     
-    public createRestaurantManager(): IRestaurantManagerService {
+    public createRestaurantManagerService(): IRestaurantManagerService {
         return new RestaurantManagerService(
-            this.userMapperFactory.createRestaurantManagerCreateMapper(), 
+            this.userMapperFactory.createRestaurantManagerCreateMapper(),
+            this.userMapperFactory.createRestaurantManagerUpdateMapper(),
             this.userRepositoryFactory.createRestaurantManagerRepository()
         )
     }
