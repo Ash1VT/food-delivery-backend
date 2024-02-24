@@ -13,3 +13,12 @@ export interface RestaurantManagerCreateInputDto extends RestaurantManagerBaseDt
 }
 
 export interface RestaurantManagerCreateOutputDto extends RestaurantManagerBaseOutputDto {}
+
+
+export interface RestaurantManagerUpdateInputDto extends RestaurantManagerBaseDto {
+    restaurantId: bigint
+}
+
+export interface RestaurantManagerUpdateOutputDto extends RestaurantManagerBaseOutputDto {
+    restaurantId?: string
+}
