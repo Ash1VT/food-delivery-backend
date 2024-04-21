@@ -4,13 +4,20 @@ import { registerSwagger } from "./core/setup/swagger";
 import { registerAppRoutes } from "./core/setup/routes";
 import { registerErrorResponders } from "./core/setup/responders";
 import { registerRequestParsers } from "./core/setup/parsers";
+import { runKafkaReceivers } from "./core/setup/kafka";
 
 const app = getExpressApp()
 const appSettings = getSettings()
 
-registerRequestParsers(app)
-registerAppRoutes(app)
-registerSwagger(app)
-registerErrorResponders(app)
+async function main() {
+    await runKafkaReceivers(appSettings)
 
-startExpressApp(app, appSettings)
+    registerRequestParsers(app)
+    registerAppRoutes(app)
+    registerSwagger(app)
+    registerErrorResponders(app)
+
+    startExpressApp(app, appSettings)
+}
+
+main()

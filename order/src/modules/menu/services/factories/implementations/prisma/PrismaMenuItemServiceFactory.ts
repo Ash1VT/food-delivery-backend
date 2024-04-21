@@ -18,6 +18,7 @@ export default class PrismaMenuItemServiceFactory implements IMenuServiceFactory
     public createMenuItemService(): IMenuItemService {
         return new MenuItemService(
             this.menuItemMapperFactory.createMenuItemCreateMapper(),
+            this.menuItemMapperFactory.createMenuItemUpdateMapper(),
             this.menuItemRepositoryFactory.createMenuItemRepository()
         )
     }

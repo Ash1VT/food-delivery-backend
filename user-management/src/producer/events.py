@@ -82,6 +82,22 @@ class ProducerEvent(ABC):
         return cls.__name__
 
 
+class CustomerCreatedEvent(ProducerEvent):
+    """
+    Event when Customer is created.
+    """
+
+    _topics_serializers = dict()
+
+
+class CourierCreatedEvent(ProducerEvent):
+    """
+    Event when Courier is created.
+    """
+
+    _topics_serializers = dict()
+
+
 class RestaurantManagerCreatedEvent(ProducerEvent):
     """
     Event when RestaurantManager is created.

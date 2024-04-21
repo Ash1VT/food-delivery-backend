@@ -11,6 +11,7 @@ async def generate_menu_item_create_data(restaurant: Optional[Restaurant] = None
     return {
         'name': menu_item.name,
         'description': menu_item.description,
+        'image_url': menu_item.image_url,
         'price': menu_item.price,
         'restaurant_id': restaurant.id
     }
@@ -22,6 +23,7 @@ async def generate_menu_item_create_data_nonexistent_restaurant():
         'name': menu_item.name,
         'description': menu_item.description,
         'price': menu_item.price,
+        'image_url': menu_item.image_url,
         'restaurant_id': 999
     }
 
@@ -31,6 +33,7 @@ async def generate_menu_item_update_data():
     return {
         'name': menu_item.name,
         'description': menu_item.description,
+        'image_url': menu_item.image_url,
         'price': menu_item.price,
     }
 
@@ -38,11 +41,13 @@ async def generate_menu_item_update_data():
 def validate_menu_item(menu_item: MenuItem, menu_item_data: dict) -> bool:
     return menu_item.name == menu_item_data.get('name') and \
         menu_item.description == menu_item_data.get('description') and \
+        menu_item.image_url == menu_item_data.get('image_url') and \
         menu_item.price == menu_item_data.get('price')
 
 
 def compare_menu_items(menu_item_1: MenuItem, menu_item_2: MenuItem) -> bool:
     return menu_item_1.name == menu_item_2.name and \
         menu_item_1.description == menu_item_2.description and \
+        menu_item_1.image_url == menu_item_2.image_url and \
         menu_item_1.price == menu_item_2.price and \
         menu_item_1.restaurant_id == menu_item_2.restaurant_id

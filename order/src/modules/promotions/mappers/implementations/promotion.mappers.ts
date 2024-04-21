@@ -1,5 +1,5 @@
 import { PromotionGetOutputDto, PromotionCreateOutputDto, PromotionCreateInputDto } from "../../dto/promotion.dto";
-import { PromotionModel } from "../../models/promotion.models";
+import { PromotionCreateInput, PromotionModel } from "../../models/promotion.models";
 import { IPromotionGetMapper, IPromotionCreateMapper } from "../interfaces/promotion.mappers";
 
 export class PromotionGetMapper implements IPromotionGetMapper {
@@ -20,7 +20,7 @@ export class PromotionCreateMapper implements IPromotionCreateMapper {
         }
     }
     
-    toDbModel(dtoModel: PromotionCreateInputDto): PromotionModel {
+    toDbModel(dtoModel: PromotionCreateInputDto): PromotionCreateInput {
         return {
             ...dtoModel
         }

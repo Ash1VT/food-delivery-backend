@@ -10,6 +10,7 @@ class MenuItem(CustomBase):
     name = Column(String, nullable=False)
     description = Column(String)
     price = Column(Integer, nullable=False)
+    image_url = Column(String, nullable=False)
 
     restaurant_id = Column(Integer, ForeignKey('restaurants.id', name='fk_restaurant_id'), nullable=False)
 

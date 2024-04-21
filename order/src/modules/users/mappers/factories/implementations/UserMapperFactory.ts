@@ -3,9 +3,9 @@ import { CustomerCreateMapper, CustomerGetMapper } from "../../implementations/c
 import { ICourierGetMapper, ICourierCreateMapper } from "../../interfaces/courier.mappers";
 import { ICustomerGetMapper, ICustomerCreateMapper } from "../../interfaces/customer.mappers";
 import { IModeratorGetMapper, IModeratorCreateMapper } from "../../interfaces/moderator.mappers";
-import { IRestaurantManagerGetMapper, IRestaurantManagerCreateMapper } from "../../interfaces/restaurantManager.mappers";
+import { IRestaurantManagerGetMapper, IRestaurantManagerCreateMapper, IRestaurantManagerUpdateMapper } from "../../interfaces/restaurantManager.mappers";
 import IUserMapperFactory from "../interfaces/IUserMapperFactory";
-import { RestaurantManagerCreateMapper, RestaurantManagerGetMapper } from "../../implementations/restaurantManager.mappers";
+import { RestaurantManagerCreateMapper, RestaurantManagerGetMapper, RestaurantManagerUpdateMapper } from "../../implementations/restaurantManager.mappers";
 import { ModeratorCreateMapper, ModeratorGetMapper } from "../../implementations/moderator.mappers";
 
 export default class UserMapperFactory implements IUserMapperFactory {
@@ -32,6 +32,10 @@ export default class UserMapperFactory implements IUserMapperFactory {
 
     createRestaurantManagerCreateMapper(): IRestaurantManagerCreateMapper {
         return new RestaurantManagerCreateMapper()
+    }
+
+    createRestaurantManagerUpdateMapper(): IRestaurantManagerUpdateMapper {
+        return new RestaurantManagerUpdateMapper()
     }
 
     createModeratorGetMapper(): IModeratorGetMapper {

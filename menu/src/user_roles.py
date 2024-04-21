@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from grpc_files.generated.roles_pb2 import UserRole as GrpcUserRole
+from grpc_files.generated.roles.roles_pb2 import UserRole as GrpcUserRole
 
 __all__ = [
     "UserRole",
@@ -33,7 +33,7 @@ class RestaurantManagerRole(UserRole):
 
     @property
     def grpc_role(self):
-        return GrpcUserRole.RESTAURANT_MANAGER
+        return GrpcUserRole.USER_ROLE_RESTAURANT_MANAGER
 
     def __str__(self):
         return "Restaurant Manager"

@@ -9,17 +9,17 @@ __all__ = [
 ]
 
 
-class RestaurantManagerCreatedSchema(RestaurantManagerCreateIn):
+class RestaurantManagerCreatedSchema(BaseModel):
     """
     Schema class for output representation of a created restaurant manager.
     """
 
-    pass
+    id: int = Field(ge=0)
 
 
-class ModeratorCreatedSchema(ModeratorCreateIn):
+class ModeratorCreatedSchema(BaseModel):
     """
     Schema class for output representation of a created restaurant manager.
     """
 
-    pass
+    id: int = Field(ge=0)

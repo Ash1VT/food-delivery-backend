@@ -7,13 +7,15 @@ import { getUniqueId } from "@tests/utils/unique"
 
 export function generateRestaurantModel(): RestaurantModel {
     return {
-        id: getUniqueId()
+        id: getUniqueId(),
+        isActive: true
     }
 }
 
 export function generateRestaurantCreateInputModel(): RestaurantCreateInput {
     return {
-        id: getUniqueId()
+        id: getUniqueId(),
+        isActive: true
     }
 }
 
@@ -40,8 +42,10 @@ export async function createRestaurant(client: PrismaClient): Promise<Restaurant
 
 // DTOs
 
-export function generateRestaurantCreateInputDto(): RestaurantCreateInputDto {
+export function generateRestaurantCreateInputDto(restaurantManagerId: bigint): RestaurantCreateInputDto {
     return {
-        id: getUniqueId()
+        id: getUniqueId(),
+        restaurantManagerId,
+        isActive: true
     }
 }

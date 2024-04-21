@@ -40,6 +40,7 @@ import { OrderCreateInputDto } from '@src/modules/orders/dto/order.dto';
 import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/implementations/order.mappers';
 import { OrderModel } from '@src/modules/orders/models/order.models';
 import { generateOrderModel, generateOrderCreateInputDto } from './factories/orders/order';
+import { getUniqueId } from './utils/unique';
 
 describe("Tests for Data Mappers", () => {
 
@@ -280,7 +281,8 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: restaurantInstance.id.toString()
+                    id: restaurantInstance.id.toString(),
+                    isActive: restaurantInstance.isActive
                 }
             }
 
@@ -296,18 +298,25 @@ describe("Tests for Data Mappers", () => {
     
             const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDto): object => {
                 return {
-                    id: restaurantDto.id
+                    id: restaurantDto.id,
+                    isActive: restaurantDto.isActive
                 }
             }
 
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: restaurantInstance.id.toString()
+                    id: restaurantInstance.id.toString(),
+                    isActive: restaurantInstance.isActive
                 }
             }
             
+            const generateFullRestaurantCreateInputDto = (): RestaurantCreateInputDto => {
+                const restaurantManagerId = getUniqueId()
+                return generateRestaurantCreateInputDto(restaurantManagerId)
+            }
+
             test("should map restaurant create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateRestaurantCreateInputDto, getExpectedDbResult, restaurantCreateMapper)
+                testDtoToDatabaseMapper(generateFullRestaurantCreateInputDto, getExpectedDbResult, restaurantCreateMapper)
             })
     
             test("should map restaurant database model to create output dto model", () => {

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from grpc_files.generated.roles_pb2 import UserRole as GrpcUserRole
+from grpc_files.generated.roles.roles_pb2 import UserRole as GrpcUserRole
 
 
 class UserRole(ABC):
@@ -28,7 +28,7 @@ class RestaurantManagerRole(UserRole):
 
     @property
     def grpc_role(self):
-        return GrpcUserRole.RESTAURANT_MANAGER
+        return GrpcUserRole.USER_ROLE_RESTAURANT_MANAGER
 
     def __str__(self):
         return "Restaurant Manager"
@@ -41,7 +41,7 @@ class ModeratorRole(UserRole):
 
     @property
     def grpc_role(self):
-        return GrpcUserRole.MODERATOR
+        return GrpcUserRole.USER_ROLE_MODERATOR
 
     def __str__(self):
         return "Moderator"

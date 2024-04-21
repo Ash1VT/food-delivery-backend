@@ -6,6 +6,6 @@ import IRestaurantManagerService from "../../interfaces/IRestaurantManagerServic
 export default interface IUserServiceFactory {
     createCustomerService(): ICustomerService
     createCourierService(): ICourierService
-    createRestaurantManager(): IRestaurantManagerService
+    createRestaurantManagerService(): IRestaurantManagerService
     createModeratorService(): IModeratorService
 }

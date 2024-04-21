@@ -6,7 +6,7 @@ from exceptions.manager import RestaurantManagerNotFoundWithIdError
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
 from models import Restaurant, RestaurantManager
-from roles import RestaurantManagerRole
+from user_roles import RestaurantManagerRole
 from schemas.restaurant import RestaurantCreateIn, RestaurantCreateOut, RestaurantUpdateIn, RestaurantUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
@@ -192,40 +192,40 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         restaurant.current_menu_id = None
 
-    async def activate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
-        """
-        Activates a restaurant by its ID.
-
-        Args:
-            id (int): The ID of the restaurant.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-
-        Raises:
-            RestaurantNotFoundWithIdError: If the restaurant is not found.
-        """
-
-        restaurant = await uow.restaurants.retrieve(id, **kwargs)
-
-        if not restaurant:
-            raise RestaurantNotFoundWithIdError(id)
-
-        restaurant.is_active = True
-
-    async def deactivate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
-        """
-        Deactivates a restaurant by its ID.
-
-        Args:
-            id (int): The ID of the restaurant.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-
-        Raises:
-            RestaurantNotFoundWithIdError: If the restaurant is not found.
-        """
-
-        restaurant = await uow.restaurants.retrieve(id, **kwargs)
-
-        if not restaurant:
-            raise RestaurantNotFoundWithIdError(id)
-
-        restaurant.is_active = False
+    # async def activate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+    #     """
+    #     Activates a restaurant by its ID.
+    #
+    #     Args:
+    #         id (int): The ID of the restaurant.
+    #         uow (SqlAlchemyUnitOfWork): The unit of work instance.
+    #
+    #     Raises:
+    #         RestaurantNotFoundWithIdError: If the restaurant is not found.
+    #     """
+    #
+    #     restaurant = await uow.restaurants.retrieve(id, **kwargs)
+    #
+    #     if not restaurant:
+    #         raise RestaurantNotFoundWithIdError(id)
+    #
+    #     restaurant.is_active = True
+    #
+    # async def deactivate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+    #     """
+    #     Deactivates a restaurant by its ID.
+    #
+    #     Args:
+    #         id (int): The ID of the restaurant.
+    #         uow (SqlAlchemyUnitOfWork): The unit of work instance.
+    #
+    #     Raises:
+    #         RestaurantNotFoundWithIdError: If the restaurant is not found.
+    #     """
+    #
+    #     restaurant = await uow.restaurants.retrieve(id, **kwargs)
+    #
+    #     if not restaurant:
+    #         raise RestaurantNotFoundWithIdError(id)
+    #
+    #     restaurant.is_active = False

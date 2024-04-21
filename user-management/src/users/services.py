@@ -3,7 +3,7 @@ import logging
 from .models import User, UserRole, UserProfile, CustomerProfile, CourierProfile
 from .utils import send_verification_email
 from producer import publisher
-from producer.events import RestaurantManagerCreatedEvent, ModeratorCreatedEvent
+from producer.events import CustomerCreatedEvent, CourierCreatedEvent, RestaurantManagerCreatedEvent, ModeratorCreatedEvent
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,11 @@ class UserService:
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
         cls._create_customer_profile(user=user)
         send_verification_email(user)
+
+        publisher.publish(CustomerCreatedEvent(data={
+            'id': user.id
+        }))
+
         return user
 
     @classmethod
@@ -87,6 +92,11 @@ class UserService:
         cls._create_user_profile(user=user, user_profile_data=user_profile_data)
         cls._create_courier_profile(user=user)
         send_verification_email(user)
+
+        publisher.publish(CourierCreatedEvent(data={
+            'id': user.id
+        }))
+        
         return user
 
     @classmethod

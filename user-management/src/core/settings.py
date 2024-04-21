@@ -167,13 +167,21 @@ class Base(Configuration):
     KAFKA_BROKER_PASSWORD = env('KAFKA_BROKER_PASSWORD')
 
     KAFKA_PRODUCER_EVENTS_TOPICS = {
+        'producer.events.CustomerCreatedEvent': {
+            'user_order': 'producer.serializers.CustomerCreatedSerializer',
+        },
+        'producer.events.CourierCreatedEvent': {
+            'user_order': 'producer.serializers.CourierCreatedSerializer',
+        },
         'producer.events.RestaurantManagerCreatedEvent': {
             'user_restaurant': 'producer.serializers.RestaurantManagerCreatedSerializer',
-            'user_menu': 'producer.serializers.RestaurantManagerCreatedSerializer'
+            'user_menu': 'producer.serializers.RestaurantManagerCreatedSerializer',
+            'user_order': 'producer.serializers.RestaurantManagerCreatedSerializer',
         },
         'producer.events.ModeratorCreatedEvent': {
             'user_restaurant': 'producer.serializers.ModeratorCreatedSerializer',
-        }
+            'user_order': 'producer.serializers.ModeratorCreatedSerializer',
+        },
     }
 
     # Auth user model
@@ -297,6 +305,7 @@ class Test(Base):
             'NAME': Base.BASE_DIR / 'db.sqlite3'
         }
     }
+
 
 class Production(Base):
     DEBUG = False
