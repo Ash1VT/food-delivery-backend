@@ -281,7 +281,8 @@ describe("Tests for Data Mappers", () => {
             
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: restaurantInstance.id.toString()
+                    id: restaurantInstance.id.toString(),
+                    isActive: restaurantInstance.isActive
                 }
             }
 
@@ -297,13 +298,15 @@ describe("Tests for Data Mappers", () => {
     
             const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDto): object => {
                 return {
-                    id: restaurantDto.id
+                    id: restaurantDto.id,
+                    isActive: restaurantDto.isActive
                 }
             }
 
             const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
                 return {
-                    id: restaurantInstance.id.toString()
+                    id: restaurantInstance.id.toString(),
+                    isActive: restaurantInstance.isActive
                 }
             }
             

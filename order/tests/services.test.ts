@@ -216,13 +216,15 @@ describe("Tests for Services", () => {
             const restaurantCreateInputDto = generateRestaurantCreateInputDto(restaurantManager.id)
 
             const expectedResult = {
-                ...restaurantCreateInputDto
+                ...restaurantCreateInputDto,
+                restaurantManagerId: undefined
             }
             
             const restaurantCreateOutputDto = await restaurantService.create(restaurantCreateInputDto)
 
             const result = {
-                id: BigInt(restaurantCreateOutputDto.id)
+                id: BigInt(restaurantCreateOutputDto.id),
+                isActive: restaurantCreateOutputDto.isActive
             }
 
             expect(result).toEqual(expectedResult)
@@ -234,7 +236,8 @@ describe("Tests for Services", () => {
             })
 
             const instanceResult = {
-                id: restaurantInstance?.id
+                id: restaurantInstance?.id,
+                isActive: restaurantInstance?.isActive,
             }
 
             expect(instanceResult).toEqual(expectedResult)
