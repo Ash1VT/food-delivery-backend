@@ -4,5 +4,6 @@ from .base import *
 from .customer import *
 from .courier import *
 from .menu_item import *
+from .order import *
 from .restaurant import *
 from .review import *
