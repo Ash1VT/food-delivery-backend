@@ -24,6 +24,50 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def retrieve_by_order(self, order_id: int) -> Optional[ReviewModel]:
+        """
+        Retrieve a review by its order ID.
+
+        Args:
+            order_id (int): The ID of the order.
+
+        Returns:
+            Optional[ReviewModel]: The retrieved review or None if not found.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    async def retrieve_by_customer_and_restaurant(self, customer_id: int, restaurant_id: int) -> Optional[ReviewModel]:
+        """
+        Retrieve a review by customer and restaurant IDs.
+
+        Args:
+            customer_id (int): The ID of the customer.
+            restaurant_id (int): The ID of the restaurant.
+
+        Returns:
+            Optional[ReviewModel]: The retrieved review or None if not found.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    async def retrieve_by_customer_and_menu_item(self, customer_id: int, menu_item_id: int) -> Optional[ReviewModel]:
+        """
+        Retrieve a review by customer and menu item IDs.
+
+        Args:
+            customer_id (int): The ID of the customer.
+            menu_item_id (int): The ID of the menu item.
+
+        Returns:
+            Optional[ReviewModel]: The retrieved review or None if not found.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
     async def list_courier_reviews(self, courier_id: int) -> List[ReviewModel]:
         """
         List all reviews for a courier.
