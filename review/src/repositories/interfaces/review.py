@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, List
 
 from models.review import ReviewModel, ReviewCreateModel, ReviewUpdateModel
 
@@ -19,6 +19,48 @@ class IReviewRepository(ABC):
 
         Returns:
             Optional[ReviewModel]: The retrieved review or None if not found.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_courier_reviews(self, courier_id: int) -> List[ReviewModel]:
+        """
+        List all reviews for a courier.
+
+        Args:
+            courier_id (int): The ID of the courier.
+
+        Returns:
+            List[ReviewModel]: The list of reviews.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_restaurant_reviews(self, restaurant_id: int) -> List[ReviewModel]:
+        """
+        List all reviews for a restaurant.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+
+        Returns:
+            List[ReviewModel]: The list of reviews.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_menu_item_reviews(self, menu_item_id: int) -> List[ReviewModel]:
+        """
+        List all reviews for a menu item.
+
+        Args:
+            menu_item_id (int): The ID of the menu item.
+
+        Returns:
+            List[ReviewModel]: The list of reviews.
         """
 
         raise NotImplementedError

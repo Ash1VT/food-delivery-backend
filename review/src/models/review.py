@@ -21,7 +21,7 @@ class ReviewModel(ReviewBaseModel):
 
     id: int
     customer_id: Optional[int]
-    courier_id: Optional[int]
+    order_id: Optional[int]
     restaurant_id: Optional[int]
     menu_item_id: Optional[int]
     created_at: str
@@ -34,7 +34,7 @@ class ReviewCreateModel(ReviewBaseModel):
     """
 
     customer_id: Optional[int]
-    courier_id: Optional[int]
+    order_id: Optional[int]
     restaurant_id: Optional[int]
     menu_item_id: Optional[int]
 

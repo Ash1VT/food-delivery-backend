@@ -18,7 +18,7 @@ class Review(Base):
     comment = Column(String, nullable=False)
 
     customer_id = Column(BigInteger, ForeignKey('customers.id', name='fk_customer_id'), nullable=False)
-    courier_id = Column(BigInteger, ForeignKey('couriers.id', name='fk_courier_id'), nullable=True)
+    order_id = Column(BigInteger, ForeignKey('orders.id', name='fk_order_id'), nullable=True, unique=True)
     restaurant_id = Column(BigInteger, ForeignKey('restaurants.id', name='fk_restaurant_id'), nullable=True)
     menu_item_id = Column(BigInteger, ForeignKey('menu_items.id', name='fk_menu_item_id'), nullable=True)
 

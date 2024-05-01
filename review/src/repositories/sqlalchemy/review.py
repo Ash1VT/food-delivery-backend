@@ -1,9 +1,9 @@
 from dataclasses import asdict
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import Delete, delete, update, insert, Insert, Update, Select, select
 
-from db.sqlalchemy.models import Review
+from db.sqlalchemy.models import Review, Order
 from models.review import ReviewUpdateModel, ReviewModel, ReviewCreateModel
 from repositories.interfaces.review import IReviewRepository
 from repositories.sqlalchemy.base import SqlAlchemyRepository
@@ -27,6 +27,45 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
         """
 
         return select(Review).where(Review.id == id)
+
+    def _get_list_courier_reviews_stmt(self, courier_id: int) -> Select:
+        """
+        Create a SELECT statement to list all reviews for a courier.
+
+        Args:
+            courier_id (int): The ID of the courier.
+
+        Returns:
+            Select: The SELECT statement to list the reviews.
+        """
+
+        return select(Review).join(Order).where(Order.courier_id == courier_id)
+
+    def _get_list_restaurant_reviews_stmt(self, restaurant_id: int) -> Select:
+        """
+        Create a SELECT statement to list all reviews for a restaurant.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+
+        Returns:
+            Select: The SELECT statement to list the reviews.
+        """
+
+        return select(Review).where(Review.restaurant_id == restaurant_id)
+
+    def _get_list_menu_item_reviews_stmt(self, menu_item_id: int) -> Select:
+        """
+        Create a SELECT statement to list all reviews for a menu item.
+
+        Args:
+            menu_item_id (int): The ID of the menu item.
+
+        Returns:
+            Select: The SELECT statement to list the reviews.
+        """
+
+        return select(Review).where(Review.menu_item_id == menu_item_id)
 
     def _get_create_stmt(self, review: ReviewCreateModel) -> Insert:
         """
@@ -74,6 +113,24 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
         review = result.scalar_one_or_none()
         if review:
             return to_review_model(review)
+
+    async def list_courier_reviews(self, courier_id: int) -> List[ReviewModel]:
+        stmt = self._get_list_courier_reviews_stmt(courier_id)
+        result = await self._session.execute(stmt)
+        reviews = result.scalars().all()
+        return [to_review_model(review) for review in reviews]
+
+    async def list_restaurant_reviews(self, restaurant_id: int) -> List[ReviewModel]:
+        stmt = self._get_list_restaurant_reviews_stmt(restaurant_id)
+        result = await self._session.execute(stmt)
+        reviews = result.scalars().all()
+        return [to_review_model(review) for review in reviews]
+
+    async def list_menu_item_reviews(self, menu_item_id: int) -> List[ReviewModel]:
+        stmt = self._get_list_menu_item_reviews_stmt(menu_item_id)
+        result = await self._session.execute(stmt)
+        reviews = result.scalars().all()
+        return [to_review_model(review) for review in reviews]
 
     async def create(self, review: ReviewCreateModel) -> ReviewModel:
         stmt = self._get_create_stmt(review)
