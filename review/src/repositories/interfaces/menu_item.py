@@ -10,7 +10,7 @@ class IMenuItemRepository(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, id: int) -> Optional[MenuItemModel]:
+    async def retrieve(self, id: int) -> Optional[MenuItemModel]:
         """
         Retrieve a menu item by its ID.
 
@@ -24,7 +24,7 @@ class IMenuItemRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, menu_item: MenuItemCreateModel) -> MenuItemModel:
+    async def create(self, menu_item: MenuItemCreateModel) -> MenuItemModel:
         """
         Create a new menu item and return it.
 
@@ -38,7 +38,7 @@ class IMenuItemRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         """
         Delete a menu item by its ID.
 

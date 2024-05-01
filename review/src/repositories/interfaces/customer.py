@@ -10,7 +10,7 @@ class ICustomerRepository(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, id: int) -> Optional[CustomerModel]:
+    async def retrieve(self, id: int) -> Optional[CustomerModel]:
         """
         Retrieve a customer by its ID.
 
@@ -24,7 +24,7 @@ class ICustomerRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, customer: CustomerCreateModel) -> CustomerModel:
+    async def create(self, customer: CustomerCreateModel) -> CustomerModel:
         """
         Create a new customer and return it.
 
@@ -38,7 +38,7 @@ class ICustomerRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, id: int, customer: CustomerUpdateModel) -> Optional[CustomerModel]:
+    async def update(self, id: int, customer: CustomerUpdateModel) -> Optional[CustomerModel]:
         """
         Update a customer by its ID.
 
@@ -53,7 +53,7 @@ class ICustomerRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         """
         Delete a customer by its ID.
 

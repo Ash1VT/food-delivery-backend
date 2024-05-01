@@ -10,7 +10,7 @@ class IRestaurantRepository(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, id: int) -> Optional[RestaurantModel]:
+    async def retrieve(self, id: int) -> Optional[RestaurantModel]:
         """
         Retrieve a restaurant by its ID.
 
@@ -24,7 +24,7 @@ class IRestaurantRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, restaurant: RestaurantCreateModel) -> RestaurantModel:
+    async def create(self, restaurant: RestaurantCreateModel) -> RestaurantModel:
         """
         Create a new restaurant and return it.
 
@@ -38,7 +38,7 @@ class IRestaurantRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         """
         Delete a restaurant by its ID.
 

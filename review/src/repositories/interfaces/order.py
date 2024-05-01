@@ -10,7 +10,7 @@ class IOrderRepository(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, id: int) -> Optional[OrderModel]:
+    async def retrieve(self, id: int) -> Optional[OrderModel]:
         """
         Retrieve an order by its ID.
 
@@ -24,7 +24,7 @@ class IOrderRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, order: OrderCreateModel) -> OrderModel:
+    async def create(self, order: OrderCreateModel) -> OrderModel:
         """
         Create a new order and return it.
 
@@ -38,7 +38,7 @@ class IOrderRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         """
         Delete an order by its ID.
 

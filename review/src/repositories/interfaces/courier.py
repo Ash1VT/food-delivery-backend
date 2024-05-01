@@ -10,7 +10,7 @@ class ICourierRepository(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, id: int) -> Optional[CourierModel]:
+    async def retrieve(self, id: int) -> Optional[CourierModel]:
         """
         Retrieve a courier by its ID.
 
@@ -24,7 +24,7 @@ class ICourierRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, courier: CourierCreateModel) -> CourierModel:
+    async def create(self, courier: CourierCreateModel) -> CourierModel:
         """
         Create a new courier and return it.
 
@@ -38,7 +38,7 @@ class ICourierRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         """
         Delete a courier by its ID.
 

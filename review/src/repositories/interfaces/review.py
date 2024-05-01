@@ -10,7 +10,7 @@ class IReviewRepository(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, id: int) -> Optional[ReviewModel]:
+    async def retrieve(self, id: int) -> Optional[ReviewModel]:
         """
         Retrieve a review by its ID.
 
@@ -24,7 +24,7 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def list_courier_reviews(self, courier_id: int) -> List[ReviewModel]:
+    async def list_courier_reviews(self, courier_id: int) -> List[ReviewModel]:
         """
         List all reviews for a courier.
 
@@ -38,7 +38,7 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def list_restaurant_reviews(self, restaurant_id: int) -> List[ReviewModel]:
+    async def list_restaurant_reviews(self, restaurant_id: int) -> List[ReviewModel]:
         """
         List all reviews for a restaurant.
 
@@ -52,7 +52,7 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def list_menu_item_reviews(self, menu_item_id: int) -> List[ReviewModel]:
+    async def list_menu_item_reviews(self, menu_item_id: int) -> List[ReviewModel]:
         """
         List all reviews for a menu item.
 
@@ -66,7 +66,7 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, review: ReviewCreateModel) -> ReviewModel:
+    async def create(self, review: ReviewCreateModel) -> ReviewModel:
         """
         Create a new review and return it.
 
@@ -80,7 +80,7 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, id: int, review: ReviewUpdateModel) -> Optional[ReviewModel]:
+    async def update(self, id: int, review: ReviewUpdateModel) -> Optional[ReviewModel]:
         """
         Update a review by its ID.
 
@@ -95,7 +95,7 @@ class IReviewRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> None:
         """
         Delete a review by its ID.
 
