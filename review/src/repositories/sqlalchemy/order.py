@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
+from loguru import logger
 from sqlalchemy import Select, select, Insert, insert, Delete, delete
 
 from db.sqlalchemy.models import Order
@@ -58,15 +59,22 @@ class OrderRepository(IOrderRepository, SqlAlchemyRepository):
         stmt = self._get_retrieve_stmt(id)
         result = await self._session.execute(stmt)
         order = result.scalar_one_or_none()
+
         if order:
+            logger.debug(f"Retrieved order with id={order.id}")
             return to_order_model(order)
 
     async def create(self, order: OrderCreateModel) -> OrderModel:
         stmt = self._get_create_stmt(order)
         result = await self._session.execute(stmt)
         order = result.scalar_one()
+
+        logger.debug(f"Created order with id={order.id}")
+
         return to_order_model(order)
 
     async def delete(self, id: int) -> None:
         stmt = self._get_delete_stmt(id)
         await self._session.execute(stmt)
+
+        logger.debug(f"Deleted order with id={id}")

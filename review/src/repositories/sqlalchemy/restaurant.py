@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
+from loguru import logger
 from sqlalchemy import insert, select, delete, Delete, Insert, Select
 
 from db.sqlalchemy.models import Restaurant
@@ -58,15 +59,23 @@ class RestaurantRepository(IRestaurantRepository, SqlAlchemyRepository):
         stmt = self._get_retrieve_stmt(id)
         result = await self._session.execute(stmt)
         restaurant = result.scalar_one_or_none()
+
         if restaurant:
+            logger.debug(f"Retrieved restaurant with id={restaurant.id}")
             return to_restaurant_model(restaurant)
 
     async def create(self, restaurant: RestaurantCreateModel) -> RestaurantModel:
         stmt = self._get_create_stmt(restaurant)
         result = await self._session.execute(stmt)
         restaurant = result.scalar_one()
+
+        logger.debug(f"Created restaurant with id={restaurant.id}")
+
         return to_restaurant_model(restaurant)
 
     async def delete(self, id: int) -> None:
         stmt = self._get_delete_stmt(id)
         await self._session.execute(stmt)
+
+        logger.debug(f"Deleted restaurant with id={id}")
+

@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
+from loguru import logger
 from sqlalchemy import delete, insert, select, Select, Insert, Delete
 
 from db.sqlalchemy.models import MenuItem
@@ -58,15 +59,22 @@ class MenuItemRepository(IMenuItemRepository, SqlAlchemyRepository):
         stmt = self._get_retrieve_stmt(id)
         result = await self._session.execute(stmt)
         menu_item = result.scalar_one_or_none()
+
         if menu_item:
+            logger.debug(f"Retrieved menu item with id={menu_item.id}")
             return to_menu_item_model(menu_item)
 
     async def create(self, menu_item: MenuItemCreateModel) -> MenuItemModel:
         stmt = self._get_create_stmt(menu_item)
         result = await self._session.execute(stmt)
         menu_item = result.scalar_one()
+
+        logger.debug(f"Created menu item with id={menu_item.id}")
+
         return to_menu_item_model(menu_item)
 
     async def delete(self, id: int) -> None:
         stmt = self._get_delete_stmt(id)
         await self._session.execute(stmt)
+
+        logger.debug(f"Deleted menu item with id={id}")
