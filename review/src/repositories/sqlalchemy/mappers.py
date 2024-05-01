@@ -1,7 +1,8 @@
-from db.sqlalchemy.models import Review, Restaurant, MenuItem, Customer, Courier
+from db.sqlalchemy.models import Review, Restaurant, MenuItem, Customer, Courier, Order
 from models.courier import CourierModel
 from models.customer import CustomerModel
 from models.menu_item import MenuItemModel
+from models.order import OrderModel
 from models.restaurant import RestaurantModel
 from models.review import ReviewModel
 
@@ -88,8 +89,26 @@ def to_review_model(review: Review) -> ReviewModel:
         rating=review.rating,
         comment=review.comment,
         customer_id=review.customer_id,
-        courier_id=review.courier_id,
+        order_id=review.order_id,
         menu_item_id=review.menu_item_id,
         restaurant_id=review.restaurant_id,
         created_at=review.created_at,
+    )
+
+
+def to_order_model(order: Order) -> OrderModel:
+    """
+    Convert database model to order model.
+
+    Args:
+        order (Order): Database model.
+
+    Returns:
+        OrderModel: Order model.
+    """
+
+    return OrderModel(
+        id=order.id,
+        customer_id=order.customer_id,
+        courier_id=order.courier_id,
     )
