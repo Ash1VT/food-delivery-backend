@@ -5,12 +5,12 @@ from config import BASE_DIRECTORY
 
 simple_fmt = (
     "<level>{level}</level> "
-    "<cyan>{module}</cyan> "
+    "<cyan>{name}</cyan> "
     "<level>{message}</level>"
 )
 comprehensive_fmt = "{level} " \
                     "{time:YYYY-MM-DD HH:mm:ss} " \
-                    "{module}:{function}:{line} " \
+                    "{name}:{function}:{line} " \
                     "{message}"
 
 logger.remove()
@@ -21,7 +21,7 @@ logger.add(
     format=simple_fmt,
     colorize=True,
     backtrace=True,
-    diagnose=True
+    diagnose=True,
 )
 
 
