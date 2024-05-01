@@ -13,7 +13,7 @@ __all__ = [
 class Review(Base):
     __tablename__ = "reviews"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=False)
+    id = Column(BigInteger, primary_key=True)
     rating = Column(SmallInteger, nullable=False)
     comment = Column(String, nullable=False)
 
@@ -25,6 +25,6 @@ class Review(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     customer = relationship("Customer", uselist=False)
-    courier = relationship("Courier", uselist=False)
+    order = relationship("Order", uselist=False)
     restaurant = relationship("Restaurant", uselist=False)
     menu_item = relationship("MenuItem", uselist=False)
