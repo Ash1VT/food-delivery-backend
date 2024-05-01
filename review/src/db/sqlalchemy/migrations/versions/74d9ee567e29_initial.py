@@ -39,7 +39,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('reviews',
-    sa.Column('id', sa.BigInteger(), autoincrement=False, nullable=False),
+    sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('rating', sa.SmallInteger(), nullable=False),
     sa.Column('comment', sa.String(), nullable=False),
     sa.Column('customer_id', sa.BigInteger(), nullable=False),
