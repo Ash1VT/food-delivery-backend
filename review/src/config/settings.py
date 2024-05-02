@@ -11,8 +11,8 @@ class Settings(BaseSettings, ABC):
     web_app_host: str
     web_app_port: int
     reload: bool
-    # roles_grpc_server_host: str
-    # roles_grpc_server_port: str
+    roles_grpc_server_host: str
+    roles_grpc_server_port: str
     # kafka_bootstrap_server_host: str
     # kafka_bootstrap_server_port: int
     # kafka_sasl_mechanism: str = 'PLAIN'
