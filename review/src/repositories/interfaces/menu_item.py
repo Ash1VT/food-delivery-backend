@@ -1,49 +1,15 @@
-from abc import ABC, abstractmethod
-from typing import Optional
+from abc import ABC
 
 from models.menu_item import MenuItemModel, MenuItemCreateModel
+from repositories.interfaces.mixins import IDeleteMixin, ICreateMixin, IRetrieveMixin
 
 
-class IMenuItemRepository(ABC):
+class IMenuItemRepository(IRetrieveMixin[MenuItemModel],
+                          ICreateMixin[MenuItemModel, MenuItemCreateModel],
+                          IDeleteMixin,
+                          ABC):
     """
     Interface for menu item repository.
     """
 
-    @abstractmethod
-    async def retrieve(self, id: int) -> Optional[MenuItemModel]:
-        """
-        Retrieve a menu item by its ID.
-
-        Args:
-            id (int): The ID of the menu item to retrieve.
-
-        Returns:
-            Optional[MenuItemModel]: The retrieved menu item or None if not found.
-        """
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def create(self, menu_item: MenuItemCreateModel) -> MenuItemModel:
-        """
-        Create a new menu item and return it.
-
-        Args:
-            menu_item (MenuItemCreateModel): The menu item to create.
-
-        Returns:
-            MenuItemModel: The created menu item.
-        """
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def delete(self, id: int) -> None:
-        """
-        Delete a menu item by its ID.
-
-        Args:
-            id (int): The ID of the menu item to delete.
-        """
-
-        raise NotImplementedError
+    pass

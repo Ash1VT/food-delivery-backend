@@ -23,7 +23,7 @@ class RolesClient(object):
         # bind the client
         self.stub = pb2_grpc.RolesServiceStub(self.channel)
 
-    def get_user_role(self, access_token) -> pb2.GetUserRoleResponse:
+    def get_user_role(self, access_token: str) -> pb2.GetUserRoleResponse:
         request = pb2.GetUserRoleRequest(access_token=access_token)
         response = self.stub.GetUserRole(request)
 

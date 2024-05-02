@@ -1,29 +1,29 @@
-from typing import Union
+from typing import Any, List
 
 from loguru import logger
 
 from grpc_files.generated.roles.roles_pb2 import UserRole as GrpcUserRole
-from repositories.interfaces.courier import ICourierRepository
-from repositories.interfaces.customer import ICustomerRepository
+from roles import UserRole
 from uow.generic import GenericUnitOfWork
 
 
-def get_repository(role: GrpcUserRole, uow: GenericUnitOfWork) -> Union[ICustomerRepository, ICourierRepository, None]:
+def get_repository(role: GrpcUserRole,
+                   uow: GenericUnitOfWork,
+                   app_roles: List[UserRole]) -> Any:
     """
     Returns the appropriate repository based on the given role.
 
     Args:
         role (UserRole): The role of the user.
         uow (GenericUnitOfWork): The unit of work object for interacting with the database.
+        app_roles (List[UserRole]): The list of supported roles in the application.
 
     Returns:
-        Union[ICustomerRepository, ICourierRepository, None]: The appropriate repository for the given role
-        or None if the role is not supported.
+        Any: The appropriate repository for the given role or None if the role is not supported.
     """
 
-    if role == GrpcUserRole.USER_ROLE_CUSTOMER:
-        return uow.customers
-    elif role == GrpcUserRole.USER_ROLE_COURIER:
-        return uow.couriers
+    for role_type in app_roles:
+        if role_type.get_grpc_role() == role:
+            return role_type.get_repository(uow)
 
     logger.warning(f"Unknown role type: {str(role)}")

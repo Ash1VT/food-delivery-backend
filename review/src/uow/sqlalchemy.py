@@ -1,5 +1,4 @@
 from typing import Callable
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from repositories.sqlalchemy.courier import CourierRepository

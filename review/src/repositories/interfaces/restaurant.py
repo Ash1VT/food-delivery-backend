@@ -1,49 +1,15 @@
-from abc import ABC, abstractmethod
-from typing import Optional
+from abc import ABC
 
 from models.restaurant import RestaurantModel, RestaurantCreateModel
+from repositories.interfaces.mixins import IRetrieveMixin, ICreateMixin, IDeleteMixin
 
 
-class IRestaurantRepository(ABC):
+class IRestaurantRepository(IRetrieveMixin[RestaurantModel],
+                            ICreateMixin[RestaurantModel, RestaurantCreateModel],
+                            IDeleteMixin,
+                            ABC):
     """
     Interface for restaurant repository.
     """
 
-    @abstractmethod
-    async def retrieve(self, id: int) -> Optional[RestaurantModel]:
-        """
-        Retrieve a restaurant by its ID.
-
-        Args:
-            id (int): The ID of the restaurant to retrieve.
-
-        Returns:
-            Optional[RestaurantModel]: The retrieved restaurant or None if not found.
-        """
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def create(self, restaurant: RestaurantCreateModel) -> RestaurantModel:
-        """
-        Create a new restaurant and return it.
-
-        Args:
-            restaurant (RestaurantCreateModel): The restaurant to create.
-
-        Returns:
-            RestaurantModel: The created restaurant.
-        """
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def delete(self, id: int) -> None:
-        """
-        Delete a restaurant by its ID.
-
-        Args:
-            id (int): The ID of the restaurant to delete.
-        """
-
-        raise NotImplementedError
+    pass

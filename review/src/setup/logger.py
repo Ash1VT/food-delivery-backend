@@ -1,7 +1,7 @@
 import sys
 
 from loguru import logger
-from config import BASE_DIRECTORY
+from config.directories import BASE_DIRECTORY
 
 simple_fmt = (
     "<level>{level}</level> "
