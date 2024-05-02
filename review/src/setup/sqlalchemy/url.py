@@ -1,6 +1,6 @@
-from config import get_settings
+from setup.settings.server import get_server_settings
 
-settings = get_settings()
+settings = get_server_settings()
 
 # Database URL #
 

@@ -1,22 +1,11 @@
-from dataclasses import asdict
-
-from sqlalchemy import insert
-
-from db.sqlalchemy.models import Customer
-from db.sqlalchemy.session import get_async_session, async_session_maker
 from models.courier import CourierCreateModel
-from models.customer import CustomerCreateModel, CustomerUpdateModel
+from models.customer import CustomerCreateModel
 from models.order import OrderCreateModel
-from models.review import ReviewCreateModel
-from repositories.sqlalchemy.courier import CourierRepository
-from repositories.sqlalchemy.customer import CustomerRepository
-from repositories.sqlalchemy.order import OrderRepository
-from repositories.sqlalchemy.review import ReviewRepository
 from schemas.review import ReviewCreateInSchema
 from services.review import ReviewService
-from setup import app, start_app
-from config import get_settings
-from setup.logger import logger
+from setup.app import app
+from setup.sqlalchemy.session import async_session_maker
+from setup.utils import start_app
 from uow.sqlalchemy import SqlAlchemyUnitOfWork
 
 
@@ -52,5 +41,4 @@ async def root(review_schema: ReviewCreateInSchema):
 
 
 if __name__ == "__main__":
-    settings = get_settings()
-    start_app(settings)
+    start_app()
