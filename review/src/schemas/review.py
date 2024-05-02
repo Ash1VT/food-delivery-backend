@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -19,10 +20,10 @@ class ReviewRetrieveOutSchema(BaseModel):
 
     id: int = Field(ge=0, examples=[1, 2, 3, 4, 5])
     customer_id: int = Field(ge=0, examples=[1, 2, 3, 4, 5])
-    courier_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
+    order_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
     restaurant_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
     menu_item_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
-    created_at: str = Field(examples=["2022-01-01T00:00:00Z"])
+    created_at: datetime = Field(examples=[datetime.now()])
 
     model_config = {
         "from_attributes": True
@@ -34,10 +35,11 @@ class ReviewCreateInSchema(ReviewBaseSchema):
     Schema class for input data when creating a review.
     """
 
-    customer_id: int = Field(ge=0, examples=[1, 2, 3, 4, 5])
-    courier_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
-    restaurant_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
-    menu_item_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
+    pass
+    # customer_id: int = Field(ge=0, examples=[1, 2, 3, 4, 5])
+    # order_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
+    # restaurant_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
+    # menu_item_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
 
 
 class ReviewCreateOutSchema(ReviewRetrieveOutSchema):

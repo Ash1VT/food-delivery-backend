@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
+from loguru import logger
 from sqlalchemy import Select, select, Insert, insert, Delete, delete, Update
 
 from db.sqlalchemy.models import Courier
@@ -58,15 +59,22 @@ class CourierRepository(ICourierRepository, SqlAlchemyRepository):
         stmt = self._get_retrieve_stmt(id)
         result = await self._session.execute(stmt)
         courier = result.scalar_one_or_none()
+
         if courier:
+            logger.debug(f"Retrieved courier with id={courier.id}")
             return to_courier_model(courier)
 
     async def create(self, courier: CourierCreateModel) -> CourierModel:
         stmt = self._get_create_stmt(courier)
         result = await self._session.execute(stmt)
         courier = result.scalar_one()
+
+        logger.debug(f"Created courier with id={courier.id}")
+
         return to_courier_model(courier)
 
     async def delete(self, id: int) -> None:
         stmt = self._get_delete_stmt(id)
         await self._session.execute(stmt)
+
+        logger.debug(f"Deleted courier with id={id}")

@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
+from loguru import logger
 from sqlalchemy import Delete, Select, Insert, select, insert, delete, Update, update
 
 from db.sqlalchemy.models import Customer
@@ -72,22 +73,31 @@ class CustomerRepository(ICustomerRepository, SqlAlchemyRepository):
         stmt = self._get_retrieve_stmt(id)
         result = await self._session.execute(stmt)
         customer = result.scalar_one_or_none()
+
         if customer:
+            logger.debug(f"Retrieved customer with id={customer.id}")
             return to_customer_model(customer)
 
     async def create(self, customer: CustomerCreateModel) -> CustomerModel:
         stmt = self._get_create_stmt(customer)
         result = await self._session.execute(stmt)
         customer = result.scalar_one()
+
+        logger.debug(f"Created customer with id={customer.id}")
+
         return to_customer_model(customer)
 
     async def update(self, id: int, customer: CustomerUpdateModel) -> Optional[CustomerModel]:
         stmt = self._get_update_stmt(id, customer)
         result = await self._session.execute(stmt)
         customer = result.scalar_one_or_none()
+
         if customer:
+            logger.debug(f"Updated customer with id={customer.id}")
             return to_customer_model(customer)
 
     async def delete(self, id: int) -> None:
         stmt = self._get_delete_stmt(id)
         await self._session.execute(stmt)
+
+        logger.debug(f"Deleted customer with id={id}")

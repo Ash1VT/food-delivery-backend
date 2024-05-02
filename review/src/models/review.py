@@ -1,5 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
@@ -20,11 +21,11 @@ class ReviewModel(ReviewBaseModel):
     """
 
     id: int
-    customer_id: Optional[int]
-    courier_id: Optional[int]
+    customer_id: int
+    order_id: Optional[int]
     restaurant_id: Optional[int]
     menu_item_id: Optional[int]
-    created_at: str
+    created_at: datetime
 
 
 @dataclass
@@ -33,10 +34,10 @@ class ReviewCreateModel(ReviewBaseModel):
     Model for creating a review.
     """
 
-    customer_id: Optional[int]
-    courier_id: Optional[int]
-    restaurant_id: Optional[int]
-    menu_item_id: Optional[int]
+    customer_id: int
+    order_id: Optional[int] = None
+    restaurant_id: Optional[int] = None
+    menu_item_id: Optional[int] = None
 
 
 @dataclass
