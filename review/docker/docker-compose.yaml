@@ -1,0 +1,56 @@
+version: '3.6'
+name: 'review'
+
+services:
+    db:
+        image: postgres:15.4-alpine
+        container_name: review-postgres
+        ports:
+          - "5436:5432"
+        volumes:
+          - ~/apps/postgres/review:/var/lib/postgresql/data
+        environment:
+          - PGPORT=5436
+          - POSTGRES_USER=${PG_USER}
+          - POSTGRES_PASSWORD=${PG_PASSWORD}
+          - POSTGRES_DB=review
+        expose:
+          - "5436"
+        networks:
+          - review_network
+    app:
+        build:
+          context: ../
+          dockerfile: ./docker/app/Dockerfile
+        container_name: reviews-app
+        ports:
+          - "8004:8004"
+        environment:
+          - CONFIGURATION=Develop
+          - WEB_APP_HOST=0.0.0.0
+          - WEB_APP_PORT=8004
+          - ROLES_GRPC_SERVER_HOST=user-app
+          - ROLES_GRPC_SERVER_PORT=50051
+          - PG_HOST=db
+          - PG_PORT=5436
+          - PG_DATABASE=review
+          - PG_USER=${PG_USER}
+          - PG_PASSWORD=${PG_PASSWORD}
+          - KAFKA_BOOTSTRAP_SERVER_HOST=kafka
+          - KAFKA_BOOTSTRAP_SERVER_PORT=9092
+          - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
+          - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
+        depends_on:
+          - db
+        networks:
+          - review_network
+          - user_grpc_network
+          - kafka_kafka_network
+
+
+networks:
+  kafka_kafka_network:
+    external: true
+  user_grpc_network:
+    external: true
+  review_network:
