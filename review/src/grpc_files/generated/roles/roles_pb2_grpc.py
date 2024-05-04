@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import roles_pb2 as roles_dot_roles__pb2
+from grpc_files.generated.roles import roles_pb2 as roles_dot_roles__pb2
 
 GRPC_GENERATED_VERSION = '1.63.0'
 GRPC_VERSION = grpc.__version__

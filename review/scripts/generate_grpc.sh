@@ -12,4 +12,4 @@ if [ -d $OUT_DIR ];
 fi
 
 venv/Scripts/python.exe -m grpc_tools.protoc -I./protos --python_out=$OUT_DIR --pyi_out=$OUT_DIR --grpc_python_out=$OUT_DIR "$IN_DIR"/roles.proto
-sed -i 's/from roles //g' "$OUT_DIR"/**/*.py
+sed -i 's/from roles/from grpc_files.generated.roles/g' "$OUT_DIR"/**/*.py
