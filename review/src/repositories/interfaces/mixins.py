@@ -32,12 +32,12 @@ class ICreateMixin(Generic[Model, CreateModel], ABC):
     """
 
     @abstractmethod
-    async def create(self, order: CreateModel) -> Model:
+    async def create(self, data: CreateModel) -> Model:
         """
         Create a new record and return it.
 
         Args:
-            order (CreateModel): The record to create.
+            data (CreateModel): The data to create the record.
 
         Returns:
             Model: The created record.
@@ -52,13 +52,13 @@ class IUpdateMixin(Generic[Model, UpdateModel], ABC):
     """
 
     @abstractmethod
-    async def update(self, id: int, customer: UpdateModel) -> Optional[Model]:
+    async def update(self, id: int, data: UpdateModel) -> Optional[Model]:
         """
         Update a record by its ID.
 
         Args:
             id (int): The ID of the record to update.
-            customer (UpdateModel): The updated record data.
+            data (UpdateModel): The data to update the record.
 
         Returns:
             Optional[Model]: The updated record or None if not found.
