@@ -9,7 +9,7 @@ __all__ = [
 
 
 @asynccontextmanager
-async def uow_transaction(uow: GenericUnitOfWork):
+async def uow_transaction(uow: GenericUnitOfWork) -> GenericUnitOfWork:
     """
     Context manager for a unit of work (UOW) transaction.
 
@@ -33,7 +33,7 @@ async def uow_transaction(uow: GenericUnitOfWork):
 
 
 @asynccontextmanager
-async def uow_transaction_with_commit(uow: GenericUnitOfWork):
+async def uow_transaction_with_commit(uow: GenericUnitOfWork) -> GenericUnitOfWork:
     """
     Context manager for a unit of work (UOW) transaction with manual commit.
 
