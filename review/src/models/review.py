@@ -22,6 +22,8 @@ class ReviewModel(ReviewBaseModel):
 
     id: int
     customer_id: int
+    customer_full_name: str
+    customer_image_url: str
     order_id: Optional[int]
     restaurant_id: Optional[int]
     menu_item_id: Optional[int]

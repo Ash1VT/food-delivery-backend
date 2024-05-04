@@ -19,6 +19,8 @@ class ReviewRetrieveOutSchema(BaseModel):
     """
 
     id: int = Field(ge=0, examples=[1, 2, 3, 4, 5])
+    customer_full_name: str = Field(max_length=255, examples=["John Doe", "Bill Clinton"])
+    customer_image_url: Optional[str] = Field(max_length=255, examples=["https://example.com/image.jpg"])
     customer_id: int = Field(ge=0, examples=[1, 2, 3, 4, 5])
     order_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
     restaurant_id: Optional[int] = Field(ge=0, examples=[1, 2, 3, 4, 5])
