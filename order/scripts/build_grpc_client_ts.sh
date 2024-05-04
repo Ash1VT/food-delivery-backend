@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 PROTOC="$(yarn bin)/grpc_tools_node_protoc"
 
