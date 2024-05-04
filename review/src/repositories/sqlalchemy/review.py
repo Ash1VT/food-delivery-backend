@@ -4,7 +4,7 @@ from typing import Optional, List
 from loguru import logger
 from sqlalchemy import Delete, delete, update, insert, Insert, Update, Select, select
 
-from db.sqlalchemy.models import Review, Order
+from db.sqlalchemy.models import Review, Order, Customer
 from models.review import ReviewUpdateModel, ReviewModel, ReviewCreateModel
 from repositories.interfaces.review import IReviewRepository
 from repositories.sqlalchemy.base import SqlAlchemyRepository
@@ -15,6 +15,19 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
     """
     SQLAlchemy implementation of the review repository.
     """
+
+    def _get_base_retrieve_stmt(self) -> Select:
+        """
+        Create a base SELECT statement to retrieve reviews.
+
+        Returns:
+            Select: The base SELECT statement to retrieve reviews.
+        """
+
+        return select(Review,
+                      Customer.full_name.label("customer_full_name"),
+                      Customer.image_url.label("customer_image_url").
+                join(Customer, Customer.id == Review.customer_id))
 
     def _get_retrieve_stmt(self, id: int) -> Select:
         """
@@ -27,7 +40,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to retrieve the review.
         """
 
-        return select(Review).where(Review.id == id)
+        return self._get_base_retrieve_stmt().where(Review.id == id)
 
     def _get_retrieve_by_order_stmt(self, order_id: int) -> Select:
         """
@@ -40,7 +53,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to retrieve the review.
         """
 
-        return select(Review).where(Review.order_id == order_id)
+        return self._get_base_retrieve_stmt().where(Review.order_id == order_id)
 
     def _get_retrieve_by_customer_and_restaurant_stmt(self, customer_id: int, restaurant_id: int) -> Select:
         """
@@ -54,7 +67,8 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to retrieve the review.
         """
 
-        return select(Review).where(Review.customer_id == customer_id, Review.restaurant_id == restaurant_id)
+        return (self._get_base_retrieve_stmt().
+                where(Review.customer_id == customer_id, Review.restaurant_id == restaurant_id))
 
     def _get_retrieve_by_customer_and_menu_item_stmt(self, customer_id: int, menu_item_id: int) -> Select:
         """
@@ -68,7 +82,8 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to retrieve the review.
         """
 
-        return select(Review).where(Review.customer_id == customer_id, Review.menu_item_id == menu_item_id)
+        return (self._get_base_retrieve_stmt().
+                where(Review.customer_id == customer_id, Review.menu_item_id == menu_item_id))
 
     def _get_list_courier_reviews_stmt(self, courier_id: int) -> Select:
         """
@@ -81,7 +96,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to list the reviews.
         """
 
-        return select(Review).join(Order).where(Order.courier_id == courier_id)
+        return self._get_base_retrieve_stmt().join(Order).where(Order.courier_id == courier_id)
 
     def _get_list_restaurant_reviews_stmt(self, restaurant_id: int) -> Select:
         """
@@ -94,7 +109,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to list the reviews.
         """
 
-        return select(Review).where(Review.restaurant_id == restaurant_id)
+        return self._get_base_retrieve_stmt().where(Review.restaurant_id == restaurant_id)
 
     def _get_list_menu_item_reviews_stmt(self, menu_item_id: int) -> Select:
         """
@@ -107,7 +122,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The SELECT statement to list the reviews.
         """
 
-        return select(Review).where(Review.menu_item_id == menu_item_id)
+        return self._get_base_retrieve_stmt().where(Review.menu_item_id == menu_item_id)
 
     def _get_create_stmt(self, review: ReviewCreateModel) -> Insert:
         """
