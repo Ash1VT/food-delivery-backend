@@ -5,6 +5,8 @@ from loguru import logger
 from exceptions.base import PermissionDeniedError
 from exceptions.courier import CourierOwnershipError
 from exceptions.customer import CustomerOwnershipError
+from exceptions.menu_item import MenuItemNotFoundError
+from exceptions.restaurant import RestaurantNotFoundError
 from exceptions.review import ReviewAlreadyExistsError, ReviewNotFoundError
 from models.courier import CourierModel
 from models.customer import CustomerModel
@@ -41,6 +43,13 @@ class ReviewService(IReviewService):
         return [ReviewRetrieveOutSchema.model_validate(review) for review in courier_review_models]
 
     async def get_restaurant_reviews(self, restaurant_id: int, uow: GenericUnitOfWork) -> List[ReviewRetrieveOutSchema]:
+
+        restaurant = await uow.restaurants.retrieve(restaurant_id)
+
+        if not restaurant:
+            logger.warning(f"Restaurant with id={restaurant_id} does not exist.")
+            raise RestaurantNotFoundError(restaurant_id)
+
         restaurant_review_models = await uow.reviews.list_restaurant_reviews(restaurant_id)
 
         logger.info(f"Retrieved list of restaurant reviews with restaurant_id={restaurant_id}.")
@@ -48,6 +57,13 @@ class ReviewService(IReviewService):
         return [ReviewRetrieveOutSchema.model_validate(review) for review in restaurant_review_models]
 
     async def get_menu_item_reviews(self, menu_item_id: int, uow: GenericUnitOfWork) -> List[ReviewRetrieveOutSchema]:
+
+        menu_item = await uow.menu_items.retrieve(menu_item_id)
+
+        if not menu_item:
+            logger.warning(f"Menu item with id={menu_item_id} does not exist.")
+            raise MenuItemNotFoundError(menu_item_id)
+
         menu_item_review_models = await uow.reviews.list_menu_item_reviews(menu_item_id)
 
         logger.info(f"Retrieved list of menu item reviews with menu_item_id={menu_item_id}.")
