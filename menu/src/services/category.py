@@ -5,7 +5,7 @@ from exceptions.category import MenuCategoryNotFoundWithIdError
 from exceptions.item import MenuItemNotFoundWithIdError, MenuItemAlreadyInCategoryError, MenuItemNotInCategoryError
 from exceptions.permissions import PermissionDeniedError
 from models import RestaurantManager, MenuCategory
-from roles import RestaurantManagerRole
+from user_roles import RestaurantManagerRole
 from schemas.category import MenuCategoryCreateIn, MenuCategoryUpdateIn, MenuCategoryCreateOut, MenuCategoryUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant

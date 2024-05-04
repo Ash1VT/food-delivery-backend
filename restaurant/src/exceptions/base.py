@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from typing import Any, Type
 
 from models import CustomBase
-from roles import UserRole
+from user_roles import UserRole
 
 __all__ = [
     'AppError',

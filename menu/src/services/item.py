@@ -4,7 +4,9 @@ from models import RestaurantManager, MenuItem
 from exceptions.item import MenuItemNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
-from roles import RestaurantManagerRole
+from producer import publisher
+from producer.events import MenuItemCreatedEvent, MenuItemDeletedEvent, MenuItemUpdatedEvent
+from user_roles import RestaurantManagerRole
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, MenuItemUpdateIn, MenuItemUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
@@ -71,7 +73,17 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Create
         data = item.model_dump()
-        return await uow.items.create(data, **kwargs)
+        created_item = await uow.items.create(data, **kwargs)
+
+        publisher.publish(MenuItemCreatedEvent(
+            id=created_item.id,
+            name=created_item.name,
+            image_url=created_item.image_url,
+            price=created_item.price,
+            restaurant_id=created_item.restaurant_id
+        ))
+
+        return created_item
 
     async def update_instance(self, id: int, item: MenuItemUpdateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
         """
@@ -105,7 +117,16 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Update
         data = item.model_dump()
-        return await uow.items.update(id, data, **kwargs)
+        updated_item = await uow.items.update(id, data, **kwargs)
+
+        publisher.publish(MenuItemUpdatedEvent(
+            id=updated_item.id,
+            name=updated_item.name,
+            image_url=updated_item.image_url,
+            price=updated_item.price,
+        ))
+
+        return updated_item
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -135,6 +156,10 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Delete
         await uow.items.delete(id, **kwargs)
+
+        publisher.publish(
+            MenuItemDeletedEvent(id=id)
+        )
 
     async def list_restaurant_items_instances(self, restaurant_id: int,
                                               uow: SqlAlchemyUnitOfWork,

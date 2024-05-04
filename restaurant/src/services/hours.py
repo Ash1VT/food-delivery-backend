@@ -4,7 +4,7 @@ from exceptions import WorkingHoursNotFoundWithIdError, WorkingHoursAlreadyExist
     WorkingHoursTimeConflictError, \
     PermissionDeniedError, RestaurantNotFoundWithIdError
 from models import WorkingHours, RestaurantManager
-from roles import RestaurantManagerRole
+from user_roles import RestaurantManagerRole
 from schemas import WorkingHoursUpdateIn, WorkingHoursCreateIn, WorkingHoursCreateOut, WorkingHoursUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant

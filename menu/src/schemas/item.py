@@ -23,6 +23,7 @@ class MenuItemBase(BaseModel, ABC):
 
     name: str = Field(min_length=1, max_length=100)
     description: Optional[str] = Field(min_length=1, max_length=1000)
+    image_url: str
     price: int = Field(gt=0)
 
 
