@@ -5,10 +5,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from config import get_settings
 from db.sqlalchemy.models import Base
+from setup.settings.server import get_server_settings
 
-settings = get_settings()
+settings = get_server_settings()
 
 config = context.config
 
