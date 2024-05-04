@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Type
 
 from loguru import logger
 
@@ -9,14 +9,14 @@ from uow.generic import GenericUnitOfWork
 
 def get_repository(role: GrpcUserRole,
                    uow: GenericUnitOfWork,
-                   app_roles: List[UserRole]) -> Any:
+                   app_roles: List[Type[UserRole]]) -> Any:
     """
     Returns the appropriate repository based on the given role.
 
     Args:
         role (UserRole): The role of the user.
         uow (GenericUnitOfWork): The unit of work object for interacting with the database.
-        app_roles (List[UserRole]): The list of supported roles in the application.
+        app_roles (List[Type[UserRole]]): The list of supported roles in the application.
 
     Returns:
         Any: The appropriate repository for the given role or None if the role is not supported.

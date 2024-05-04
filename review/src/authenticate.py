@@ -1,4 +1,4 @@
-from typing import Optional, Union, Dict, Any, List
+from typing import Optional, Union, Dict, Any, List, Type
 
 from fastapi import HTTPException
 from grpc import RpcError
@@ -14,7 +14,7 @@ from uow.generic import GenericUnitOfWork
 async def authenticate(access_token: Optional[str],
                        uow: GenericUnitOfWork,
                        grpc_roles_client: RolesClient,
-                       app_roles: List[UserRole]) -> Any:
+                       app_roles: List[Type[UserRole]]) -> Any:
     """
     Authenticates a user using an access token via grpc request to User microservice
     and returns the corresponding user object.
@@ -23,7 +23,7 @@ async def authenticate(access_token: Optional[str],
         access_token (Optional[str]): The access token used for authentication.
         uow (GenericUnitOfWork): The unit of work object for interacting with the database.
         grpc_roles_client (RolesClient): The gRPC client for interacting with the User microservice.
-        app_roles (List[UserRole]): The list of supported roles in the application.
+        app_roles (List[Type[UserRole]]): The list of supported roles in the application.
 
     Returns:
         Any: The user object if authentication is successful,
@@ -35,6 +35,7 @@ async def authenticate(access_token: Optional[str],
 
     try:
         if not access_token or len(access_token) == 0:
+            logger.info("Authenticated as anonymous user")
             return
 
         grpc_response = grpc_roles_client.get_user_role(access_token)
@@ -42,6 +43,7 @@ async def authenticate(access_token: Optional[str],
         repository = get_repository(grpc_response.role, uow, app_roles)
 
         if repository is None:
+            logger.info("Authenticated as anonymous user")
             return
 
         user_id = int(grpc_response.user_id)
