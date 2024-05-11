@@ -1,5 +1,8 @@
 from typing import Optional
 
+from fastapi import UploadFile
+
+from config import get_settings
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.category import MenuCategoryNotFoundWithIdError
 from exceptions.item import MenuItemNotFoundWithIdError, MenuItemAlreadyInCategoryError, MenuItemNotInCategoryError
@@ -9,6 +12,7 @@ from user_roles import RestaurantManagerRole
 from schemas.category import MenuCategoryCreateIn, MenuCategoryUpdateIn, MenuCategoryCreateOut, MenuCategoryUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
+from utils.firebase import upload_menu_category_image_to_firebase
 from .mixins import CreateMixin, UpdateMixin, DeleteMixin
 
 __all__ = [
@@ -75,6 +79,8 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Create
         data = item.model_dump()
+        settings = get_settings()
+        data['image_url'] = settings.default_menu_category_image_url
         return await uow.categories.create(data, **kwargs)
 
     async def update_instance(self, id: int, item: MenuCategoryUpdateIn,
@@ -243,3 +249,27 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Remove
         menu_category.items.remove(item)
+
+    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
+
+        # Permission checks
+        if not self._restaurant_manager:
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check category for existence
+        if not await uow.categories.exists(id):
+            raise MenuCategoryNotFoundWithIdError(id)
+
+        # Get restaurant by category
+        restaurant = await uow.restaurants.retrieve_by_category(id)
+
+        # Check if restaurant manager owns a menu category
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant.id)
+
+        # Get image url
+        image_url = upload_menu_category_image_to_firebase(id, image)
+
+        # Upload image
+        await uow.categories.update(id, {
+            'image_url': image_url
+        })

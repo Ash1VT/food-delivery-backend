@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 
 from decorators import handle_app_errors
 from dependencies import get_uow_with_commit, get_menu_category_service
@@ -54,4 +54,18 @@ async def remove_item_from_category(category_id: int,
                                     menu_category_service: MenuCategoryService = Depends(get_menu_category_service),
                                     uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
     await menu_category_service.remove_menu_item(category_id, item_id, uow)
+    return {}
+
+
+@router.put('/{category_id}/image')
+@handle_app_errors
+async def upload_category_image(category_id: int,
+                                image: UploadFile = File(...),
+                                menu_category_service: MenuCategoryService = Depends(get_menu_category_service),
+                                uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    # Check if the uploaded file is an image
+    if not image.content_type.startswith('image'):
+        raise HTTPException(status_code=400, detail="Uploaded file is not an image")
+
+    await menu_category_service.upload_image(category_id, image, uow)
     return {}

@@ -1,5 +1,8 @@
 from typing import Optional, List
 
+from fastapi import UploadFile
+
+from config import get_settings
 from models import RestaurantManager, MenuItem
 from exceptions.item import MenuItemNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError
@@ -10,6 +13,7 @@ from user_roles import RestaurantManagerRole
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, MenuItemUpdateIn, MenuItemUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
+from utils.firebase import upload_menu_item_image_to_firebase
 from .mixins import CreateMixin, UpdateMixin, DeleteMixin
 
 __all__ = [
@@ -73,6 +77,8 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Create
         data = item.model_dump()
+        settings = get_settings()
+        data['image_url'] = settings.default_menu_item_image_url
         created_item = await uow.items.create(data, **kwargs)
 
         publisher.publish(MenuItemCreatedEvent(
@@ -208,3 +214,26 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         instance_list = await self.list_restaurant_items_instances(restaurant_id, uow, **kwargs)
         return [MenuItemRetrieveOut.model_validate(instance) for instance in instance_list]
+
+    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
+
+        # Permission checks
+        if not self._restaurant_manager:
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check for existence
+        menu_item = await uow.items.retrieve(id)
+
+        if not menu_item:
+            raise MenuItemNotFoundWithIdError(id)
+
+        # Check if restaurant manager owns a menu item
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, menu_item.restaurant_id)
+
+        # Get image url
+        image_url = upload_menu_item_image_to_firebase(id, image)
+
+        # Upload image
+        await uow.items.update(id, {
+            'image_url': image_url
+        })
