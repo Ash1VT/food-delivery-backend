@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@src/core/setup/prisma"
+import getSettings from "@src/core/utils/getSettings"
 import { idValidator } from "@src/core/validators/idValidator"
 import { authenticateWithPrisma } from "@src/modules/authentication/utils/prisma/auhenticateWithPrisma"
 import PrismaOrderServiceFactory from "@src/modules/orders/services/factories/implementations/prisma/PrismaOrderServiceFactory"
@@ -12,7 +13,8 @@ export const getRestaurantOrders = async (req: Request, res: Response) => {
     const orderStatus = orderStatusValidator.parse(req.query.status)
     const restaurantId = idValidator.parse(req.params.restaurantId)
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const appSettings = getSettings()
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
