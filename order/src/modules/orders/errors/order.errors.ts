@@ -30,6 +30,31 @@ export class OrderNotReadyError extends AppError {
 
 }
 
+
+export class OrderNotPendingError extends AppError {
+
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} is not in 'Pending' status`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+
+}
+
+export class OrderNotPreparingError extends AppError {
+
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} is not in 'Preparing' status`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+
+}
+
 export class OrderNotDeliveringError extends AppError {
 
     constructor(orderId: bigint) {

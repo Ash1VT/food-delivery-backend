@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import OrderItemRepository from "../../../implementations/prisma/PrismaOrderItemRepository";
+import PrismaOrderItemRepository from "../../../implementations/prisma/PrismaOrderItemRepository";
 import PrismaOrderRepository from "../../../implementations/prisma/PrismaOrderRepository";
 import IOrderItemRepository from "../../../interfaces/IOrderItemRepository";
 import IOrderRepository from "../../../interfaces/IOrderRepository";
 import IOrderRepositoryFactory from "../../interfaces/IOrderRepositoryFactory";
+import IDeliveryInformationRepository from "../../../interfaces/IDeliveryInformationRepository";
+import PrismaDeliveryInformationRepository from "../../../implementations/prisma/PrismaDeliveryInformationRepository";
 
 export default class PrismaOrderRepositoryFactory implements IOrderRepositoryFactory {
     constructor(
@@ -15,6 +17,10 @@ export default class PrismaOrderRepositoryFactory implements IOrderRepositoryFac
     }
 
     public createOrderItemRepository(): IOrderItemRepository {
-        return new OrderItemRepository(this.prismaClient)
+        return new PrismaOrderItemRepository(this.prismaClient)
+    }
+
+    public createDeliveryInformationRepository(): IDeliveryInformationRepository {
+       return new PrismaDeliveryInformationRepository(this.prismaClient)
     }
 }
