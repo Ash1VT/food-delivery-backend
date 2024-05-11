@@ -19,6 +19,7 @@ class MenuCategory(CustomBase):
     __tablename__ = 'menu_categories'
 
     name = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
 
     menu_id = Column(Integer, ForeignKey('menus.id',
                                          name='fk_menu_id',
