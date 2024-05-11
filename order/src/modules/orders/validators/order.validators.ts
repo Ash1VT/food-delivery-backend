@@ -6,6 +6,7 @@ import { OrderStatus } from "../models/orderStatus.models";
 export const orderCreateValidator = z.object({
     restaurantId: idValidator,
     promotionId: idValidator.optional(),
+    customerAddressId: idValidator,
     promocode: z.string().optional(),
     items: orderItemCreateValidator.array().min(1, {
         message: "Must be at least one order item in order"
@@ -16,7 +17,6 @@ export const orderCreateValidator = z.object({
 
 export const orderStatusValidator = z.enum([
     "pending",
-    "confirmed",
     "preparing",
     "ready",
     "delivering",
