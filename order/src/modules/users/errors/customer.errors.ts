@@ -18,11 +18,25 @@ export class CustomerAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExi
 
 }
 
-export class CustomerOwnershipError extends AppError {
+export class CustomerOrderOwnershipError extends AppError {
     
     constructor(customerId: bigint, orderId: bigint) {
         super(`Customer with id=${customerId} is not a creator of an 
                Order with id=${orderId} to perform this action`)
+    }
+
+    public get statusCode(): number {
+        return 403
+    }
+
+}
+
+
+export class CustomerAddressOwnershipError extends AppError {
+    
+    constructor(customerId: bigint, addressId: bigint) {
+        super(`Customer with id=${customerId} hasn't got an
+               Address with id=${addressId} to perform this action`)
     }
 
     public get statusCode(): number {
