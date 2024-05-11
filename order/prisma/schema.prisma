@@ -10,7 +10,8 @@ datasource db {
 model Customer {
   id BigInt @id
 
-  orders Order[]
+  orders    Order[]
+  addresses CustomerAddress[]
 
   @@map("customers")
 }
@@ -38,14 +39,43 @@ model RestaurantManager {
   @@map("restaurant_managers")
 }
 
+model CustomerAddress {
+  id BigInt @id @default(autoincrement())
+
+  country    String @map("country")
+  region     String @map("region")
+  details    String @map("details")
+  customerId BigInt @map("customer_id")
+
+  approvalStatus CustomerAddressApprovalStatus @default(PENDING) @map("is_approved")
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@map("customers_addresses")
+}
+
+model WorkingHours {
+  id BigInt @id
+
+  dayOfWeek   DayOfWeek @map("day_of_week")
+  openingTime DateTime  @map("opening_time") @db.Time()
+  closingTime DateTime  @map("closing_time") @db.Time()
+
+  restaurantId BigInt @map("restaurant_id")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
 model Restaurant {
   id                BigInt             @id
   restaurantManager RestaurantManager?
-  isActive          Boolean
+  address           String             @map("address")
+  isActive          Boolean            @map("is_active")
 
-  orders     Order[]
-  menuItem   MenuItem[]
-  promocodes Promocode[]
+  orders       Order[]
+  menuItem     MenuItem[]
+  promocodes   Promocode[]
+  workingHours WorkingHours[]
 
   @@map("restaurants")
 }
@@ -68,7 +98,6 @@ model Promocode {
   isActive           Boolean  @default(true) @map("is_active")
   restaurantId       BigInt   @map("restaurant_id")
 
-  // orders     Order[]
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@map("promocodes")
@@ -76,9 +105,9 @@ model Promocode {
 
 model MenuItem {
   id           BigInt @id
-  name         String
+  name         String @map("name")
   imageUrl     String @map("image_url")
-  price        Float
+  price        Float  @map("price")
   restaurantId BigInt @map("restaurant_id")
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
@@ -88,8 +117,6 @@ model MenuItem {
 
 model OrderItem {
   id BigInt @id @default(autoincrement())
-
-  //menuItemId BigInt @map("menu_item_id")
 
   menuItemPrice    Float  @map("menu_item_price")
   menuItemName     String @map("menu_item_name")
@@ -102,36 +129,49 @@ model OrderItem {
   @@map("order_items")
 }
 
-model Order {
-  id                   BigInt      @id @default(autoincrement())
-  customerId           BigInt      @map("customer_id")
-  courierId            BigInt?     @map("courier_id")
-  restaurantId         BigInt      @map("restaurant_id")
-  promocodeName        String?     @map("promocode_name")
-  promocodeDiscount    Int?        @map("promocode_discount")
-  promotionId          BigInt?     @map("promotion_id")
-  status               OrderStatus @default(PENDING)
-  createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz()
-  deliveryAcceptedAt   DateTime?   @map("delivery_accepted_at") @db.Timestamptz()
-  supposedDeliveryTime DateTime    @map("supposed_delivery_time") @db.Time()
-  actualDeliveryTime   DateTime?   @map("actual_delivery_time") @db.Time()
-  deliveryFinishedAt   DateTime?   @map("delivery_finished_at") @db.Timestamptz()
-  totalPrice           Float       @map("total_price")
-  decountedPrice       Float       @map("decounted_price")
+model DeliveryInformation {
+  id                   BigInt        @id @default(autoincrement())
+  deliveryType         DeliveryType? @map("delivery_type")
+  deliveryDistance     Float?        @map("delivery_distance")
+  supposedDeliveryTime Int?          @map("supposed_delivery_time")
 
-  customer   Customer    @relation(fields: [customerId], references: [id])
-  courier    Courier?    @relation(fields: [courierId], references: [id])
-  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
-  // promocode  Promocode?  @relation(fields: [promocodeId], references: [id])
-  promotion  Promotion?  @relation(fields: [promotionId], references: [id])
-  items      OrderItem[]
+  originAddress      String @map("origin_address")
+  destinationAddress String @map("destination_address")
+
+  deliveryAcceptedAt DateTime? @map("delivery_accepted_at") @db.Timestamptz()
+  actualDeliveryTime Int?      @map("actual_delivery_time")
+  deliveryFinishedAt DateTime? @map("delivery_finished_at") @db.Timestamptz()
+  order              Order?
+
+  @@map("deliveries_information")
+}
+
+model Order {
+  id                    BigInt      @id @default(autoincrement())
+  customerId            BigInt      @map("customer_id")
+  courierId             BigInt?     @map("courier_id")
+  restaurantId          BigInt      @map("restaurant_id")
+  promocodeName         String?     @map("promocode_name")
+  promocodeDiscount     Int?        @map("promocode_discount")
+  promotionId           BigInt?     @map("promotion_id")
+  deliveryInformationId BigInt      @unique @map("delivery_information_id")
+  status                OrderStatus @default(PENDING)
+  createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz()
+  totalPrice            Float       @map("total_price")
+  decountedPrice        Float       @map("decounted_price")
+
+  customer            Customer            @relation(fields: [customerId], references: [id])
+  courier             Courier?            @relation(fields: [courierId], references: [id])
+  restaurant          Restaurant          @relation(fields: [restaurantId], references: [id])
+  promotion           Promotion?          @relation(fields: [promotionId], references: [id])
+  deliveryInformation DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
+  items               OrderItem[]
 
   @@map("orders")
 }
 
 enum OrderStatus {
   PENDING
-  CONFIRMED
   PREPARING
   READY
   DELIVERING
@@ -139,4 +179,31 @@ enum OrderStatus {
   CANCELLED
 
   @@map("order_statuses")
+}
+
+enum DeliveryType {
+  WALKING
+  DRIVING
+
+  @@map("delivery_types")
+}
+
+enum CustomerAddressApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("customers_addresses_approval_status")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+
+  @@map("days_of_week")
 }
