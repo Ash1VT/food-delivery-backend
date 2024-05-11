@@ -158,6 +158,11 @@ class Base(Configuration):
     EMAIL_PORT = env('EMAIL_PORT')
     EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
+    # Firebase
+
+    FIREBASE_STORAGE_BUCKET = env('FIREBASE_STORAGE_BUCKET')
+    DEFAULT_USER_AVATAR_URL = 'https://storage.googleapis.com/fooddelivery-21854.appspot.com/users/avatars/default_user_avatar.svg'
+
     # Kafka
 
     KAFKA_BOOTSTRAP_SERVER_HOST = env('KAFKA_BOOTSTRAP_SERVER_HOST')
@@ -169,9 +174,14 @@ class Base(Configuration):
     KAFKA_PRODUCER_EVENTS_TOPICS = {
         'producer.events.CustomerCreatedEvent': {
             'user_order': 'producer.serializers.CustomerCreatedSerializer',
+            'user_review': 'producer.serializers.CustomerCreatedToReviewSerializer',
+        },
+        'producer.events.CustomerUpdatedEvent': {
+            'user_review': 'producer.serializers.CustomerUpdatedSerializer',
         },
         'producer.events.CourierCreatedEvent': {
             'user_order': 'producer.serializers.CourierCreatedSerializer',
+            'user_review': 'producer.serializers.CourierCreatedSerializer',
         },
         'producer.events.RestaurantManagerCreatedEvent': {
             'user_restaurant': 'producer.serializers.RestaurantManagerCreatedSerializer',
