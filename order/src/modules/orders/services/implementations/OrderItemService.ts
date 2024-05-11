@@ -3,14 +3,14 @@ import { IOrderItemCreateMapper, IOrderItemGetMapper } from "../../mappers/inter
 import IOrderItemRepository from "../../repositories/interfaces/IOrderItemRepository";
 import IOrderItemService from "../interfaces/IOrderItemService";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
-import { MenuItemAlreadyInOrderError, MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError } from "@src/modules/menu/errors/menuItem.errors";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
-import { OrderNotFoundWithIdError } from "../../errors/order.errors";
+import { OrderNotFoundWithIdError, OrderNotPendingError } from "../../errors/order.errors";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions.errors";
 import { OrderItemModel } from "../../models/orderItem.models";
 import { CourierOwnershipError } from "@src/modules/users/errors/courier.errors";
-import { CustomerOwnershipError } from "@src/modules/users/errors/customer.errors";
+import { CustomerOrderOwnershipError } from "@src/modules/users/errors/customer.errors";
 import BaseService from "@src/core/services/BaseService";
+import { MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError, MenuItemAlreadyInOrderError } from "@src/modules/menu/errors/menuItem.errors";
 
 export class OrderItemService extends BaseService implements IOrderItemService {
     
@@ -41,7 +41,7 @@ export class OrderItemService extends BaseService implements IOrderItemService {
         // Check that customer owns order
         if (this.customer)
             if (orderInstance.customerId !== this.customer.id) {
-                throw new CustomerOwnershipError(this.customer.id, orderId)
+                throw new CustomerOrderOwnershipError(this.customer.id, orderId)
             }
         
         // Check that courier owns order
@@ -69,6 +69,11 @@ export class OrderItemService extends BaseService implements IOrderItemService {
 
         const orderItemsInstances = orderInstance.items as OrderItemModel[]
 
+        // Check that order is in PENDING status
+        if (orderInstance.status !== "PENDING") {
+            throw new OrderNotPendingError(orderId)
+        }
+
         // Check that menu item exists
         const menuItemInstance = await this.menuItemRepository.getOne(orderItemData.menuItemId)
 
@@ -78,7 +83,7 @@ export class OrderItemService extends BaseService implements IOrderItemService {
 
         // Check that customer owns this order
         if (orderInstance.customerId !== this.customer.id) {
-            throw new CustomerOwnershipError(this.customer.id, orderId)
+            throw new CustomerOrderOwnershipError(this.customer.id, orderId)
         }
 
         // Check that menu item is in same restaurant as order
