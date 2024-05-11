@@ -85,7 +85,8 @@ def to_restaurant_model(restaurant: Restaurant) -> RestaurantModel:
     """
 
     restaurant = RestaurantModel(
-        id=restaurant.id
+        id=restaurant.id,
+        is_active=restaurant.is_active
     )
 
     logger.debug(f"Converted database restaurant model with id={restaurant.id} to restaurant model.")

@@ -9,6 +9,7 @@ class RestaurantBaseModel(ABC):
     """
 
     id: int
+    is_active: bool
 
 
 @dataclass

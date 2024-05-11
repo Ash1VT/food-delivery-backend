@@ -6,7 +6,8 @@ from exceptions.base import PermissionDeniedError
 from exceptions.courier import CourierOwnershipError
 from exceptions.customer import CustomerOwnershipError
 from exceptions.menu_item import MenuItemNotFoundError
-from exceptions.restaurant import RestaurantNotFoundError
+from exceptions.order import OrderNotFoundError
+from exceptions.restaurant import RestaurantNotFoundError, RestaurantNotActiveError
 from exceptions.review import ReviewAlreadyExistsError, ReviewNotFoundError
 from models.courier import CourierModel
 from models.customer import CustomerModel
@@ -50,6 +51,11 @@ class ReviewService(IReviewService):
             logger.warning(f"Restaurant with id={restaurant_id} does not exist.")
             raise RestaurantNotFoundError(restaurant_id)
 
+        # Check if restaurant is active
+        if not restaurant.is_active:
+            logger.warning(f"Restaurant with id={restaurant_id} is not active.")
+            raise RestaurantNotActiveError(restaurant_id)
+
         restaurant_review_models = await uow.reviews.list_restaurant_reviews(restaurant_id)
 
         logger.info(f"Retrieved list of restaurant reviews with restaurant_id={restaurant_id}.")
@@ -84,9 +90,14 @@ class ReviewService(IReviewService):
             logger.warning(f"Review with id={review.id} already exists.")
             raise ReviewAlreadyExistsError()
 
-        # Check if customer can leave review
         order = await uow.orders.retrieve(order_id)
 
+        # Check if order exists
+        if not order:
+            logger.warning(f"Order with id={order_id} does not exist.")
+            raise OrderNotFoundError(order_id)
+
+        # Check if customer can leave review
         if order.customer_id != self._customer.id:
             logger.warning(f"User is not the customer with id={order.customer_id} and cannot leave review.")
             raise CustomerOwnershipError()
@@ -112,6 +123,19 @@ class ReviewService(IReviewService):
             logger.warning(f"User is not a customer.")
             raise PermissionDeniedError(CustomerRole)
 
+        # Check if restaurant exists
+        restaurant = await uow.restaurants.retrieve(restaurant_id)
+
+        if not restaurant:
+            logger.warning(f"Restaurant with id={restaurant_id} does not exist.")
+            raise RestaurantNotFoundError(restaurant_id)
+
+        # Check if restaurant is active
+        if not restaurant.is_active:
+            logger.warning(f"Restaurant with id={restaurant_id} is not active.")
+            raise RestaurantNotActiveError(restaurant_id)
+
+        # Check if review already exists
         retrieved_review = await uow.reviews.retrieve_by_customer_and_restaurant(self._customer.id, restaurant_id)
 
         if retrieved_review:
@@ -119,7 +143,6 @@ class ReviewService(IReviewService):
             raise ReviewAlreadyExistsError()
 
         # Create review
-
         review_create_model = ReviewCreateModel(
             restaurant_id=restaurant_id,
             customer_id=self._customer.id,
@@ -139,6 +162,14 @@ class ReviewService(IReviewService):
             logger.warning(f"User is not a customer.")
             raise PermissionDeniedError(CustomerRole)
 
+        # Check if menu item exists
+        menu_item = await uow.menu_items.retrieve(menu_item_id)
+
+        if not menu_item:
+            logger.warning(f"Menu item with id={menu_item_id} does not exist.")
+            raise MenuItemNotFoundError(menu_item_id)
+
+        # Check if review already exists
         retrieved_review = await uow.reviews.retrieve_by_customer_and_menu_item(self._customer.id, menu_item_id)
 
         if retrieved_review:
