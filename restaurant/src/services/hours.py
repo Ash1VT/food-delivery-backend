@@ -4,6 +4,8 @@ from exceptions import WorkingHoursNotFoundWithIdError, WorkingHoursAlreadyExist
     WorkingHoursTimeConflictError, \
     PermissionDeniedError, RestaurantNotFoundWithIdError
 from models import WorkingHours, RestaurantManager
+from producer import publisher
+from producer.events import WorkingHoursCreatedEvent, WorkingHoursUpdatedEvent, WorkingHoursDeletedEvent
 from user_roles import RestaurantManagerRole
 from schemas import WorkingHoursUpdateIn, WorkingHoursCreateIn, WorkingHoursCreateOut, WorkingHoursUpdateOut
 from uow import SqlAlchemyUnitOfWork
@@ -79,7 +81,17 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Create
         data = item.model_dump()
-        return await uow.working_hours.create(data, **kwargs)
+        working_hours_instance = await uow.working_hours.create(data, **kwargs)
+
+        publisher.publish(WorkingHoursCreatedEvent(
+            id=working_hours_instance.id,
+            day_of_week=working_hours_instance.day_of_week,
+            opening_time=working_hours_instance.opening_time,
+            closing_time=working_hours_instance.closing_time,
+            restaurant_id=working_hours_instance.restaurant_id,
+        ))
+
+        return working_hours_instance
 
     async def update_instance(self, id: int,
                               item: WorkingHoursUpdateIn,
@@ -121,7 +133,15 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Update
         data = item.model_dump()
-        return await uow.working_hours.update(id, data, **kwargs)
+        working_hours_instance = await uow.working_hours.update(id, data, **kwargs)
+
+        publisher.publish(WorkingHoursUpdatedEvent(
+            id=working_hours_instance.id,
+            opening_time=working_hours_instance.opening_time,
+            closing_time=working_hours_instance.closing_time,
+        ))
+
+        return working_hours_instance
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -152,3 +172,7 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Delete
         await uow.working_hours.delete(id, **kwargs)
+
+        publisher.publish(WorkingHoursDeletedEvent(
+            id=id
+        ))

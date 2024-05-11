@@ -7,6 +7,9 @@ __all__ = [
     "ProducerEvent",
     "RestaurantCreatedEvent",
     "RestaurantUpdatedEvent",
+    "WorkingHoursCreatedEvent",
+    "WorkingHoursUpdatedEvent",
+    "WorkingHoursDeletedEvent",
 ]
 
 BaseEventSchema = TypeVar("BaseEventSchema", bound=BaseModel)
@@ -96,6 +99,30 @@ class RestaurantCreatedEvent(ProducerEvent):
 class RestaurantUpdatedEvent(ProducerEvent):
     """
     Event that is published when a restaurant is updated.
+    """
+
+    _topics_schemas = dict()
+
+
+class WorkingHoursCreatedEvent(ProducerEvent):
+    """
+    Event that is published when working hours are created.
+    """
+
+    _topics_schemas = dict()
+
+
+class WorkingHoursUpdatedEvent(ProducerEvent):
+    """
+    Event that is published when working hours are updated.
+    """
+
+    _topics_schemas = dict()
+
+
+class WorkingHoursDeletedEvent(ProducerEvent):
+    """
+    Event that is published when working hours are deleted.
     """
 
     _topics_schemas = dict()
