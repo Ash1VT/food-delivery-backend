@@ -2,7 +2,6 @@ import { idValidator } from "@src/core/validators/idValidator"
 import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent"
 import IRestaurantRepositoryFactory from "@src/modules/restaurants/repositories/factories/interfaces/IRestaurantRepositoryFactory"
 import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository"
-import IWorkingHoursRepository from "@src/modules/restaurants/repositories/interfaces/IWorkingHours"
 import { restaurantCreatedValidator, restaurantUpdatedValidator } from "../../validators/restaurant.validators"
 
 export abstract class RestaurantCreatedBaseEvent extends KafkaConsumerBaseEvent {
