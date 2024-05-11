@@ -7,6 +7,12 @@ from .cache import config_cache
 
 
 class Settings(BaseSettings):
+    firebase_storage_bucket: str
+    default_menu_item_image_url: str = ('https://storage.googleapis.com/fooddelivery-21854.appspot.com/items/images'
+                                        '/default_menu_item_image.svg')
+    default_menu_category_image_url: str = ("https://storage.googleapis.com/fooddelivery-21854.appspot.com/categories"
+                                            "/images/default_menu_category_image.svg")
+
     web_app_host: str
     web_app_port: int
     reload: bool
@@ -32,12 +38,14 @@ class Settings(BaseSettings):
     kafka_producer_events_topics: Dict[str, Dict[str, str]] = {
         'producer.events.MenuItemCreatedEvent': {
             'menu_order': 'producer.schemas.MenuItemCreatedSchema',
+            'menu_review': 'producer.schemas.MenuItemCreatedToReviewSchema'
         },
         'producer.events.MenuItemUpdatedEvent': {
             'menu_order': 'producer.schemas.MenuItemUpdatedSchema'
         },
         'producer.events.MenuItemDeletedEvent': {
-            'menu_order': 'producer.schemas.MenuItemDeletedSchema'
+            'menu_order': 'producer.schemas.MenuItemDeletedSchema',
+            'menu_review': 'producer.schemas.MenuItemDeletedSchema'
         },
     }
 
@@ -59,6 +67,7 @@ class TestSettings(Settings):
 
     model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.test')
 
+
 class ProductionSettings(Settings):
     reload: bool = False
     pg_host: str
@@ -68,6 +77,7 @@ class ProductionSettings(Settings):
     pg_password: str
 
     model_config = SettingsConfigDict(env_file=ENV_DIRECTORY / '.env.prod')
+
 
 @config_cache
 def get_settings():
