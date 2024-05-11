@@ -1,5 +1,8 @@
 import { Options, Tag } from "swagger-jsdoc"
 import { version } from "../../package.json";
+import getSettings from "@src/core/utils/getSettings";
+
+const appSettings = getSettings()
 
 export const swaggerOptions: Options  = {
     definition: {
@@ -10,7 +13,7 @@ export const swaggerOptions: Options  = {
         },
         servers: [
             {
-                url: "http://localhost:8004/api/v1",
+                url: `http://${appSettings.variables.appHost}:${appSettings.variables.appPort}/api/v1`,
                 description: "Local development server"
             }
         ],
@@ -27,6 +30,14 @@ export const swaggerOptions: Options  = {
             {
                 name: "restaurants",
                 description: "Restaurants API"
+            },
+            {
+                name: "customers",
+                description: "Customers API"
+            },
+            {
+                name: "addresses",
+                description: "Addresses API"
             }
         ],
     },
