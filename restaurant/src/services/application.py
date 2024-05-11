@@ -1,13 +1,16 @@
 from typing import Optional, List
 
+from config import get_settings
 from exceptions import PermissionDeniedError, RestaurantApplicationNotFoundWithIdError, \
     RestaurantManagerNotFoundWithIdError
 from models import RestaurantApplication, Moderator, ApplicationType
-from producer import publisher, RestaurantCreatedEvent
+from producer import publisher, RestaurantCreatedEvent, RestaurantUpdatedEvent
+from schemas.application import RestaurantApplicationUpdateOut, RestaurantApplicationUpdateIn
 from user_roles import ModeratorRole
 from schemas import RestaurantApplicationRetrieveOut
-from uow import SqlAlchemyUnitOfWork
-from .mixins import RetrieveMixin, ListMixin
+from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
+from . import UpdateIn, Model
+from .mixins import RetrieveMixin, ListMixin, UpdateMixin
 
 __all__ = [
     "RestaurantApplicationService",
@@ -15,7 +18,9 @@ __all__ = [
 
 
 class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, RestaurantApplicationRetrieveOut],
-                                   ListMixin[RestaurantApplication, RestaurantApplicationRetrieveOut]):
+                                   ListMixin[RestaurantApplication, RestaurantApplicationRetrieveOut],
+                                   UpdateMixin[RestaurantApplication, RestaurantApplicationUpdateIn,
+                                   RestaurantApplicationUpdateOut]):
     """
     Service class for managing restaurant applications.
 
@@ -26,6 +31,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             retrieved instances.
     """
 
+    schema_update_in = RestaurantApplicationUpdateIn
     schema_retrieve_out = RestaurantApplicationRetrieveOut
 
     def __init__(self, moderator: Optional[Moderator] = None):
@@ -157,6 +163,20 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         instance_list = await self.list_update_application_instances(uow, **kwargs)
         return super().get_list_schema(instance_list)
 
+    async def update_instance(self, id: int, item: RestaurantApplicationUpdateIn,
+                              uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantApplication:
+        # Permission checks
+        if not self._moderator:
+            raise PermissionDeniedError(ModeratorRole)
+
+        # Check if application exists
+        if not await uow.restaurant_applications.exists(id):
+            raise RestaurantApplicationNotFoundWithIdError(id)
+
+        # Update application
+        data = item.model_dump()
+        return await uow.restaurant_applications.update(id, data, **kwargs)
+
     async def confirm_application(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
         Confirm the application with the given ID and create a restaurant.
@@ -197,16 +217,25 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         del data['id']
 
         if application_type == ApplicationType.create:
+            settings = get_settings()
+            data['image_url'] = settings.default_restaurant_logo
             restaurant = await uow.restaurants.create(data)
             restaurant_manager.restaurant_id = restaurant.id
 
             publisher.publish(
                 RestaurantCreatedEvent(id=restaurant.id,
+                                       address=restaurant.address,
                                        restaurant_manager_id=restaurant_manager.id,
                                        is_active=restaurant.is_active)
             )
         elif application_type == ApplicationType.update:
-            await uow.restaurants.update(restaurant_manager.restaurant_id, data)
+            restaurant = await uow.restaurants.update(restaurant_manager.restaurant_id, data)
+
+            publisher.publish(
+                RestaurantUpdatedEvent(id=restaurant.id,
+                                       address=restaurant.address,
+                                       is_active=restaurant.is_active)
+            )
 
         await uow.restaurant_applications.delete(id)
 
