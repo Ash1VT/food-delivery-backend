@@ -322,9 +322,10 @@ describe("Tests for Validators", () => {
 
         test("should successfully validate order create input dto", () => {
             const restaurantId = getUniqueId()
+            const customerAddressId = getUniqueId()
             const menuItemIds = Array.from({length: manyCount}, () => getUniqueId())
 
-            const orderCreateInputDto = generateOrderCreateInputDto(restaurantId, menuItemIds)
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurantId, customerAddressId, menuItemIds)
             
             const orderJsonCreateInput = {
                 ...orderCreateInputDto,
@@ -337,9 +338,10 @@ describe("Tests for Validators", () => {
 
         test("should not validate order create input dto, due to empty order items", () => {
             const restaurantId = getUniqueId()
+            const customerAddressId = getUniqueId()
             const menuItemIds: bigint[] = []
 
-            const orderCreateInputDto = generateOrderCreateInputDto(restaurantId, menuItemIds)
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurantId, customerAddressId, menuItemIds)
             
             const orderJsonCreateInput = {
                 ...orderCreateInputDto,
@@ -354,11 +356,12 @@ describe("Tests for Validators", () => {
 
         test("should not validate order create input dto, due to repeated order items", () => {
             const restaurantId = getUniqueId()
+            const customerAddressId = getUniqueId()
             const menuItemIds = Array.from({length: manyCount}, () => getUniqueId())
 
             menuItemIds.push(menuItemIds[0])
             
-            const orderCreateInputDto = generateOrderCreateInputDto(restaurantId, menuItemIds)
+            const orderCreateInputDto = generateOrderCreateInputDto(restaurantId, customerAddressId, menuItemIds)
             
             const orderJsonCreateInput = {
                 ...orderCreateInputDto,

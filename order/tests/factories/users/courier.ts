@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { CourierCreateInputDto } from "@src/modules/users/dto/courier.dto";
 import { CourierCreateInput, CourierModel, CourierUpdateInput } from "@src/modules/users/models/courier.models";
 import { getUniqueId } from "@tests/utils/unique";
 
@@ -40,8 +39,8 @@ export async function createCourier(client: PrismaClient): Promise<CourierModel>
 
 // DTOs
 
-export function generateCourierCreateInputDto(): CourierCreateInputDto {
-    return {
-        id: getUniqueId()
-    }
-}
+// export function generateCourierCreateInputDto(): CourierCreateInputDto {
+//     return {
+//         id: getUniqueId()
+//     }
+// }

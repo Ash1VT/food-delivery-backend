@@ -31,6 +31,7 @@ import { generateOrderItemCreateInputModel, generateOrderItemUpdateInputModel, c
 import { createOrder, generateOrderCreateInputModel, generateOrderUpdateInputModel } from "./factories/orders/order"
 import { OrderCreateInput, OrderUpdateInput, OrderModel } from "@src/modules/orders/models/order.models"
 import PrismaOrderRepository from "@src/modules/orders/repositories/implementations/prisma/PrismaOrderRepository"
+import { createDeliveryInformation } from "./factories/orders/deliveryInformation";
 
 describe("Tests for Prisma Repositories", () => {
 
@@ -495,11 +496,12 @@ describe("Tests for Prisma Repositories", () => {
             const customer = await createCustomer(prismaClient)
             const restaurant = await createRestaurant(prismaClient)
             const courier = await createCourier(prismaClient)
+            const deliveryInformation = await createDeliveryInformation(prismaClient)
             const orderItems = Array.from({length: manyCount}, () => {
                 return generateOrderItemWithOrderCreateInputModel()
             })
 
-            const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItems, courier.id)
+            const order = await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orderItems, courier.id)
             return generateOrderItemCreateInputModel(order.id)
         }
 
@@ -507,11 +509,12 @@ describe("Tests for Prisma Repositories", () => {
             const customer = await createCustomer(prismaClient)
             const restaurant = await createRestaurant(prismaClient)
             const courier = await createCourier(prismaClient)
+            const deliveryInformation = await createDeliveryInformation(prismaClient)
             const orderItems = Array.from({length: manyCount}, () => {
                 return generateOrderItemWithOrderCreateInputModel()
             })
 
-            const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItems, courier.id)
+            const order = await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orderItems, courier.id)
             return generateOrderItemUpdateInputModel(order.id)
         }
 
@@ -519,11 +522,14 @@ describe("Tests for Prisma Repositories", () => {
             const customer = await createCustomer(prismaClient)
             const restaurant = await createRestaurant(prismaClient)
             const courier = await createCourier(prismaClient)
+            const deliveryInformation = await createDeliveryInformation(prismaClient)
+
+
             const orderItems = Array.from({length: manyCount}, () => {
                 return generateOrderItemWithOrderCreateInputModel()
             })
 
-            const order = await createOrder(prismaClient, customer.id, restaurant.id, orderItems, courier.id)
+            const order = await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orderItems, courier.id)
             return await createOrderItem(prismaClient, order.id)
         }
 
@@ -543,11 +549,13 @@ describe("Tests for Prisma Repositories", () => {
             const customerInstance = await createCustomer(prismaClient)
             const restaurantInstance = await createRestaurant(prismaClient)
             const courierInstance = await createCourier(prismaClient)
+            const deliveryInformationInstance = await createDeliveryInformation(prismaClient)
+
             const orderItemInstances = Array.from({length: manyCount}, () => {
                 return generateOrderItemWithOrderCreateInputModel()
             }).sort((a, b) => a.menuItemName.localeCompare(b.menuItemName))
 
-            const orderInstance = await createOrder(prismaClient, customerInstance.id, restaurantInstance.id, orderItemInstances, courierInstance.id)
+            const orderInstance = await createOrder(prismaClient, customerInstance.id, deliveryInformationInstance.id, restaurantInstance.id, orderItemInstances, courierInstance.id)
 
             const orderItemInstancesDb = (await orderItemPrismaRepository.getOrderItems(orderInstance.id)).sort((a, b) => a.menuItemName.localeCompare(b.menuItemName))
 
@@ -577,11 +585,12 @@ describe("Tests for Prisma Repositories", () => {
             const customer = await createCustomer(prismaClient)
             const restaurant = await createRestaurant(prismaClient)
             const courier = await createCourier(prismaClient)
+            const deliveryInformation = await createDeliveryInformation(prismaClient)
             const orderItems = Array.from({length: manyCount}, () => {
                 return generateOrderItemWithOrderCreateInputModel()
             })
 
-            return generateOrderCreateInputModel(customer.id, restaurant.id, orderItems, courier.id)
+            return generateOrderCreateInputModel(customer.id, restaurant.id, deliveryInformation.id, orderItems, courier.id)
         }
 
         const generateFullOrderUpdateInput = async (): Promise<OrderUpdateInput> => {
@@ -593,11 +602,13 @@ describe("Tests for Prisma Repositories", () => {
             const customer = await createCustomer(prismaClient)
             const restaurant = await createRestaurant(prismaClient)
             const courier = await createCourier(prismaClient)
+            const deliveryInformation = await createDeliveryInformation(prismaClient)
+            
             const orders = Array.from({length: manyCount}, () => {
                 return generateOrderItemWithOrderCreateInputModel()
             })
 
-            return await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
+            return await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orders, courier.id)
         }
 
         const createFullOrders = async (): Promise<OrderModel[]> => {
@@ -630,7 +641,7 @@ describe("Tests for Prisma Repositories", () => {
 
         test('should get many orders with READY status', async () => {
             const orderInstances = await createFullOrders()
-            const orderInstancesDb = await orderPrismaRepository.getMany(true, "READY")
+            const orderInstancesDb = await orderPrismaRepository.getMany(true, true, "READY")
 
             const ordersAreWithReadyStatus = orderInstancesDb.every((orderInstanceDb) => orderInstanceDb.status === "READY")
             expect(ordersAreWithReadyStatus).toBe(true)
@@ -641,10 +652,12 @@ describe("Tests for Prisma Repositories", () => {
             for (let i = 0; i < manyCount; i++){
                 const restaurant = await createRestaurant(prismaClient)
                 const courier = await createCourier(prismaClient)
+                const deliveryInformation = await createDeliveryInformation(prismaClient)
+
                 const orders = Array.from({length: manyCount}, () => {
                     return generateOrderItemWithOrderCreateInputModel()
                 })
-                await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
+                await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orders, courier.id)
             }
 
             const orderInstancesDb = await orderPrismaRepository.getCustomerOrders(customer.id)
@@ -659,10 +672,12 @@ describe("Tests for Prisma Repositories", () => {
             for (let i = 0; i < manyCount; i++){
                 const customer = await createCustomer(prismaClient)
                 const restaurant = await createRestaurant(prismaClient)
+                const deliveryInformation = await createDeliveryInformation(prismaClient)
+
                 const orders = Array.from({length: manyCount}, () => {
                     return generateOrderItemWithOrderCreateInputModel()
                 })
-                await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
+                await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orders, courier.id)
             }
 
             const orderInstancesDb = await orderPrismaRepository.getCourierOrders(courier.id)
@@ -677,11 +692,12 @@ describe("Tests for Prisma Repositories", () => {
             for (let i = 0; i < manyCount; i++){
                 const customer = await createCustomer(prismaClient)
                 const courier = await createCourier(prismaClient)
+                const deliveryInformation = await createDeliveryInformation(prismaClient)
 
                 const orders = Array.from({length: manyCount}, () => {
                     return generateOrderItemWithOrderCreateInputModel()
                 })
-                await createOrder(prismaClient, customer.id, restaurant.id, orders, courier.id)
+                await createOrder(prismaClient, customer.id, deliveryInformation.id, restaurant.id, orders, courier.id)
             }
 
             const orderInstancesDb = await orderPrismaRepository.getRestaurantOrders(restaurant.id)

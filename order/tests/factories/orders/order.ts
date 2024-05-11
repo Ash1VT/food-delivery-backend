@@ -12,8 +12,7 @@ import { getUniqueId } from '@tests/utils/unique';
 // Models
 
 export function generateOrderModel(customerId: bigint, restaurantId: bigint, status: OrderStatus, 
-                                   itemsCount: number, promocodeName?: string, promocodeDiscount?: number, 
-                                   actualDeliveryTime?: Date, deliveryAcceptedAt?: Date, deliveryFinishedAt?: Date, 
+                                   itemsCount: number, deliveryInformationId: bigint, promocodeName?: string, promocodeDiscount?: number, 
                                    courierId?: bigint, promotionId?: bigint): OrderModel {
     const orderId = getUniqueId()
     const createdAt = faker.date.recent()
@@ -24,12 +23,9 @@ export function generateOrderModel(customerId: bigint, restaurantId: bigint, sta
         customerId,
         courierId,
         restaurantId,
+        deliveryInformationId,
         status,
         createdAt,
-        supposedDeliveryTime,
-        actualDeliveryTime,
-        deliveryAcceptedAt,
-        deliveryFinishedAt,
         promocodeName,
         promocodeDiscount,
         promotionId,
@@ -45,7 +41,7 @@ export function generateOrderModel(customerId: bigint, restaurantId: bigint, sta
     }
 }
 
-export function generateOrderCreateInputModel(customerId: bigint, restaurantId: bigint, items: OrderItemWithOrderCreateInput[], courierId?: bigint): OrderCreateInput {
+export function generateOrderCreateInputModel(customerId: bigint, restaurantId: bigint, deliveryInformationId: bigint, items: OrderItemWithOrderCreateInput[], courierId?: bigint): OrderCreateInput {
     const createdAt = faker.date.recent()
     const supposedDeliveryTime = moment(createdAt).add(faker.number.int({ min: 1, max: 200 }), "m").toDate()
     
@@ -53,8 +49,8 @@ export function generateOrderCreateInputModel(customerId: bigint, restaurantId: 
         customerId,
         courierId,
         restaurantId,
+        deliveryInformationId,
         createdAt,
-        supposedDeliveryTime,
         promocodeName: faker.lorem.word(5),
         promocodeDiscount: faker.number.int({
             min: 10,
@@ -78,16 +74,13 @@ export function generateOrderUpdateInputModel(courierId?: bigint): OrderUpdateIn
     return {
         courierId,
         status: "DELIVERING",
-        deliveryAcceptedAt: faker.date.recent(),
-        actualDeliveryTime: faker.date.recent(),
-        deliveryFinishedAt: faker.date.recent(),
     }
 }
 
 // Database Generation
 
-export async function createOrder(client: PrismaClient, customerId: bigint, restaurantId: bigint, items: OrderItemWithOrderCreateInput[], courierId?: bigint): Promise<OrderModel> {
-    const orderData = generateOrderCreateInputModel(customerId, restaurantId, items, courierId)
+export async function createOrder(client: PrismaClient, customerId: bigint, deliveryInformationId: bigint, restaurantId: bigint, items: OrderItemWithOrderCreateInput[], courierId?: bigint): Promise<OrderModel> {
+    const orderData = generateOrderCreateInputModel(customerId, restaurantId, deliveryInformationId, items, courierId)
     return await client.order.create({
         data: orderData
     })
@@ -95,10 +88,11 @@ export async function createOrder(client: PrismaClient, customerId: bigint, rest
 
 // DTOs
 
-export function generateOrderCreateInputDto(restaurantId: bigint, menuItemsIds: bigint[], promocode?: string, promotionId?: bigint): OrderCreateInputDto {
+export function generateOrderCreateInputDto(restaurantId: bigint, customerAddressId: bigint, menuItemsIds: bigint[], promocode?: string, promotionId?: bigint): OrderCreateInputDto {
     return {
         restaurantId,
         promotionId,
+        customerAddressId,
         promocode,
         items: menuItemsIds.map((menuItemId) => generateOrderItemCreateInputDto(menuItemId))
     }

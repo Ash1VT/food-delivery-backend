@@ -45,7 +45,10 @@ describe("Tests for Utils", () => {
                 kafkaBrokerUser: 'myuser',
                 kafkaBrokerPassword: 'mypassword',
                 kafkaGroupConsumersCount: 1,
-                kafkaConsumerTopicsEvents: []
+                kafkaConsumerTopicsEvents: [],
+                kafkaProducerEventsTopics: [],
+                arcgisApiKey: 'myApiKey',
+                bingApiKey: 'myApiKey',
             }
         }
 

@@ -1,5 +1,5 @@
+import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
-import { RestaurantCreateInputDto } from "@src/modules/restaurants/dto/restaurant.dto"
 import { RestaurantModel, RestaurantCreateInput, RestaurantUpdateInput } from "@src/modules/restaurants/models/restaurant.models"
 import { getUniqueId } from "@tests/utils/unique"
 
@@ -8,6 +8,7 @@ import { getUniqueId } from "@tests/utils/unique"
 export function generateRestaurantModel(): RestaurantModel {
     return {
         id: getUniqueId(),
+        address: faker.location.streetAddress(),
         isActive: true
     }
 }
@@ -15,6 +16,7 @@ export function generateRestaurantModel(): RestaurantModel {
 export function generateRestaurantCreateInputModel(): RestaurantCreateInput {
     return {
         id: getUniqueId(),
+        address: faker.location.streetAddress(),
         isActive: true
     }
 }
@@ -42,10 +44,10 @@ export async function createRestaurant(client: PrismaClient): Promise<Restaurant
 
 // DTOs
 
-export function generateRestaurantCreateInputDto(restaurantManagerId: bigint): RestaurantCreateInputDto {
-    return {
-        id: getUniqueId(),
-        restaurantManagerId,
-        isActive: true
-    }
-}
+// export function generateRestaurantCreateInputDto(restaurantManagerId: bigint): RestaurantCreateInputDto {
+//     return {
+//         id: getUniqueId(),
+//         restaurantManagerId,
+//         isActive: true
+//     }
+// }

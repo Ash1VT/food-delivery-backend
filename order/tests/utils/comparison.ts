@@ -1,4 +1,5 @@
 import { MenuItemModel, MenuItemCreateInput, MenuItemUpdateInput } from "@src/modules/menu/models/menuItem.models"
+import { DeliveryInformationModel, DeliveryInformationCreateInput } from "@src/modules/orders/models/deliveryInformation.models"
 import { OrderModel, OrderCreateInput, OrderUpdateInput } from "@src/modules/orders/models/order.models"
 import { OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "@src/modules/orders/models/orderItem.models"
 import { PromocodeModel, PromocodeCreateInput, PromocodeUpdateInput } from "@src/modules/promotions/models/promocode.models"
@@ -194,6 +195,20 @@ export function compareOrderItemWithUpdateInput(orderItem: OrderItemModel, order
            orderItemUpdateInput.quantity ? orderItem.quantity === orderItemUpdateInput.quantity : true
 }
 
+// DELIVERY INFORMATION
+
+export function compareDeliveryInformationWithCreateInput(deliveryInformation: DeliveryInformationModel, deliveryInformationCreateInput: DeliveryInformationCreateInput): boolean {
+    return deliveryInformationCreateInput.destinationAddress === deliveryInformation.destinationAddress &&
+           deliveryInformationCreateInput.originAddress === deliveryInformation.originAddress &&
+           deliveryInformationCreateInput.actualDeliveryTime ? deliveryInformation.actualDeliveryTime === deliveryInformationCreateInput.actualDeliveryTime : true &&
+           deliveryInformationCreateInput.deliveryAcceptedAt ? deliveryInformation.deliveryAcceptedAt === deliveryInformationCreateInput.deliveryAcceptedAt : true &&
+           deliveryInformationCreateInput.deliveryDistance ? deliveryInformation.deliveryDistance === deliveryInformationCreateInput.deliveryDistance : true &&
+           deliveryInformationCreateInput.deliveryFinishedAt ? deliveryInformation.deliveryFinishedAt === deliveryInformationCreateInput.deliveryFinishedAt : true &&
+           deliveryInformationCreateInput.deliveryType ? deliveryInformation.deliveryType === deliveryInformationCreateInput.deliveryType : true &&
+           deliveryInformationCreateInput.supposedDeliveryTime ? deliveryInformation.supposedDeliveryTime === deliveryInformationCreateInput.supposedDeliveryTime : true &&
+           deliveryInformationCreateInput.id ? deliveryInformation.id === deliveryInformationCreateInput.id : true
+}
+
 // ORDER
 
 // export function compareOrderWithModel(firstOrder: OrderModel, secondOrder: OrderModel): boolean {
@@ -211,10 +226,6 @@ export function compareOrderWithCreateInput(order: OrderModel, orderCreateInput:
                    orderCreateInput.promocodeDiscount ? order.promocodeDiscount === orderCreateInput.promocodeDiscount : true &&
                    orderCreateInput.status ? order.status === orderCreateInput.status : true &&
                    orderCreateInput.createdAt ? order.createdAt === orderCreateInput.createdAt : true &&
-                   orderCreateInput.deliveryAcceptedAt ? order.deliveryAcceptedAt === orderCreateInput.deliveryAcceptedAt : true &&
-                   order.supposedDeliveryTime === orderCreateInput.supposedDeliveryTime &&
-                   orderCreateInput.actualDeliveryTime ? order.actualDeliveryTime === orderCreateInput.actualDeliveryTime : true &&
-                   orderCreateInput.deliveryFinishedAt ? order.deliveryFinishedAt === orderCreateInput.deliveryFinishedAt : true &&
                    order.totalPrice === orderCreateInput.totalPrice &&
                    order.decountedPrice === orderCreateInput.decountedPrice
 
@@ -231,17 +242,13 @@ export function compareOrderWithCreateInput(order: OrderModel, orderCreateInput:
 
 export function compareOrderWithUpdateInput(order: OrderModel, orderUpdateInput: OrderUpdateInput): boolean {
     return orderUpdateInput.id ? order.id === orderUpdateInput.id : true &&
-           orderUpdateInput.id ?  order.customerId === orderUpdateInput.customerId : true &&
+           orderUpdateInput.customerId ?  order.customerId === orderUpdateInput.customerId : true &&
            orderUpdateInput.courierId ? order.courierId === orderUpdateInput.courierId : true &&
-           orderUpdateInput.id ? order.restaurantId === orderUpdateInput.restaurantId : true &&
+           orderUpdateInput.restaurantId ? order.restaurantId === orderUpdateInput.restaurantId : true &&
            orderUpdateInput.promocodeName ? order.promocodeName === orderUpdateInput.promocodeName : true &&
            orderUpdateInput.promocodeDiscount ? order.promocodeDiscount === orderUpdateInput.promocodeDiscount : true &&
            orderUpdateInput.status ? order.status === orderUpdateInput.status : true &&
            orderUpdateInput.createdAt ? order.createdAt === orderUpdateInput.createdAt : true &&
-           orderUpdateInput.deliveryAcceptedAt ? order.deliveryAcceptedAt === orderUpdateInput.deliveryAcceptedAt : true &&
-           orderUpdateInput.id ? order.supposedDeliveryTime === orderUpdateInput.supposedDeliveryTime : true &&
-           orderUpdateInput.actualDeliveryTime ? order.actualDeliveryTime === orderUpdateInput.actualDeliveryTime : true &&
-           orderUpdateInput.deliveryFinishedAt ? order.deliveryFinishedAt === orderUpdateInput.deliveryFinishedAt : true &&
-           orderUpdateInput.id ? order.totalPrice === orderUpdateInput.totalPrice : true &&
-           orderUpdateInput.id ? order.decountedPrice === orderUpdateInput.decountedPrice : true
+           orderUpdateInput.totalPrice ? order.totalPrice === orderUpdateInput.totalPrice : true &&
+           orderUpdateInput.decountedPrice ? order.decountedPrice === orderUpdateInput.decountedPrice : true
 }

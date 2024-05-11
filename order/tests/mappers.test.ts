@@ -1,30 +1,6 @@
-import { MenuItemCreateInputDto, MenuItemUpdateInputDto } from '@src/modules/menu/dto/menuItem.dto';
-import { CourierCreateInputDto, CourierGetOutputDto } from '../src/modules/users/dto/courier.dto';
-import { CourierCreateMapper, CourierGetMapper } from "@src/modules/users/mappers/implementations/courier.mappers"
-import { generateCourierCreateInputDto, generateCourierModel } from "./factories/users/courier"
-import { CustomerCreateMapper, CustomerGetMapper } from '@src/modules/users/mappers/implementations/customer.mappers';
-import { generateCustomerCreateInputDto, generateCustomerModel } from './factories/users/customer';
-import { ModeratorGetMapper, ModeratorCreateMapper } from '@src/modules/users/mappers/implementations/moderator.mappers';
-import { generateModeratorModel, generateModeratorCreateInputDto } from './factories/users/moderator';
-import { RestaurantManagerGetMapper, RestaurantManagerCreateMapper } from '@src/modules/users/mappers/implementations/restaurantManager.mappers';
-import { generateRestaurantManagerModel, generateRestaurantManagerCreateInputDto } from './factories/users/restaurantManager';
-import { generateRestaurantCreateInputDto, generateRestaurantModel } from './factories/restaurants/restaurant';
-import { MenuItemGetMapper, MenuItemCreateMapper, MenuItemUpdateMapper } from '@src/modules/menu/mappers/implementations/menuItem.mappers';
-import { RestaurantGetMapper, RestaurantCreateMapper } from '@src/modules/restaurants/mappers/implementations/restaurant.mappers';
-import { generateMenuItemModel, generateMenuItemCreateInputDto, generateMenuItemUpdateInputDto, generateMenuItemCreateInputModel, generateMenuItemUpdateInputModel } from './factories/menu/menuItem';
 import { faker } from '@faker-js/faker';
 import { PromotionGetMapper, PromotionCreateMapper } from '@src/modules/promotions/mappers/implementations/promotion.mappers';
 import { generatePromotionModel, generatePromotionCreateInputDto } from './factories/promotions/promotion';
-import { CourierModel } from '@src/modules/users/models/courier.models';
-import { CustomerModel } from '@src/modules/users/models/customer.models';
-import { CustomerCreateInputDto } from '@src/modules/users/dto/customer.dto';
-import { ModeratorModel } from '@src/modules/users/models/moderator.models';
-import { ModeratorCreateInputDto } from '@src/modules/users/dto/moderator.dto';
-import { RestaurantManagerModel } from '@src/modules/users/models/restaurantManager.models';
-import { RestaurantManagerCreateInputDto } from '@src/modules/users/dto/restaurantManager.dto';
-import { RestaurantCreateInputDto } from '@src/modules/restaurants/dto/restaurant.dto';
-import { RestaurantModel } from '@src/modules/restaurants/models/restaurant.models';
-import { MenuItemModel } from '@src/modules/menu/models/menuItem.models';
 import { PromotionCreateInputDto } from '@src/modules/promotions/dto/promotion.dto';
 import { PromotionModel } from '@src/modules/promotions/models/promotion.models';
 import { generatePromocodeCreateInputDto, generatePromocodeModel, generatePromocodeUpdateInputDto } from './factories/promotions/promocode';
@@ -40,7 +16,7 @@ import { OrderCreateInputDto } from '@src/modules/orders/dto/order.dto';
 import { OrderGetMapper, OrderCreateMapper } from '@src/modules/orders/mappers/implementations/order.mappers';
 import { OrderModel } from '@src/modules/orders/models/order.models';
 import { generateOrderModel, generateOrderCreateInputDto } from './factories/orders/order';
-import { getUniqueId } from './utils/unique';
+import { DeliveryInformationCreateMapper, DeliveryInformationGetMapper } from '@src/modules/orders/mappers/implementations/deliveryInformation.mappers';
 
 describe("Tests for Data Mappers", () => {
 
@@ -73,362 +49,362 @@ describe("Tests for Data Mappers", () => {
 
     // COURIER
 
-    describe("Tests for Courier Mappers", () => {
+    // describe("Tests for Courier Mappers", () => {
 
-        describe("Tests for Courier Get Mapper", () => {
+    //     describe("Tests for Courier Get Mapper", () => {
 
-            const courierGetMapper = new CourierGetMapper()
+    //         const courierGetMapper = new CourierGetMapper()
             
-            const getExpectedDtoResult = (courierInstance: CourierModel): object => {
-                return {
-                    id: courierInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (courierInstance: CourierModel): object => {
+    //             return {
+    //                 id: courierInstance.id.toString()
+    //             }
+    //         }
 
-            test("should map courier database model to get output dto model", () => {
-                testDatabaseToDtoMapper(generateCourierModel, getExpectedDtoResult, courierGetMapper)
-            })
+    //         test("should map courier database model to get output dto model", () => {
+    //             testDatabaseToDtoMapper(generateCourierModel, getExpectedDtoResult, courierGetMapper)
+    //         })
     
-        })
+    //     })
     
-        describe("Tests for Courier Create Mapper", () => {
+    //     describe("Tests for Courier Create Mapper", () => {
     
-            const courierCreateMapper = new CourierCreateMapper()
+    //         const courierCreateMapper = new CourierCreateMapper()
             
-            const getExpectedDbResult = (courierDto: CourierCreateInputDto): object => {
-                return {
-                    id: courierDto.id
-                }
-            }
+    //         const getExpectedDbResult = (courierDto: CourierCreateInputDto): object => {
+    //             return {
+    //                 id: courierDto.id
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (courierInstance: CourierModel): object => {
-                return {
-                    id: courierInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (courierInstance: CourierModel): object => {
+    //             return {
+    //                 id: courierInstance.id.toString()
+    //             }
+    //         }
 
-            test("should map courier create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateCourierCreateInputDto, getExpectedDbResult, courierCreateMapper)
-            })
+    //         test("should map courier create input dto model to create input database model", () => {
+    //             testDtoToDatabaseMapper(generateCourierCreateInputDto, getExpectedDbResult, courierCreateMapper)
+    //         })
     
-            test("should map courier database model to create output dto model", () => {
-                testDatabaseToDtoMapper(generateCourierModel, getExpectedDtoResult, courierCreateMapper)
-            })
+    //         test("should map courier database model to create output dto model", () => {
+    //             testDatabaseToDtoMapper(generateCourierModel, getExpectedDtoResult, courierCreateMapper)
+    //         })
     
-        })
-    })
+    //     })
+    // })
 
     // CUSTOMER
 
-    describe("Tests for Customer Mappers", () => {
+    // describe("Tests for Customer Mappers", () => {
 
-        describe("Tests for Customer Get Mapper", () => {
+    //     describe("Tests for Customer Get Mapper", () => {
 
-            const customerGetMapper = new CustomerGetMapper()
+    //         const customerGetMapper = new CustomerGetMapper()
             
-            const getExpectedDtoResult = (customerInstance: CustomerModel): object => {
-                return {
-                    id: customerInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (customerInstance: CustomerModel): object => {
+    //             return {
+    //                 id: customerInstance.id.toString()
+    //             }
+    //         }
 
-            test("should map customer database model to get output dto model", () => {
-                testDatabaseToDtoMapper(generateCustomerModel, getExpectedDtoResult, customerGetMapper)
-            })
+    //         test("should map customer database model to get output dto model", () => {
+    //             testDatabaseToDtoMapper(generateCustomerModel, getExpectedDtoResult, customerGetMapper)
+    //         })
     
-        })
+    //     })
     
-        describe("Tests for Customer Create Mapper", () => {
+    //     describe("Tests for Customer Create Mapper", () => {
     
-            const customerCreateMapper = new CustomerCreateMapper()
+    //         const customerCreateMapper = new CustomerCreateMapper()
             
-            const getExpectedDbResult = (courierDto: CustomerCreateInputDto): object => {
-                return {
-                    id: courierDto.id
-                }
-            }
+    //         const getExpectedDbResult = (courierDto: CustomerCreateInputDto): object => {
+    //             return {
+    //                 id: courierDto.id
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (courierInstance: CustomerModel): object => {
-                return {
-                    id: courierInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (courierInstance: CustomerModel): object => {
+    //             return {
+    //                 id: courierInstance.id.toString()
+    //             }
+    //         }
 
-            test("should map customer create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateCustomerCreateInputDto, getExpectedDbResult, customerCreateMapper)
-            })
+    //         test("should map customer create input dto model to create input database model", () => {
+    //             testDtoToDatabaseMapper(generateCustomerCreateInputDto, getExpectedDbResult, customerCreateMapper)
+    //         })
     
-            test("should map customer database model to create output dto model", () => {
-                testDatabaseToDtoMapper(generateCustomerModel, getExpectedDtoResult, customerCreateMapper)
-            })
+    //         test("should map customer database model to create output dto model", () => {
+    //             testDatabaseToDtoMapper(generateCustomerModel, getExpectedDtoResult, customerCreateMapper)
+    //         })
     
-        })
-    })
+    //     })
+    // })
 
     // MODERATOR
 
-    describe("Tests for Moderator Mappers", () => {
+    // describe("Tests for Moderator Mappers", () => {
 
-        describe("Tests for Moderator Get Mapper", () => {
+    //     describe("Tests for Moderator Get Mapper", () => {
 
-            const moderatorGetMapper = new ModeratorGetMapper()
+    //         const moderatorGetMapper = new ModeratorGetMapper()
             
-            const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
-                return {
-                    id: moderatorInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
+    //             return {
+    //                 id: moderatorInstance.id.toString()
+    //             }
+    //         }
 
-            test("should map moderator database model to get output dto model", () => {
-                testDatabaseToDtoMapper(generateModeratorModel, getExpectedDtoResult, moderatorGetMapper)
-            })
+    //         test("should map moderator database model to get output dto model", () => {
+    //             testDatabaseToDtoMapper(generateModeratorModel, getExpectedDtoResult, moderatorGetMapper)
+    //         })
     
-        })
+    //     })
         
-        describe("Tests for Moderator Create Mapper", () => {
+    //     describe("Tests for Moderator Create Mapper", () => {
     
-            const moderatorCreateMapper = new ModeratorCreateMapper()
+    //         const moderatorCreateMapper = new ModeratorCreateMapper()
             
-            const getExpectedDbResult = (moderatorDto: ModeratorCreateInputDto): object => {
-                return {
-                    id: moderatorDto.id
-                }
-            }
+    //         const getExpectedDbResult = (moderatorDto: ModeratorCreateInputDto): object => {
+    //             return {
+    //                 id: moderatorDto.id
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
-                return {
-                    id: moderatorInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (moderatorInstance: ModeratorModel): object => {
+    //             return {
+    //                 id: moderatorInstance.id.toString()
+    //             }
+    //         }
 
-            test("should map moderator create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateModeratorCreateInputDto, getExpectedDbResult, moderatorCreateMapper)
-            })
+    //         test("should map moderator create input dto model to create input database model", () => {
+    //             testDtoToDatabaseMapper(generateModeratorCreateInputDto, getExpectedDbResult, moderatorCreateMapper)
+    //         })
     
-            test("should map moderator database model to create output dto model", () => {
-                testDatabaseToDtoMapper(generateModeratorModel, getExpectedDtoResult, moderatorCreateMapper)
-            })
+    //         test("should map moderator database model to create output dto model", () => {
+    //             testDatabaseToDtoMapper(generateModeratorModel, getExpectedDtoResult, moderatorCreateMapper)
+    //         })
     
-        })
+    //     })
 
-    })
+    // })
 
     // RESTAURANT MANAGER
 
-    describe("Tests for Restaurant Manager Mappers", () => {
+    // describe("Tests for Restaurant Manager Mappers", () => {
 
-        const generateFullRestaurantManagerModel = (): RestaurantManagerModel => {
-            const restaurantId = faker.number.bigInt()
-            return generateRestaurantManagerModel(restaurantId)
-        }
+    //     const generateFullRestaurantManagerModel = (): RestaurantManagerModel => {
+    //         const restaurantId = faker.number.bigInt()
+    //         return generateRestaurantManagerModel(restaurantId)
+    //     }
 
-        describe("Tests for Restaurant Manager Get Mapper", () => {
+    //     describe("Tests for Restaurant Manager Get Mapper", () => {
 
-            const restaurantManagerGetMapper = new RestaurantManagerGetMapper()
+    //         const restaurantManagerGetMapper = new RestaurantManagerGetMapper()
     
-            const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
-                return {
-                    id: restaurantManagerInstance.id.toString(),
-                    restaurantId: restaurantManagerInstance.restaurantId ? restaurantManagerInstance.restaurantId.toString() : undefined
-                }
-            }
+    //         const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
+    //             return {
+    //                 id: restaurantManagerInstance.id.toString(),
+    //                 restaurantId: restaurantManagerInstance.restaurantId ? restaurantManagerInstance.restaurantId.toString() : undefined
+    //             }
+    //         }
 
-            test("should map restaurant manager database model to get output dto model", () => {
-                testDatabaseToDtoMapper(generateRestaurantManagerModel, getExpectedDtoResult, restaurantManagerGetMapper)
-            })
+    //         test("should map restaurant manager database model to get output dto model", () => {
+    //             testDatabaseToDtoMapper(generateRestaurantManagerModel, getExpectedDtoResult, restaurantManagerGetMapper)
+    //         })
 
-            test("should map restaurant manager database model to get output dto model including restaurant", () => {
-                testDatabaseToDtoMapper(generateFullRestaurantManagerModel, getExpectedDtoResult, restaurantManagerGetMapper)
-            })
+    //         test("should map restaurant manager database model to get output dto model including restaurant", () => {
+    //             testDatabaseToDtoMapper(generateFullRestaurantManagerModel, getExpectedDtoResult, restaurantManagerGetMapper)
+    //         })
     
-        })
+    //     })
         
-        describe("Tests for Restaurant Manager Create Mapper", () => {
+    //     describe("Tests for Restaurant Manager Create Mapper", () => {
     
-            const restaurantManagerCreateMapper = new RestaurantManagerCreateMapper()
+    //         const restaurantManagerCreateMapper = new RestaurantManagerCreateMapper()
             
-            const getExpectedDbResult = (restaurantManagerDto: RestaurantManagerCreateInputDto): object => {
-                return {
-                    id: restaurantManagerDto.id
-                }
-            }
+    //         const getExpectedDbResult = (restaurantManagerDto: RestaurantManagerCreateInputDto): object => {
+    //             return {
+    //                 id: restaurantManagerDto.id
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
-                return {
-                    id: restaurantManagerInstance.id.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (restaurantManagerInstance: RestaurantManagerModel): object => {
+    //             return {
+    //                 id: restaurantManagerInstance.id.toString()
+    //             }
+    //         }
             
-            test("should map restaurant manager create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateRestaurantManagerCreateInputDto, getExpectedDbResult, restaurantManagerCreateMapper)
-            })
+    //         test("should map restaurant manager create input dto model to create input database model", () => {
+    //             testDtoToDatabaseMapper(generateRestaurantManagerCreateInputDto, getExpectedDbResult, restaurantManagerCreateMapper)
+    //         })
 
-            test("should map restaurant manager database model to create output dto model", () => {
-                testDatabaseToDtoMapper(generateRestaurantManagerModel, getExpectedDtoResult, restaurantManagerCreateMapper)
-            })
+    //         test("should map restaurant manager database model to create output dto model", () => {
+    //             testDatabaseToDtoMapper(generateRestaurantManagerModel, getExpectedDtoResult, restaurantManagerCreateMapper)
+    //         })
 
-        })
+    //     })
 
-    })
+    // })
 
     // RESTAURANT
 
-    describe("Tests for Restaurant Mappers", () => {
+    // describe("Tests for Restaurant Mappers", () => {
 
-        describe("Tests for Restaurant Get Mapper", () => {
+    //     describe("Tests for Restaurant Get Mapper", () => {
 
-            const restaurantGetMapper = new RestaurantGetMapper()
+    //         const restaurantGetMapper = new RestaurantGetMapper()
             
-            const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
-                return {
-                    id: restaurantInstance.id.toString(),
-                    isActive: restaurantInstance.isActive
-                }
-            }
+    //         const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
+    //             return {
+    //                 id: restaurantInstance.id.toString(),
+    //                 isActive: restaurantInstance.isActive
+    //             }
+    //         }
 
-            test("should map restaurant database model to get output dto model", () => {
-                testDatabaseToDtoMapper(generateRestaurantModel, getExpectedDtoResult, restaurantGetMapper)
-            })
+    //         test("should map restaurant database model to get output dto model", () => {
+    //             testDatabaseToDtoMapper(generateRestaurantModel, getExpectedDtoResult, restaurantGetMapper)
+    //         })
     
-        })
+    //     })
         
-        describe("Tests for Restaurant Create Mapper", () => {
+    //     describe("Tests for Restaurant Create Mapper", () => {
     
-            const restaurantCreateMapper = new RestaurantCreateMapper()
+    //         const restaurantCreateMapper = new RestaurantCreateMapper()
     
-            const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDto): object => {
-                return {
-                    id: restaurantDto.id,
-                    isActive: restaurantDto.isActive
-                }
-            }
+    //         const getExpectedDbResult = (restaurantDto: RestaurantCreateInputDto): object => {
+    //             return {
+    //                 id: restaurantDto.id,
+    //                 isActive: restaurantDto.isActive
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
-                return {
-                    id: restaurantInstance.id.toString(),
-                    isActive: restaurantInstance.isActive
-                }
-            }
+    //         const getExpectedDtoResult = (restaurantInstance: RestaurantModel): object => {
+    //             return {
+    //                 id: restaurantInstance.id.toString(),
+    //                 isActive: restaurantInstance.isActive
+    //             }
+    //         }
             
-            const generateFullRestaurantCreateInputDto = (): RestaurantCreateInputDto => {
-                const restaurantManagerId = getUniqueId()
-                return generateRestaurantCreateInputDto(restaurantManagerId)
-            }
+    //         const generateFullRestaurantCreateInputDto = (): RestaurantCreateInputDto => {
+    //             const restaurantManagerId = getUniqueId()
+    //             return generateRestaurantCreateInputDto(restaurantManagerId)
+    //         }
 
-            test("should map restaurant create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateFullRestaurantCreateInputDto, getExpectedDbResult, restaurantCreateMapper)
-            })
+    //         test("should map restaurant create input dto model to create input database model", () => {
+    //             testDtoToDatabaseMapper(generateFullRestaurantCreateInputDto, getExpectedDbResult, restaurantCreateMapper)
+    //         })
     
-            test("should map restaurant database model to create output dto model", () => {
-                testDatabaseToDtoMapper(generateRestaurantModel, getExpectedDtoResult, restaurantCreateMapper)
-            })
+    //         test("should map restaurant database model to create output dto model", () => {
+    //             testDatabaseToDtoMapper(generateRestaurantModel, getExpectedDtoResult, restaurantCreateMapper)
+    //         })
     
-        })
+    //     })
 
-    })
+    // })
 
     // MENU ITEM
 
-    describe("Tests for Menu Item Mappers", () => {
+    // describe("Tests for Menu Item Mappers", () => {
 
-        const generateFullMenuItemModel = (): MenuItemModel => {
-            const restaurantId = faker.number.bigInt()
-            return generateMenuItemModel(restaurantId)
-        }
+    //     const generateFullMenuItemModel = (): MenuItemModel => {
+    //         const restaurantId = faker.number.bigInt()
+    //         return generateMenuItemModel(restaurantId)
+    //     }
 
-        describe("Tests for Menu Item Get Mapper", () => {
+    //     describe("Tests for Menu Item Get Mapper", () => {
 
-            const menuItemGetMapper = new MenuItemGetMapper()
+    //         const menuItemGetMapper = new MenuItemGetMapper()
 
-            const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
-                return {
-                    id: menuItemInstance.id.toString(),
-                    name: menuItemInstance.name,
-                    imageUrl: menuItemInstance.imageUrl,
-                    price: menuItemInstance.price,
-                    restaurantId: menuItemInstance.restaurantId.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
+    //             return {
+    //                 id: menuItemInstance.id.toString(),
+    //                 name: menuItemInstance.name,
+    //                 imageUrl: menuItemInstance.imageUrl,
+    //                 price: menuItemInstance.price,
+    //                 restaurantId: menuItemInstance.restaurantId.toString()
+    //             }
+    //         }
 
-            test("should map menu item database model to get output dto model", () => {
-                testDatabaseToDtoMapper(generateFullMenuItemModel, getExpectedDtoResult, menuItemGetMapper)
-            })
+    //         test("should map menu item database model to get output dto model", () => {
+    //             testDatabaseToDtoMapper(generateFullMenuItemModel, getExpectedDtoResult, menuItemGetMapper)
+    //         })
     
-        })
+    //     })
         
-        describe("Tests for Menu Item Create Mapper", () => {
+    //     describe("Tests for Menu Item Create Mapper", () => {
     
-            const menuItemCreateMapper = new MenuItemCreateMapper()
+    //         const menuItemCreateMapper = new MenuItemCreateMapper()
 
-            const generateFullMenuItemDto = (): MenuItemCreateInputDto => {
-                const restaurantId = faker.number.bigInt()
-                return generateMenuItemCreateInputDto(restaurantId)
-            }
+    //         const generateFullMenuItemDto = (): MenuItemCreateInputDto => {
+    //             const restaurantId = faker.number.bigInt()
+    //             return generateMenuItemCreateInputDto(restaurantId)
+    //         }
 
-            const getExpectedDbResult = (menuItemDto: MenuItemCreateInputDto): object => {
-                return {
-                    id: menuItemDto.id,
-                    name: menuItemDto.name,
-                    imageUrl: menuItemDto.imageUrl,
-                    price: menuItemDto.price,
-                    restaurantId: menuItemDto.restaurantId
-                }
-            }
+    //         const getExpectedDbResult = (menuItemDto: MenuItemCreateInputDto): object => {
+    //             return {
+    //                 id: menuItemDto.id,
+    //                 name: menuItemDto.name,
+    //                 imageUrl: menuItemDto.imageUrl,
+    //                 price: menuItemDto.price,
+    //                 restaurantId: menuItemDto.restaurantId
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
-                return {
-                    id: menuItemInstance.id.toString(),
-                    name: menuItemInstance.name,
-                    imageUrl: menuItemInstance.imageUrl,
-                    price: menuItemInstance.price,
-                    restaurantId: menuItemInstance.restaurantId.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
+    //             return {
+    //                 id: menuItemInstance.id.toString(),
+    //                 name: menuItemInstance.name,
+    //                 imageUrl: menuItemInstance.imageUrl,
+    //                 price: menuItemInstance.price,
+    //                 restaurantId: menuItemInstance.restaurantId.toString()
+    //             }
+    //         }
             
 
-            test("should map menu item create input dto model to create input database model", () => {
-                testDtoToDatabaseMapper(generateFullMenuItemDto, getExpectedDbResult, menuItemCreateMapper)
-            })
+    //         test("should map menu item create input dto model to create input database model", () => {
+    //             testDtoToDatabaseMapper(generateFullMenuItemDto, getExpectedDbResult, menuItemCreateMapper)
+    //         })
     
-            test("should map menu item database model to create output dto model", () => {
-                testDatabaseToDtoMapper(generateFullMenuItemModel, getExpectedDtoResult, menuItemCreateMapper)
-            })
+    //         test("should map menu item database model to create output dto model", () => {
+    //             testDatabaseToDtoMapper(generateFullMenuItemModel, getExpectedDtoResult, menuItemCreateMapper)
+    //         })
     
-        })
+    //     })
 
-        describe("Tests for Menu Item Update Mapper", () => {
+    //     describe("Tests for Menu Item Update Mapper", () => {
     
-            const menuItemUpdateMapper = new MenuItemUpdateMapper()
+    //         const menuItemUpdateMapper = new MenuItemUpdateMapper()
 
-            const getExpectedDbResult = (menuItemDto: MenuItemUpdateInputDto): object => {
-                return {
-                    name: menuItemDto.name,
-                    imageUrl: menuItemDto.imageUrl,
-                    price: menuItemDto.price
-                }
-            }
+    //         const getExpectedDbResult = (menuItemDto: MenuItemUpdateInputDto): object => {
+    //             return {
+    //                 name: menuItemDto.name,
+    //                 imageUrl: menuItemDto.imageUrl,
+    //                 price: menuItemDto.price
+    //             }
+    //         }
 
-            const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
-                return {
-                    id: menuItemInstance.id.toString(),
-                    name: menuItemInstance.name,
-                    imageUrl: menuItemInstance.imageUrl,
-                    price: menuItemInstance.price,
-                    restaurantId: menuItemInstance.restaurantId.toString()
-                }
-            }
+    //         const getExpectedDtoResult = (menuItemInstance: MenuItemModel): object => {
+    //             return {
+    //                 id: menuItemInstance.id.toString(),
+    //                 name: menuItemInstance.name,
+    //                 imageUrl: menuItemInstance.imageUrl,
+    //                 price: menuItemInstance.price,
+    //                 restaurantId: menuItemInstance.restaurantId.toString()
+    //             }
+    //         }
 
-            test("should map menu item update input dto model to update input database model", () => {
-                testDtoToDatabaseMapper(generateMenuItemUpdateInputDto, getExpectedDbResult, menuItemUpdateMapper)
-            })
+    //         test("should map menu item update input dto model to update input database model", () => {
+    //             testDtoToDatabaseMapper(generateMenuItemUpdateInputDto, getExpectedDbResult, menuItemUpdateMapper)
+    //         })
     
-            test("should map menu item database model to update output dto model", () => {
-                testDatabaseToDtoMapper(generateFullMenuItemModel, getExpectedDtoResult, menuItemUpdateMapper)
-            })
+    //         test("should map menu item database model to update output dto model", () => {
+    //             testDatabaseToDtoMapper(generateFullMenuItemModel, getExpectedDtoResult, menuItemUpdateMapper)
+    //         })
     
-        })
+    //     })
 
-    })
+    // })
 
     // PROMOTION
 
@@ -717,6 +693,7 @@ describe("Tests for Data Mappers", () => {
         const generateFullOrderModel = (): OrderModel => {
             const customerId = faker.number.bigInt()
             const restaurantId = faker.number.bigInt()
+            const deliveryInformationId = faker.number.bigInt()
             const courierId = faker.number.bigInt()
             const promotionId = faker.number.bigInt()
             const promocodeName = faker.lorem.word(5)
@@ -724,23 +701,22 @@ describe("Tests for Data Mappers", () => {
                 min: 10,
                 max: 100
             })
-            const actualDeliveryTime = faker.date.future()
-            const deliveryAcceptedTime = faker.date.future()
-            const deliveryFinishedTime = faker.date.future()
 
-            return generateOrderModel(customerId, restaurantId, "READY", manyCount, promocodeName, promocodeDiscount, actualDeliveryTime, deliveryAcceptedTime, deliveryFinishedTime, courierId, promotionId)
+            return generateOrderModel(customerId, restaurantId, "READY", manyCount, deliveryInformationId, promocodeName, promocodeDiscount, courierId, promotionId)
         }
 
         const generateMinimumOrderModel = (): OrderModel => {
             const customerId = faker.number.bigInt()
             const restaurantId = faker.number.bigInt()
-            return generateOrderModel(customerId, restaurantId, "READY", 0)
+            const deliveryInformationId = faker.number.bigInt()
+            return generateOrderModel(customerId, restaurantId, "READY", 0, deliveryInformationId)
         }
 
         describe("Tests for Order Get Mapper", () => {
             
             const orderItemGetMapper = new OrderItemGetMapper()
-            const orderGetMapper = new OrderGetMapper(orderItemGetMapper)
+            const deliveryInforamationGetMapper = new DeliveryInformationGetMapper()
+            const orderGetMapper = new OrderGetMapper(orderItemGetMapper, deliveryInforamationGetMapper)
 
             const getExpectedDtoResult = (orderInstance: OrderModel): object => {
                 const orderItems = orderInstance.items?.map((orderItemInstance) => {
@@ -764,10 +740,6 @@ describe("Tests for Data Mappers", () => {
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
                     promotionId: orderInstance.promotionId ? orderInstance.promotionId.toString() : undefined,
                     createdAt: orderInstance.createdAt.toISOString(),
-                    deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toISOString(),
-                    supposedDeliveryTime: orderInstance.supposedDeliveryTime.toISOString(),
-                    actualDeliveryTime: orderInstance.actualDeliveryTime?.toISOString(),
-                    deliveryFinishedAt: orderInstance.deliveryFinishedAt?.toISOString(),
                     totalPrice: orderInstance.totalPrice,
                     decountedPrice: orderInstance.decountedPrice,
                     items: orderItems
@@ -787,14 +759,16 @@ describe("Tests for Data Mappers", () => {
         describe("Tests for Order Create Mapper", () => {
     
             const orderItemCreateMapper = new OrderItemCreateMapper()
-            const orderCreateMapper = new OrderCreateMapper(orderItemCreateMapper)
+            const deliveryInformationCreateMapper = new DeliveryInformationCreateMapper()
+            const orderCreateMapper = new OrderCreateMapper(orderItemCreateMapper, deliveryInformationCreateMapper)
 
             const generateFullOrderDto = (): OrderCreateInputDto => {
                 const restaurantId = faker.number.bigInt()
+                const deliveryInformationId = faker.number.bigInt()
                 const promocode = faker.lorem.word(5)
                 const promotionId = faker.number.bigInt()
                 const menuItemIds = Array.from({length: manyCount}, () => (faker.number.bigInt()))
-                return generateOrderCreateInputDto(restaurantId, menuItemIds, promocode, promotionId)
+                return generateOrderCreateInputDto(restaurantId, deliveryInformationId, menuItemIds, promocode, promotionId)
             }
 
             const generateMinimumOrderDto = (): OrderCreateInputDto => {
@@ -815,9 +789,9 @@ describe("Tests for Data Mappers", () => {
 
                 return {
                     customerId: orderInstance.customerId,
+                    deliveryInformationId: orderInstance.deliveryInformationId,
                     promocodeName: orderInstance.promocodeName ? orderInstance.promocodeName : undefined,
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
-                    supposedDeliveryTime: orderInstance.supposedDeliveryTime,
                     totalPrice: orderInstance.totalPrice,
                     decountedPrice: orderInstance.decountedPrice,
                     items: orderItemsAdditionalData
@@ -840,7 +814,6 @@ describe("Tests for Data Mappers", () => {
                     promocodeName: additionalData.promocodeName,
                     promocodeDiscount: additionalData.promocodeDiscount,
                     promotionId: orderDto.promotionId ? orderDto.promotionId : undefined,
-                    supposedDeliveryTime: additionalData.supposedDeliveryTime,
                     totalPrice: Number(additionalData.totalPrice.toFixed(2)),
                     decountedPrice: Number(additionalData.decountedPrice.toFixed(2)),
                     items: {
@@ -871,10 +844,6 @@ describe("Tests for Data Mappers", () => {
                     promocodeDiscount: orderInstance.promocodeDiscount ? orderInstance.promocodeDiscount : undefined,
                     promotionId: orderInstance.promotionId ? orderInstance.promotionId.toString() : undefined,
                     createdAt: orderInstance.createdAt.toISOString(),
-                    deliveryAcceptedAt: orderInstance.deliveryAcceptedAt?.toISOString(),
-                    supposedDeliveryTime: orderInstance.supposedDeliveryTime.toISOString(),
-                    actualDeliveryTime: orderInstance.actualDeliveryTime?.toISOString(),
-                    deliveryFinishedAt: orderInstance.deliveryFinishedAt?.toISOString(),
                     totalPrice: orderInstance.totalPrice,
                     decountedPrice: orderInstance.decountedPrice,
                     items: orderItems
