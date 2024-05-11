@@ -4,13 +4,16 @@ import { Request, Response } from "express"
 import PrismaOrderServiceFactory from '../services/factories/implementations/prisma/PrismaOrderServiceFactory';
 import { idValidator } from '@src/core/validators/idValidator';
 import { authenticateWithPrisma } from '@src/modules/authentication/utils/prisma/auhenticateWithPrisma';
+import { deliveryTypeValidator } from '../validators/deliveryType.validators';
+import getSettings from '@src/core/utils/getSettings';
 
 export const makeOrder = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
 
     const orderCreateInputDto = orderCreateValidator.parse(req.body)
+    const appSettings = getSettings()
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
     
     await authenticateWithPrisma(req, prismaClient, orderService)
@@ -24,8 +27,9 @@ export const getAllOrders = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
     
     const orderStatus = orderStatusValidator.parse(req.query.status)
-    
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+
+    const appSettings = getSettings()
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
@@ -39,8 +43,9 @@ export const getCurrentCustomerOrders = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
     
     const orderStatus = orderStatusValidator.parse(req.query.status)
+    const appSettings = getSettings()
     
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
@@ -54,8 +59,9 @@ export const getCurrentCourierOrders = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
    
     const orderStatus = orderStatusValidator.parse(req.query.status)
+    const appSettings = getSettings()
     
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
@@ -67,8 +73,9 @@ export const getCurrentCourierOrders = async (req: Request, res: Response) => {
 
 export const getAvailableForDeliveryOrders = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
+    const appSettings = getSettings()
     
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
@@ -78,18 +85,68 @@ export const getAvailableForDeliveryOrders = async (req: Request, res: Response)
     res.status(200).json(orderGetOutputDtos)
 }
 
+export const confirmOrder = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+
+    const orderId = idValidator.parse(req.params.orderId)
+    const appSettings = getSettings()
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderService = orderServiceFactory.createOrderService()
+
+    await authenticateWithPrisma(req, prismaClient, orderService)
+
+    await orderService.confirmOrder(orderId)
+    
+    res.status(200).json({})
+}
+
+export const prepareOrder = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+
+    const orderId = idValidator.parse(req.params.orderId)
+    const appSettings = getSettings()
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderService = orderServiceFactory.createOrderService()
+
+    await authenticateWithPrisma(req, prismaClient, orderService)
+
+    await orderService.prepareOrder(orderId)
+    
+    res.status(200).json({})
+}
+
+export const cancelOrder = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+
+    const orderId = idValidator.parse(req.params.orderId)
+    const appSettings = getSettings()
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderService = orderServiceFactory.createOrderService()
+
+    await authenticateWithPrisma(req, prismaClient, orderService)
+
+    await orderService.cancelOrder(orderId)
+    
+    res.status(200).json({})
+}
+
 
 export const takeOrder = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
 
     const orderId = idValidator.parse(req.params.orderId)
+    const deliveryType = deliveryTypeValidator.parse(req.query.deliveryType)
+    const appSettings = getSettings()
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
 
-    await orderService.takeOrder(orderId)
+    await orderService.takeOrder(orderId, deliveryType)
     
     res.status(200).json({})
 }
@@ -98,8 +155,9 @@ export const finishOrderDelivery = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
 
     const orderId = idValidator.parse(req.params.orderId)
+    const appSettings = getSettings()
     
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)
