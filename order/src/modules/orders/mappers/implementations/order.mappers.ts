@@ -1,13 +1,15 @@
 import { OrderCreateInputDto, OrderCreateOutputDto, OrderGetOutputDto } from "../../dto/order.dto";
 import { OrderCreateInput, OrderModel } from "../../models/order.models";
 import { OrderAdditionalData } from "../additionalData";
+import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper } from "../interfaces/deliveryInformation.mappers";
 import { IOrderGetMapper, IOrderCreateMapper } from "../interfaces/order.mappers";
 import { IOrderItemCreateMapper, IOrderItemGetMapper } from "../interfaces/orderItem.mappers";
 
 export class OrderGetMapper implements IOrderGetMapper {
 
     constructor(
-        protected orderItemGetMapper: IOrderItemGetMapper
+        protected orderItemGetMapper: IOrderItemGetMapper,
+        protected deliveryInformationGetMapper: IDeliveryInformationGetMapper
     ) {}
 
     toDto(dbModel: OrderModel): OrderGetOutputDto {
@@ -21,10 +23,7 @@ export class OrderGetMapper implements IOrderGetMapper {
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
             promotionId: dbModel.promotionId ? dbModel.promotionId.toString() : undefined,
             createdAt: dbModel.createdAt.toISOString(),
-            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
-            supposedDeliveryTime: dbModel.supposedDeliveryTime.toISOString(),
-            actualDeliveryTime: dbModel.actualDeliveryTime?.toISOString(),
-            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString(),
+            deliveryInformation: dbModel.deliveryInformation ? this.deliveryInformationGetMapper.toDto(dbModel.deliveryInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
         }
     }
@@ -34,7 +33,8 @@ export class OrderGetMapper implements IOrderGetMapper {
 export class OrderCreateMapper implements IOrderCreateMapper {
 
     constructor(
-        protected orderItemCreateMapper: IOrderItemCreateMapper
+        protected orderItemCreateMapper: IOrderItemCreateMapper,
+        protected deliveryInformationCreateMapper: IDeliveryInformationCreateMapper
     ) {}
 
     toDto(dbModel: OrderModel): OrderCreateOutputDto {
@@ -48,10 +48,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
             promotionId: dbModel.promotionId ? dbModel.promotionId.toString() : undefined,
             createdAt: dbModel.createdAt.toISOString(),
-            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
-            supposedDeliveryTime: dbModel.supposedDeliveryTime.toISOString(),
-            actualDeliveryTime: dbModel.actualDeliveryTime?.toISOString(),
-            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString(),
+            deliveryInformation: dbModel.deliveryInformation ? this.deliveryInformationCreateMapper.toDto(dbModel.deliveryInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemCreateMapper.toDto(orderItem))
         }
     }
@@ -63,7 +60,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             promocodeName: additionalData.promocodeName,
             promocodeDiscount: additionalData.promocodeDiscount,
             promotionId: dtoModel.promotionId ? dtoModel.promotionId : undefined,
-            supposedDeliveryTime: additionalData.supposedDeliveryTime,
+            deliveryInformationId: additionalData.deliveryInformationId,
             totalPrice: Number(additionalData.totalPrice.toFixed(2)),
             decountedPrice: Number(additionalData.decountedPrice.toFixed(2)),
             items: {

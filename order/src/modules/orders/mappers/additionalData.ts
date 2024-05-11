@@ -12,11 +12,11 @@ export type OrderItemWithOrderAdditionalData = {
 }
 
 export type OrderAdditionalData = {
-    customerId: bigint,
+    customerId: bigint
+    deliveryInformationId: bigint
     promocodeName?: string
-    promocodeDiscount?: number,
-    supposedDeliveryTime: Date,
-    totalPrice: number,
+    promocodeDiscount?: number
+    totalPrice: number
     decountedPrice: number
     items: OrderItemWithOrderAdditionalData[]
 }
