@@ -14,6 +14,8 @@ import IOrderService from "../../../interfaces/IOrderService"
 import IOrderServiceFactory from "../../interfaces/IOrderServiceFactory"
 import IPromotionRepositoryFactory from "@src/modules/promotions/repositories/factories/interfaces/IPromotionRepositoryFactory"
 import PrismaPromotionRepositoryFactory from "@src/modules/promotions/repositories/factories/implementations/prisma/PrismaPromotionRepositoryFactory"
+import ICustomerAddressRepositoryFactory from "@src/modules/addresses/repositories/factories/interfaces/ICustomerAddressRepositoryFactory"
+import PrismaCustomerAddressRepositoryFactory from "@src/modules/addresses/repositories/factories/implementations/prisma/PrismaCustomerAddressRepositoryFactory"
 
 export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
     protected orderMapperFactory: IOrderMapperFactory = new OrderMapperFactory()
@@ -21,12 +23,16 @@ export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
     protected promotionRepositoryFactory: IPromotionRepositoryFactory
     protected menuItemRepositoryFactory: IMenuItemRepositoryFactory
     protected restaurantRepositoryFactory: IRestaurantRepositoryFactory
+    protected customerAddressRepositoryFactory: ICustomerAddressRepositoryFactory
+    protected bingApiKey: string
 
-    constructor(prismaClient: PrismaClient) {
+    constructor(prismaClient: PrismaClient, bingApiKey: string) {
         this.orderRepositoryFactory = new PrismaOrderRepositoryFactory(prismaClient)
         this.promotionRepositoryFactory = new PrismaPromotionRepositoryFactory(prismaClient)
         this.menuItemRepositoryFactory = new PrismaMenuItemRepositoryFactory(prismaClient)
         this.restaurantRepositoryFactory = new PrismaRestaurantRepositoryFactory(prismaClient)
+        this.customerAddressRepositoryFactory = new PrismaCustomerAddressRepositoryFactory(prismaClient)
+        this.bingApiKey = bingApiKey
     }
 
     public createOrderService(): IOrderService {
@@ -35,8 +41,12 @@ export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
             this.orderMapperFactory.createOrderCreateMapper(),
             this.orderRepositoryFactory.createOrderRepository(),
             this.promotionRepositoryFactory.createPromocodeRepository(),
+            this.customerAddressRepositoryFactory.createCustomerAddressRepository(),
+            this.orderRepositoryFactory.createDeliveryInformationRepository(),
             this.menuItemRepositoryFactory.createMenuItemRepository(),
-            this.restaurantRepositoryFactory.createRestaurantRepository()
+            this.restaurantRepositoryFactory.createRestaurantRepository(),
+            this.restaurantRepositoryFactory.createWorkingHoursRepository(),
+            this.bingApiKey
         )
     }
     
