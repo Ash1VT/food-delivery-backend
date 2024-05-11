@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 
 COPY src/ $WEB_APP_DIR/src
-COPY requirements.txt alembic.ini $WEB_APP_DIR
+COPY requirements.txt alembic.ini key.json $WEB_APP_DIR
 COPY docker/app/start.sh $WEB_APP_DIR
 
 RUN apt-get update
