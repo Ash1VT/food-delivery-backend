@@ -1,3 +1,4 @@
+import { DeliveryInformation } from "@prisma/client";
 import { OrderItemModel, OrderItemWithOrderCreateInput } from "./orderItem.models";
 import { OrderStatus } from "./orderStatus.models";
 
@@ -9,15 +10,13 @@ export type OrderModel = {
     promocodeName?: string | null
     promocodeDiscount?: number | null
     promotionId?: bigint | null
+    deliveryInformationId: bigint
     status: OrderStatus
     createdAt: Date
-    deliveryAcceptedAt?: Date | null
-    supposedDeliveryTime: Date
-    actualDeliveryTime?: Date | null
-    deliveryFinishedAt?: Date | null
     totalPrice: number
     decountedPrice: number
     items?: OrderItemModel[]
+    deliveryInformation?: DeliveryInformation
 }
 
 export type OrderCreateInput = {
@@ -28,12 +27,9 @@ export type OrderCreateInput = {
     promocodeName?: string
     promocodeDiscount?: number
     promotionId?: bigint
+    deliveryInformationId: bigint
     status?: OrderStatus
     createdAt?: Date
-    deliveryAcceptedAt?: Date
-    supposedDeliveryTime: Date
-    actualDeliveryTime?: Date
-    deliveryFinishedAt?: Date
     totalPrice: number
     decountedPrice: number
     items?: {
@@ -48,12 +44,9 @@ export type OrderUpdateInput = {
     restaurantId?: bigint
     promocodeName?: string | null
     promocodeDiscount?: number | null
+    deliveryInformationId?: bigint
     status?: OrderStatus
     createdAt?: Date
-    deliveryAcceptedAt?: Date | null
-    supposedDeliveryTime?: Date
-    actualDeliveryTime?: Date | null
-    deliveryFinishedAt?: Date | null
     totalPrice?: number
     decountedPrice?: number
 }
