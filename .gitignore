@@ -139,3 +139,6 @@ GitHub.sublime-settings
 # Visual Studio Code #
 .vscode
 .history
+
+# Firebase #
+key.json
