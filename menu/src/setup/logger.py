@@ -32,7 +32,3 @@ logger.add(
     backtrace=True,
     diagnose=True
 )
-
-logger.add(
-    sink
-)
