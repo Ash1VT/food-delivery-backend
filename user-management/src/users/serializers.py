@@ -8,9 +8,11 @@ from .services import UserService
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer for user's profile."""
 
+    image = serializers.ImageField(write_only=True, required=False)
+
     class Meta:
         model = UserProfile
-        fields = ('first_name', 'last_name', 'age', 'phone', 'birth_date')
+        fields = ('first_name', 'last_name', 'phone', 'image', 'birth_date')
 
 
 # User serializers #
@@ -161,6 +163,15 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
+class UserProfileOutSerializer(serializers.ModelSerializer):
+    """
+    User profile serializer for responses.
+    """
+    class Meta:
+        model = UserProfile
+        fields = ('first_name', 'last_name', 'phone', 'image_url', 'birth_date')
+
+
 class UserOutSerializer(serializers.ModelSerializer):
     """
     User serializer for responses.
@@ -168,7 +179,7 @@ class UserOutSerializer(serializers.ModelSerializer):
     Includes the user profile serializer as a nested field for user profile data.
     """
 
-    user_profile = UserProfileSerializer()
+    user_profile = UserProfileOutSerializer()
 
     class Meta:
         model = User
@@ -226,7 +237,7 @@ class UserOutModeratorSerializer(serializers.ModelSerializer):
     Includes the user profile serializer as a nested field for user profile data.
     """
 
-    user_profile = UserProfileSerializer()
+    user_profile = UserProfileOutSerializer()
 
     class Meta:
         model = User
