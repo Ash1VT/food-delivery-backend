@@ -37,3 +37,12 @@ class MenuItemDeletedSchema(BaseModel):
     """
 
     id: int = Field(ge=0)
+
+
+class MenuItemCreatedToReviewSchema(BaseModel):
+    """
+    Schema class for output representation of data of menu item when it is created
+    to data that will be published to Kafka for review microservice.
+    """
+
+    id: int = Field(ge=0)
