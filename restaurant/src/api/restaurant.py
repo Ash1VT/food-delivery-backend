@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
 
 from dependencies import get_uow, get_uow_with_commit, get_restaurant_service
 from schemas.application import RestaurantApplicationCreateOut
@@ -61,4 +61,18 @@ async def deactivate_restaurant(restaurant_id: int,
                                 service: RestaurantService = Depends(get_restaurant_service),
                                 uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
     await service.deactivate_restaurant(restaurant_id, uow)
+    return {}
+
+
+@router.put('/{restaurant_id}/image')
+@handle_app_errors
+async def upload_restaurant_image(restaurant_id: int,
+                                  image: UploadFile = File(...),
+                                  service: RestaurantService = Depends(get_restaurant_service),
+                                  uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
+    # Check if the uploaded file is an image
+    if not image.content_type.startswith('image'):
+        raise HTTPException(status_code=400, detail="Uploaded file is not an image")
+
+    await service.upload_image(restaurant_id, image, uow)
     return {}
