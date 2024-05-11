@@ -10,6 +10,7 @@ class Restaurant(CustomBase):
     __tablename__ = 'restaurants'
 
     name = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
     description = Column(String)
     address = Column(String, nullable=False)
     phone = Column(String, nullable=False)
