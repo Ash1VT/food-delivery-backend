@@ -1,13 +1,26 @@
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent"
+import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent"
+import KafkaProducerBaseEvent, { TopicValidator } from "@src/kafka/producer/events/KafkaProducerBaseEvent"
 
-export interface KafkaEventConstructor {
-    new (data: object): KafkaBaseEvent
+export interface KafkaConsumerEventConstructor {
+    new (data: any): KafkaConsumerBaseEvent
+    getEventName(): string
+}
+
+export interface KafkaProducerEventConstructor {
+    new (data: any): KafkaProducerBaseEvent
+    extendTopicsValidators(topicsValidators: TopicValidator[]): void
+    getTopics(): string[]
     getEventName(): string
 }
 
 export type KafkaConsumerTopicEvent = {
     topicName: string
-    events: KafkaEventConstructor[]
+    events: KafkaConsumerEventConstructor[]
+}
+
+export type KafkaProducerEventTopics = {
+    Event: KafkaProducerEventConstructor
+    topicsValidators: TopicValidator[]
 }
 
 
@@ -30,5 +43,8 @@ export type SettingsOptions = {
     kafkaBrokerPassword: string
 
     kafkaGroupConsumersCount: number
-    kafkaConsumerTopicsEvents: KafkaConsumerTopicEvent[],
+    kafkaConsumerTopicsEvents: KafkaConsumerTopicEvent[]
+    kafkaProducerEventsTopics: KafkaProducerEventTopics[]
+
+    bingApiKey: string
 }

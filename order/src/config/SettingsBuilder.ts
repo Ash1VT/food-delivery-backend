@@ -6,6 +6,9 @@ import { ModeratorCreatedPrismaEvent } from "@src/modules/users/consumer/events/
 import { RestaurantManagerCreatedPrismaEvent } from "@src/modules/users/consumer/events/prisma/restaurantManager.events";
 import { MenuItemCreatedPrismaEvent, MenuItemDeletedPrismaEvent, MenuItemUpdatedPrismaEvent } from "@src/modules/menu/consumer/events/prisma/menuItem.events";
 import { RestaurantCreatedPrismaEvent, RestaurantUpdatedPrismaEvent } from "@src/modules/restaurants/consumer/events/prisma/restaurant.events";
+import { OrderFinishedEvent } from "@src/modules/orders/producer/events/order.events";
+import { orderFinishedToReviewValidator } from "@src/modules/orders/producer/validators/order.validators";
+import { WorkingHoursCreatedPrismaEvent, WorkingHoursDeletedPrismaEvent, WorkingHoursUpdatedPrismaEvent } from "@src/modules/restaurants/consumer/events/prisma/workingHours.events";
 
 export abstract class BaseSettingsBuilder {
     public abstract build(): Settings;
@@ -41,9 +44,21 @@ export class SettingsBuilder extends BaseSettingsBuilder {
                 },
                 {
                     topicName: "restaurant_order",
-                    events: [RestaurantCreatedPrismaEvent, RestaurantUpdatedPrismaEvent]
+                    events: [RestaurantCreatedPrismaEvent, RestaurantUpdatedPrismaEvent, WorkingHoursCreatedPrismaEvent, WorkingHoursUpdatedPrismaEvent, WorkingHoursDeletedPrismaEvent]
+                },
+            ],
+            "kafkaProducerEventsTopics": [
+                {
+                    Event: OrderFinishedEvent,
+                    topicsValidators: [
+                        {
+                            topic: "order_review",
+                            validator: orderFinishedToReviewValidator
+                        }
+                    ]
                 }
-            ]
+            ],
+            "bingApiKey": EnvManager.getVariable("BING_API_KEY")
         })
     }
 }
