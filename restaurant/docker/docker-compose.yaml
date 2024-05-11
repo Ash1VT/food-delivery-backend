@@ -40,6 +40,7 @@ services:
           - KAFKA_BOOTSTRAP_SERVER_PORT=9092
           - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
           - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
+          - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
         depends_on:
           - db
         networks:
