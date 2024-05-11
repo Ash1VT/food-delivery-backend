@@ -30,7 +30,7 @@ services:
           - SECRET_KEY=${SECRET_KEY}
           - DJANGO_CONFIGURATION=Develop
           - WEB_APP_PROTOCOL=http
-          - WEB_APP_HOST=0.0.0.0
+          - WEB_APP_HOST=user-app
           - WEB_APP_PORT=8000
           - GRPC_SERVER_PORT=50051
           - PG_HOST=db
@@ -47,6 +47,7 @@ services:
           - KAFKA_BOOTSTRAP_SERVER_PORT=9092
           - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
           - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
+          - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
         depends_on:
           - db
         expose:
