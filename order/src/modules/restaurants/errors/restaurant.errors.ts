@@ -30,3 +30,15 @@ export class RestaurantNotActiveError extends AppError {
     }
 
 }
+
+export class RestaurantNotWorkingError extends AppError {
+
+    constructor(restaurantId: bigint) {
+        super(`Restaurant with id=${restaurantId} is not working`)
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+
+}
