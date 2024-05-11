@@ -31,6 +31,7 @@ class MenuCategoryOutBase(MenuCategoryBase, ABC):
     """
 
     id: int = Field(ge=0)
+    image_url: str
     menu_id: int = Field(ge=0)
 
     model_config = {

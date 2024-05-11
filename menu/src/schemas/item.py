@@ -23,7 +23,6 @@ class MenuItemBase(BaseModel, ABC):
 
     name: str = Field(min_length=1, max_length=100)
     description: Optional[str] = Field(min_length=1, max_length=1000)
-    image_url: str
     price: int = Field(gt=0)
 
 
@@ -33,6 +32,7 @@ class MenuItemBaseOut(MenuItemBase, ABC):
     """
 
     id: int = Field(ge=0)
+    image_url: str
     restaurant_id: int = Field(ge=0)
 
     model_config = {
