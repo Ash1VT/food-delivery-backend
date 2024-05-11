@@ -18,7 +18,7 @@ app.include_router(api_router)
 
 # Start kafka receivers #
 @app.on_event("startup")
-def start_kafka_receivers():
+def startup_event():
     try:
         kafka_receivers = init_kafka_receivers(consumer_sasl_creator)
         logger.info("Started kafka receivers.")

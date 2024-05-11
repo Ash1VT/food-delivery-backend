@@ -8,7 +8,6 @@
     "env:dev": "dotenv -e ./env/.env.dev",
     "env:test": "dotenv -e ./env/.env.test",
     "build": "tsc && yarn grpc:generate_js && yarn build:paths",
-    "build:docker": "tsc && ./scripts/build_grpc_client_js.sh && yarn build:paths",
     "build:paths": "tscpaths -p tsconfig.json -s . -o dist",
     "grpc:generate_ts": "bash ./scripts/build_grpc_client_ts.sh",
     "grpc:generate_js": "bash ./scripts/build_grpc_client_js.sh",

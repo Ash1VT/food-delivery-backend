@@ -1,6 +1,7 @@
 import { getPrismaClient } from "@src/core/setup/prisma";
 import { RestaurantCreatedBaseEvent, RestaurantUpdatedBaseEvent } from "../abstractions/restaurant.events";
 import PrismaRestaurantRepositoryFactory from "@src/modules/restaurants/repositories/factories/implementations/prisma/PrismaRestaurantRepositoryFactory";
+import PrismaUserRepositoryFactory from "@src/modules/users/repositories/factories/implementations/prisma/PrismaUserRepositoryFactory";
 
 export class RestaurantCreatedPrismaEvent extends RestaurantCreatedBaseEvent {
 
@@ -9,7 +10,8 @@ export class RestaurantCreatedPrismaEvent extends RestaurantCreatedBaseEvent {
     ) {
         const prismaClient = getPrismaClient()
         const restaurantRepositoryFactory = new PrismaRestaurantRepositoryFactory(prismaClient)
-        super(data, restaurantRepositoryFactory)
+        const userRepositoryFactory = new PrismaUserRepositoryFactory(prismaClient)
+        super(data, restaurantRepositoryFactory, userRepositoryFactory)
     }
 }
 

@@ -1,7 +1,7 @@
 import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent"
 import IRestaurantRepositoryFactory from "@src/modules/restaurants/repositories/factories/interfaces/IRestaurantRepositoryFactory"
-import IWorkingHoursRepository from "@src/modules/restaurants/repositories/interfaces/IWorkingHours"
 import { workingHoursCreatedValidator, workingHoursDeletedValidator, workingHoursUpdatedValidator } from "../../validators/workingHours.validatots"
+import IWorkingHoursRepository from "@src/modules/restaurants/repositories/interfaces/IWorkingHoursRepository"
 
 export abstract class WorkingHoursCreatedBaseEvent extends KafkaConsumerBaseEvent {
     protected workingHoursRepository: IWorkingHoursRepository

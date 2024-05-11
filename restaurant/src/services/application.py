@@ -9,7 +9,6 @@ from schemas.application import RestaurantApplicationUpdateOut, RestaurantApplic
 from user_roles import ModeratorRole
 from schemas import RestaurantApplicationRetrieveOut
 from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
-from . import UpdateIn, Model
 from .mixins import RetrieveMixin, ListMixin, UpdateMixin
 
 __all__ = [
@@ -32,6 +31,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
     """
 
     schema_update_in = RestaurantApplicationUpdateIn
+    schema_update_out = RestaurantApplicationUpdateOut
     schema_retrieve_out = RestaurantApplicationRetrieveOut
 
     def __init__(self, moderator: Optional[Moderator] = None):

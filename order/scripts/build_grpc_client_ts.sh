@@ -1,5 +1,3 @@
-#!/usr/bin/env sh
-
 PROTOC="$(yarn bin)/grpc_tools_node_protoc"
 
 PROTOC_GEN_TS_PATH="$(yarn bin)/protoc-gen-ts"

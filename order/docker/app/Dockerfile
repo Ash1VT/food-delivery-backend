@@ -23,8 +23,10 @@ RUN yarn generate
 
 # Build dist
 RUN chmod +x ./scripts/build_grpc_client_js.sh
-RUN yarn build:docker
-
+RUN sed -i 's/\r$//' ./scripts/build_grpc_client_js.sh
+RUN yarn tsc
+RUN ./scripts/build_grpc_client_js.sh
+RUN yarn build:paths
 
 # Start production image build
 FROM node:20.11.1-alpine
@@ -43,5 +45,6 @@ COPY docker/app/start.sh $WEB_APP_DIR
 RUN apk update
 RUN apk add netcat-openbsd
 RUN chmod a+x start.sh
+RUN sed -i 's/\r$//' start.sh
 
 CMD ./start.sh

@@ -23,10 +23,10 @@ import moment from 'moment';
 import { DeliveryInformationModel } from '../../models/deliveryInformation.models';
 import { CustomerAddressNotApprovedError } from '@src/modules/addresses/errors/customerAddress.errors';
 import { MenuItemNotFoundWithIdError, MenuItemAllNotInSameRestaurantError } from '@src/modules/menu/errors/menuItem.errors';
-import IWorkingHoursRepository from '@src/modules/restaurants/repositories/interfaces/IWorkingHours';
 import { publisher } from '@src/core/setup/kafka/publisher';
 import { OrderFinishedEvent } from '../../producer/events/order.events';
 import { getDayOfWeek } from '../../utils/daysOfWeek';
+import IWorkingHoursRepository from '@src/modules/restaurants/repositories/interfaces/IWorkingHoursRepository';
 
 export default class OrderService extends BaseService implements IOrderService {
 

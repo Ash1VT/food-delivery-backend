@@ -20,27 +20,22 @@ app.include_router(api_router)
 # Startup
 
 @app.on_event("startup")
-def start_kafka_receivers():
+def startup_event():
+    settings = get_settings()
+
     try:
-        settings = get_settings()
         kafka_receivers = init_kafka_receivers(consumer_creator, settings)
         for kafka_receiver in kafka_receivers:
             kafka_receiver.start_receiving()
     except Exception as e:
         print(e)
 
-
-@app.on_event("startup")
-def init_kafka_producer_events():
     try:
         settings = get_settings()
         init_producer_events(settings)
     except Exception as e:
         print(e)
 
-
-@app.on_event("startup")
-def authenticate_firebase():
     try:
         from setup.firebase import init_firebase
         settings = get_settings()

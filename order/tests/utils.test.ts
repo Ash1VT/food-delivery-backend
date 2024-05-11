@@ -47,7 +47,6 @@ describe("Tests for Utils", () => {
                 kafkaGroupConsumersCount: 1,
                 kafkaConsumerTopicsEvents: [],
                 kafkaProducerEventsTopics: [],
-                arcgisApiKey: 'myApiKey',
                 bingApiKey: 'myApiKey',
             }
         }

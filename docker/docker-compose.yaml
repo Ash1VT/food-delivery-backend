@@ -72,7 +72,7 @@ services:
       - KAFKA_INTER_BROKER_PASSWORD=${KAFKA_INTER_BROKER_PASSWORD}
       - KAFKA_TOPIC_PARTITIONS=3
       - KAFKA_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_TOPICS=user_restaurant,user_menu,menu_restaurant,user_order,menu_order,restaurant_order
+      - KAFKA_TOPICS=user_restaurant,user_menu,menu_restaurant,user_order,menu_order,restaurant_order,user_review,menu_review,restaurant_review,order_review
     depends_on:
       - kafka
     networks:

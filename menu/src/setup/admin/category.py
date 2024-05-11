@@ -7,6 +7,7 @@ class MenuCategoryAdmin(ModelView, model=MenuCategory):
 
     column_list = [MenuCategory.id,
                    MenuCategory.name,
+                   MenuCategory.image_url,
                    MenuCategory.items]
 
     icon = "fa-solid fa-fish"
