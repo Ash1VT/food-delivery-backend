@@ -1,6 +1,6 @@
 import { asyncHandler } from "@src/core/utils/asyncHandler";
 import { Request, Response, Router } from "express";
-import { finishOrderDelivery, getAllOrders, getAvailableForDeliveryOrders, getCurrentCourierOrders, getCurrentCustomerOrders, makeOrder, takeOrder } from "../controllers/order.controllers";
+import { cancelOrder, confirmOrder, finishOrderDelivery, getAllOrders, getAvailableForDeliveryOrders, getCurrentCourierOrders, getCurrentCustomerOrders, makeOrder, prepareOrder, takeOrder } from "../controllers/order.controllers";
 import { addOrderItem, getOrderItems } from "../controllers/orderItem.controllers";
 
 
@@ -17,6 +17,15 @@ import { addOrderItem, getOrderItems } from "../controllers/orderItem.controller
  *         enum: [pending, confirmed, preparing, ready, delivering, delivered, cancelled]
  *       description: Order Status
  *       example: ready
+ *     deliveryType:
+ *       name: deliveryType
+ *       in: query
+ *       required: true
+ *       schema:
+ *         type: string
+ *         enum: [walking, driving]
+ *       description: Delivery Type
+ *       example: walking
  *     orderId:      
  *       in: path
  *       name: orderId
@@ -150,7 +159,6 @@ orderRouter.get("/available", asyncHandler(getAvailableForDeliveryOrders))
 */
 orderRouter.get("/:orderId/items", asyncHandler(getOrderItems))
 
-
 /**
  * @swagger
  * /orders:
@@ -199,6 +207,66 @@ orderRouter.post("/:orderId/items", asyncHandler(addOrderItem))
 
 /**
  * @swagger
+ * /orders/{orderId}/confirm:
+ *   patch:
+ *     summary: Confirms an order.
+ *     description: Confirms an order. Can be used only by moderators.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     responses:
+ *       200:
+ *         description: Empty response.
+ *       403:
+ *         description: Error connected with authorization.
+ *       404:
+ *         description: Order not found.
+*/
+orderRouter.patch("/:orderId/confirm", asyncHandler(confirmOrder))
+
+/**
+ * @swagger
+ * /orders/{orderId}/prepare:
+ *   patch:
+ *     summary: Prepares an order.
+ *     description: Prepares an order. Can be used only by restaurant managers.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     responses:
+ *       200:
+ *         description: Empty response.
+ *       403:
+ *         description: Error connected with authorization.
+ *       404:
+ *         description: Order not found.
+*/
+orderRouter.patch("/:orderId/prepare", asyncHandler(prepareOrder))
+
+/**
+ * @swagger
+ * /orders/{orderId}/cancel:
+ *   patch:
+ *     summary: Cancels an order.
+ *     description: Cancels an order. Can be used only by moderators.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     responses:
+ *       200:
+ *         description: Empty response.
+ *       403:
+ *         description: Error connected with authorization.
+ *       404:
+ *         description: Order not found.
+*/
+orderRouter.patch("/:orderId/cancel", asyncHandler(cancelOrder))
+
+/**
+ * @swagger
  * /orders/{orderId}/take:
  *   patch:
  *     summary: Takes an order for starting delivery.
@@ -207,6 +275,7 @@ orderRouter.post("/:orderId/items", asyncHandler(addOrderItem))
  *       - "orders"
  *     parameters:
  *       - $ref: '#/components/parameters/orderId'
+ *       - $ref: '#/components/parameters/deliveryType'
  *     responses:
  *       200:
  *         description: Empty response.
