@@ -1,4 +1,4 @@
-import { KafkaEventConstructor } from "@src/config/types/settings";
+import { KafkaConsumerEventConstructor } from "@src/config/types/settings";
 import { Consumer } from "kafkajs";
 
 export default class KafkaReceiver {
@@ -6,7 +6,7 @@ export default class KafkaReceiver {
     constructor(
         protected consumer: Consumer,
         protected topic: string,
-        protected consumerEventConstructors: KafkaEventConstructor[]
+        protected consumerEventConstructors: KafkaConsumerEventConstructor[]
     ) {}
 
 
@@ -14,7 +14,7 @@ export default class KafkaReceiver {
         await this.consumer.subscribe({ topic: this.topic, fromBeginning: true })
     }
 
-    private getConsumerEvent(eventName: string): KafkaEventConstructor | undefined {
+    private getConsumerEvent(eventName: string): KafkaConsumerEventConstructor | undefined {
         return this.consumerEventConstructors.find(constructor => constructor.getEventName() === eventName)
     }
 
