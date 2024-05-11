@@ -1,23 +1,22 @@
-import { idValidator } from "@src/core/validators/idValidator"
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent"
-import IMenuServiceFactory from "@src/modules/menu/services/factories/interfaces/IMenuItemServiceFactory"
-import IMenuItemService from "@src/modules/menu/services/interfaces/IMenuItemService"
-import { menuItemCreateValidator, menuItemUpdateValidator } from "@src/modules/menu/validators/menuItem.validators"
+import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent"
+import IMenuItemRepositoryFactory from "@src/modules/menu/repositories/factories/interfaces/IMenuItemRepositoryFactory"
+import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository"
+import { menuItemCreatedValidator, menuItemDeletedValidator, menuItemUpdatedValidator } from "../../validators/menuItem.validators"
 
-export abstract class MenuItemCreatedBaseEvent extends KafkaBaseEvent {
-    protected menuItemService: IMenuItemService
+export abstract class MenuItemCreatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected menuItemRepository: IMenuItemRepository
 
     constructor(
-        data: object,
-        protected menuItemServiceFactory: IMenuServiceFactory
+        data: any,
+        protected menuItemRepositoryFactory: IMenuItemRepositoryFactory
     ) {
         super(data)
-        this.menuItemService = menuItemServiceFactory.createMenuItemService()
+        this.menuItemRepository = menuItemRepositoryFactory.createMenuItemRepository()
     }
 
     public async action(): Promise<void> {
-        const menuItemData = menuItemCreateValidator.parse(this.data)
-        await this.menuItemService.create(menuItemData)
+        const menuItemData = menuItemCreatedValidator.parse(this.data)
+        await this.menuItemRepository.create(menuItemData)
     }
 
     public static getEventName(): string {
@@ -26,23 +25,20 @@ export abstract class MenuItemCreatedBaseEvent extends KafkaBaseEvent {
 }
 
 
-export abstract class MenuItemUpdatedBaseEvent extends KafkaBaseEvent {
-    protected menuItemService: IMenuItemService
+export abstract class MenuItemUpdatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected menuItemRepository: IMenuItemRepository
 
     constructor(
-        data: object,
-        protected menuItemServiceFactory: IMenuServiceFactory
+        data: any,
+        protected menuItemRepositoryFactory: IMenuItemRepositoryFactory
     ) {
         super(data)
-        this.menuItemService = menuItemServiceFactory.createMenuItemService()
+        this.menuItemRepository = menuItemRepositoryFactory.createMenuItemRepository()
     }
 
     public async action(): Promise<void> {
-        const data = this.data as {id: bigint}
-        const menuItemId = idValidator.parse(data.id)
-
-        const menuItemData = menuItemUpdateValidator.parse(data)
-        await this.menuItemService.update(menuItemId, menuItemData)
+        const {id: menuItemId, ...menuItemData } = menuItemUpdatedValidator.parse(this.data)
+        await this.menuItemRepository.update(menuItemId, menuItemData)
     }
 
     public static getEventName(): string {
@@ -51,21 +47,20 @@ export abstract class MenuItemUpdatedBaseEvent extends KafkaBaseEvent {
 }
 
 
-export abstract class MenuItemDeletedBaseEvent extends KafkaBaseEvent {
-    protected menuItemService: IMenuItemService
+export abstract class MenuItemDeletedBaseEvent extends KafkaConsumerBaseEvent {
+    protected menuItemRepository: IMenuItemRepository
 
     constructor(
-        data: object,
-        protected menuItemServiceFactory: IMenuServiceFactory
+        data: any,
+        protected menuItemRepositoryFactory: IMenuItemRepositoryFactory
     ) {
         super(data)
-        this.menuItemService = menuItemServiceFactory.createMenuItemService()
+        this.menuItemRepository = menuItemRepositoryFactory.createMenuItemRepository()
     }
 
     public async action(): Promise<void> {
-        const data = this.data as {id: bigint}
-        const menuItemId = idValidator.parse(data.id)
-        await this.menuItemService.delete(menuItemId)
+        const {id: menuItemId} = menuItemDeletedValidator.parse(this.data)
+        await this.menuItemRepository.delete(menuItemId)
     }
 
     public static getEventName(): string {

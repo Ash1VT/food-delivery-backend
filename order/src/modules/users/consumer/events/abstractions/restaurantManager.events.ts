@@ -1,24 +1,23 @@
-import { idValidator } from '@src/core/validators/idValidator';
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent";
-import IUserServiceFactory from "../../../services/factories/interfaces/IUserServiceFactory";
-import IRestaurantManagerService from "@src/modules/users/services/interfaces/IRestaurantManagerService";
-import { restaurantManagerCreateValidator } from "@src/modules/users/validators/restaurantManager.validators";
+import IRestaurantManagerRepository from '@src/modules/users/repositories/interfaces/IRestaurantManagerRepository';
+import IUserRepositoryFactory from '@src/modules/users/repositories/factories/interfaces/IUserRepositoryFactory';
+import KafkaConsumerBaseEvent from '@src/kafka/consumer/events/KafkaConsumerBaseEvent';
+import { restaurantManagerCreatedValidator } from '../../validators/restaurantManager.validators';
 
 
-export abstract class RestaurantManagerCreatedBaseEvent extends KafkaBaseEvent {
-    protected restaurantManagerService: IRestaurantManagerService
+export abstract class RestaurantManagerCreatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected restaurantManagerRepository: IRestaurantManagerRepository
 
     constructor(
         data: object,
-        protected userServiceFactory: IUserServiceFactory
+        protected userRepositoryFactory: IUserRepositoryFactory
     ) {
         super(data)
-        this.restaurantManagerService = userServiceFactory.createRestaurantManagerService()
+        this.restaurantManagerRepository = userRepositoryFactory.createRestaurantManagerRepository()
     }
 
     public async action(): Promise<void> {
-        const restaurantManagerData = restaurantManagerCreateValidator.parse(this.data)
-        await this.restaurantManagerService.create(restaurantManagerData)
+        const restaurantManagerData = restaurantManagerCreatedValidator.parse(this.data)
+        await this.restaurantManagerRepository.create(restaurantManagerData)
     }
 
     public static getEventName(): string {

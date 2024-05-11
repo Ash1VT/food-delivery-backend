@@ -1,22 +1,22 @@
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent"
-import IUserServiceFactory from "@src/modules/users/services/factories/interfaces/IUserServiceFactory"
-import ICourierService from "@src/modules/users/services/interfaces/ICourierService"
-import { courierCreateValidator } from "@src/modules/users/validators/courier.validators"
+import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent"
+import IUserRepositoryFactory from "@src/modules/users/repositories/factories/interfaces/IUserRepositoryFactory"
+import ICourierRepository from "@src/modules/users/repositories/interfaces/ICourierRepository"
+import { courierCreatedValidator } from "../../validators/courier.validators"
 
-export abstract class CourierCreatedBaseEvent extends KafkaBaseEvent {
-    protected courierService: ICourierService
+export abstract class CourierCreatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected courierRepository: ICourierRepository
 
     constructor(
-        data: object,
-        protected userServiceFactory: IUserServiceFactory
+        data: any,
+        protected userRepositoryFactory: IUserRepositoryFactory
     ) {
         super(data)
-        this.courierService = userServiceFactory.createCourierService()
+        this.courierRepository = userRepositoryFactory.createCourierRepository()
     }
 
     public async action(): Promise<void> {
-        const courierData = courierCreateValidator.parse(this.data)
-        await this.courierService.create(courierData)
+        const courierData = courierCreatedValidator.parse(this.data)
+        await this.courierRepository.create(courierData)
     }
 
     public static getEventName(): string {

@@ -1,23 +1,23 @@
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent";
-import IUserServiceFactory from "../../../services/factories/interfaces/IUserServiceFactory";
-import IModeratorService from "@src/modules/users/services/interfaces/IModeratorService";
-import { moderatorCreateValidator } from "@src/modules/users/validators/moderator.validators";
+import IModeratorRepository from "@src/modules/users/repositories/interfaces/IModeratorRepository";
+import IUserRepositoryFactory from "@src/modules/users/repositories/factories/interfaces/IUserRepositoryFactory";
+import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent";
+import { moderatorCreatedValidator } from "../../validators/moderator.validators";
 
 
-export abstract class ModeratorCreatedBaseEvent extends KafkaBaseEvent {
-    protected moderatorService: IModeratorService
+export abstract class ModeratorCreatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected moderatorRepository: IModeratorRepository
 
     constructor(
-        data: object,
-        protected userServiceFactory: IUserServiceFactory
+        data: any,
+        protected userRepositoryFactory: IUserRepositoryFactory
     ) {
         super(data)
-        this.moderatorService = userServiceFactory.createModeratorService()
+        this.moderatorRepository = userRepositoryFactory.createModeratorRepository()
     }
 
     public async action(): Promise<void> {
-        const moderatorData = moderatorCreateValidator.parse(this.data)
-        await this.moderatorService.create(moderatorData)
+        const moderatorData = moderatorCreatedValidator.parse(this.data)
+        await this.moderatorRepository.create(moderatorData)
     }
 
     public static getEventName(): string {

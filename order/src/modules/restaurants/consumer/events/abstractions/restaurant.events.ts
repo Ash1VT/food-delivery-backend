@@ -1,23 +1,24 @@
 import { idValidator } from "@src/core/validators/idValidator"
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent"
-import IRestaurantServiceFactory from "@src/modules/restaurants/services/factories/interfaces/IRestaurantServiceFactory"
-import IRestaurantService from "@src/modules/restaurants/services/interfaces/IRestaurantService"
-import { restaurantCreateValidator, restaurantUpdateValidator } from "@src/modules/restaurants/validators/restaurant.validators"
+import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent"
+import IRestaurantRepositoryFactory from "@src/modules/restaurants/repositories/factories/interfaces/IRestaurantRepositoryFactory"
+import IRestaurantRepository from "@src/modules/restaurants/repositories/interfaces/IRestaurantRepository"
+import IWorkingHoursRepository from "@src/modules/restaurants/repositories/interfaces/IWorkingHours"
+import { restaurantCreatedValidator, restaurantUpdatedValidator } from "../../validators/restaurant.validators"
 
-export abstract class RestaurantCreatedBaseEvent extends KafkaBaseEvent {
-    protected restaurantService: IRestaurantService
+export abstract class RestaurantCreatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected restaurantRepository: IRestaurantRepository
 
     constructor(
-        data: object,
-        protected restaurantServiceFactory: IRestaurantServiceFactory
+        data: any,
+        protected restaurantRepositoryFactory: IRestaurantRepositoryFactory
     ) {
         super(data)
-        this.restaurantService = restaurantServiceFactory.createRestaurantService()
+        this.restaurantRepository = restaurantRepositoryFactory.createRestaurantRepository()
     }
 
     public async action(): Promise<void> {
-        const restaurantData = restaurantCreateValidator.parse(this.data)
-        await this.restaurantService.create(restaurantData)
+        const restaurantData = restaurantCreatedValidator.parse(this.data)
+        await this.restaurantRepository.create(restaurantData)
     }
 
     public static getEventName(): string {
@@ -26,23 +27,20 @@ export abstract class RestaurantCreatedBaseEvent extends KafkaBaseEvent {
 }
 
 
-export abstract class RestaurantUpdatedBaseEvent extends KafkaBaseEvent {
-    protected restaurantService: IRestaurantService
+export abstract class RestaurantUpdatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected restaurantRepository: IRestaurantRepository
 
     constructor(
-        data: object,
-        protected restaurantServiceFactory: IRestaurantServiceFactory
+        data: any,
+        protected restaurantRepositoryFactory: IRestaurantRepositoryFactory
     ) {
         super(data)
-        this.restaurantService = restaurantServiceFactory.createRestaurantService()
+        this.restaurantRepository = restaurantRepositoryFactory.createRestaurantRepository()
     }
 
     public async action(): Promise<void> {
-        const data = this.data as {id: bigint}
-        const restaurantId = idValidator.parse(data.id)
-
-        const restaurantData = restaurantUpdateValidator.parse(data)
-        await this.restaurantService.update(restaurantId, restaurantData)
+        const {id: restaurantId, ...restaurantData} = restaurantUpdatedValidator.parse(this.data)
+        await this.restaurantRepository.update(restaurantId, restaurantData)
     }
 
     public static getEventName(): string {

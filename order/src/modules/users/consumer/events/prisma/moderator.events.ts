@@ -1,14 +1,14 @@
 import { getPrismaClient } from "@src/core/setup/prisma";
-import PrismaUserServiceFactory from "@src/modules/users/services/factories/implementations/prisma/PrismaUserServiceFactory";
 import { ModeratorCreatedBaseEvent } from "../abstractions/moderator.events";
+import PrismaUserRepositoryFactory from "@src/modules/users/repositories/factories/implementations/prisma/PrismaUserRepositoryFactory";
 
 export class ModeratorCreatedPrismaEvent extends ModeratorCreatedBaseEvent {
 
     constructor(
-        data: object
+        data: any
     ) {
         const prismaClient = getPrismaClient()
-        const userServiceFactory = new PrismaUserServiceFactory(prismaClient)
-        super(data, userServiceFactory)
+        const userRepositoryFactory = new PrismaUserRepositoryFactory(prismaClient)
+        super(data, userRepositoryFactory)
     }
 }

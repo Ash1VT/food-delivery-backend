@@ -1,36 +1,36 @@
 import { getPrismaClient } from "@src/core/setup/prisma";
 import { MenuItemCreatedBaseEvent, MenuItemDeletedBaseEvent, MenuItemUpdatedBaseEvent } from "../abstractions/menuItem.events";
-import PrismaMenuItemServiceFactory from "@src/modules/menu/services/factories/implementations/prisma/PrismaMenuItemServiceFactory";
+import PrismaMenuItemRepositoryFactory from "@src/modules/menu/repositories/factories/implementations/prisma/PrismaMenuItemRepositoryFactory";
 
 export class MenuItemCreatedPrismaEvent extends MenuItemCreatedBaseEvent {
 
     constructor(
-        data: object
+        data: any
     ) {
         const prismaClient = getPrismaClient()
-        const menuItemServiceFactory = new PrismaMenuItemServiceFactory(prismaClient)
-        super(data, menuItemServiceFactory)
+        const menuItemRepositoryFactory = new PrismaMenuItemRepositoryFactory(prismaClient)
+        super(data, menuItemRepositoryFactory)
     }
 }
 
 export class MenuItemUpdatedPrismaEvent extends MenuItemUpdatedBaseEvent {
 
     constructor(
-        data: object
+        data: any
     ) {
         const prismaClient = getPrismaClient()
-        const menuItemServiceFactory = new PrismaMenuItemServiceFactory(prismaClient)
-        super(data, menuItemServiceFactory)
+        const menuItemRepositoryFactory = new PrismaMenuItemRepositoryFactory(prismaClient)
+        super(data, menuItemRepositoryFactory)
     }
 }
 
 export class MenuItemDeletedPrismaEvent extends MenuItemDeletedBaseEvent {
 
     constructor(
-        data: object
+        data: any
     ) {
         const prismaClient = getPrismaClient()
-        const menuItemServiceFactory = new PrismaMenuItemServiceFactory(prismaClient)
-        super(data, menuItemServiceFactory)
+        const menuItemRepositoryFactory = new PrismaMenuItemRepositoryFactory(prismaClient)
+        super(data, menuItemRepositoryFactory)
     }
 }

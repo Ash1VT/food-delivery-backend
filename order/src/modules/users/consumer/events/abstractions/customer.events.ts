@@ -1,22 +1,22 @@
-import KafkaBaseEvent from "@src/kafka/consumer/events/KafkaBaseEvent";
-import IUserServiceFactory from "../../../services/factories/interfaces/IUserServiceFactory";
-import ICustomerService from "../../../services/interfaces/ICustomerService";
-import { customerCreateValidator } from "@src/modules/users/validators/customer.validators";
+import ICustomerRepository from "@src/modules/users/repositories/interfaces/ICustomerRepository";
+import IUserRepositoryFactory from "@src/modules/users/repositories/factories/interfaces/IUserRepositoryFactory";
+import KafkaConsumerBaseEvent from "@src/kafka/consumer/events/KafkaConsumerBaseEvent";
+import { customerCreatedValidator } from "../../validators/customer.validators";
 
-export abstract class CustomerCreatedBaseEvent extends KafkaBaseEvent {
-    protected customerService: ICustomerService
+export abstract class CustomerCreatedBaseEvent extends KafkaConsumerBaseEvent {
+    protected customerRepository: ICustomerRepository
 
     constructor(
-        data: object,
-        protected userServiceFactory: IUserServiceFactory
+        data: any,
+        protected userRepositoryFactory: IUserRepositoryFactory
     ) {
         super(data)
-        this.customerService = userServiceFactory.createCustomerService()
+        this.customerRepository = userRepositoryFactory.createCustomerRepository()
     }
 
     public async action(): Promise<void> {
-        const customerData = customerCreateValidator.parse(this.data)
-        await this.customerService.create(customerData)
+        const customerData = customerCreatedValidator.parse(this.data)
+        await this.customerRepository.create(customerData)
     }
 
     public static getEventName(): string {
