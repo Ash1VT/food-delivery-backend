@@ -7,6 +7,9 @@ __all__ = [
     'ProducerEvent',
     'RestaurantManagerCreatedEvent',
     'ModeratorCreatedEvent',
+    'CourierCreatedEvent',
+    'CustomerCreatedEvent',
+    'CustomerUpdatedEvent',
 ]
 
 
@@ -85,6 +88,14 @@ class ProducerEvent(ABC):
 class CustomerCreatedEvent(ProducerEvent):
     """
     Event when Customer is created.
+    """
+
+    _topics_serializers = dict()
+
+
+class CustomerUpdatedEvent(ProducerEvent):
+    """
+    Event when Customer is updated.
     """
 
     _topics_serializers = dict()
