@@ -3,7 +3,7 @@ from typing import Dict, List, Type, Callable
 from pydantic_settings import BaseSettings
 
 from kafka_files.consumer.events import CustomerUpdatedEvent, CustomerCreatedEvent, CourierCreatedEvent, \
-    MenuItemCreatedEvent, MenuItemDeletedEvent, RestaurantCreatedEvent, OrderCreatedEvent, ConsumerEvent
+    MenuItemCreatedEvent, MenuItemDeletedEvent, RestaurantCreatedEvent, OrderFinishedEvent, ConsumerEvent
 from roles import CustomerRole, CourierRole, UserRole
 from setup.sqlalchemy.uow import get_sqlalchemy_uow
 from uow.generic import GenericUnitOfWork
@@ -30,7 +30,7 @@ class AppSettings(BaseSettings):
             RestaurantCreatedEvent
         ],
         'order_review': [
-            OrderCreatedEvent
+            OrderFinishedEvent
         ]
     }
 

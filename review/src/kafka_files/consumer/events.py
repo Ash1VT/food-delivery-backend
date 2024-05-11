@@ -128,7 +128,7 @@ class MenuItemDeletedEvent(ConsumerEvent[MenuItemModel]):
             await uow.menu_items.delete(self._serialize_data().id)
 
 
-class OrderCreatedEvent(ConsumerEvent[OrderCreateModel]):
+class OrderFinishedEvent(ConsumerEvent[OrderCreateModel]):
     """
     Event when Order is created.
     """
