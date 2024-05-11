@@ -7,6 +7,10 @@ from .directories import ENV_DIRECTORY, BASE_DIRECTORY, SRC_DIRECTORY
 
 
 class Settings(BaseSettings):
+    firebase_storage_bucket: str
+    default_restaurant_logo: str = ('https://storage.googleapis.com/fooddelivery-21854.appspot.com/restaurants/logos'
+                                    '/default_restaurant_logo.jpeg')
+
     web_app_host: str
     web_app_port: int
     reload: bool
@@ -29,12 +33,23 @@ class Settings(BaseSettings):
     kafka_producer_events_topics: Dict[str, Dict[str, str]] = {
         'producer.events.RestaurantCreatedEvent': {
             'menu_restaurant': 'producer.schemas.RestaurantCreatedSchema',
-            'restaurant_order': 'producer.schemas.RestaurantCreatedSchema'
+            'restaurant_order': 'producer.schemas.RestaurantCreatedSchema',
+            'restaurant_review': 'producer.schemas.RestaurantCreatedToReviewSchema'
         },
         'producer.events.RestaurantUpdatedEvent': {
             'menu_restaurant': 'producer.schemas.RestaurantUpdatedSchema',
-            'restaurant_order': 'producer.schemas.RestaurantUpdatedSchema'
+            'restaurant_order': 'producer.schemas.RestaurantUpdatedSchema',
+            'restaurant_review': 'producer.schemas.RestaurantUpdatedToReviewSchema'
         },
+        'producer.events.WorkingHoursCreatedEvent': {
+            'restaurant_order': 'producer.schemas.WorkingHoursCreatedSchema'
+        },
+        'producer.events.WorkingHoursUpdatedEvent': {
+            'restaurant_order': 'producer.schemas.WorkingHoursUpdatedSchema'
+        },
+        'producer.events.WorkingHoursDeletedEvent': {
+            'restaurant_order': 'producer.schemas.WorkingHoursDeletedSchema'
+        }
     }
 
 
