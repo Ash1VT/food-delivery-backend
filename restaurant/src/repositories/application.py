@@ -1,5 +1,6 @@
 from typing import List
 
+from loguru import logger
 from sqlalchemy import select, Select, exists
 
 from models import RestaurantApplication, ApplicationType
@@ -73,7 +74,11 @@ class RestaurantApplicationRepository(SQLAlchemyRepository[RestaurantApplication
 
         stmt = self._get_list_create_applications_stmt(**kwargs)
         result = await self._session.execute(stmt)
-        return [r[0] for r in result.fetchall()]
+        result = [r[0] for r in result.fetchall()]
+
+        logger.debug(f"Retrieved list of create restaurant applications")
+
+        return result
 
     async def list_update_applications(self, **kwargs) -> List[RestaurantApplication]:
         """
@@ -88,7 +93,11 @@ class RestaurantApplicationRepository(SQLAlchemyRepository[RestaurantApplication
 
         stmt = self._get_list_update_applications_stmt(**kwargs)
         result = await self._session.execute(stmt)
-        return [r[0] for r in result.fetchall()]
+        result = [r[0] for r in result.fetchall()]
+
+        logger.debug(f"Retrieved list of update restaurant applications")
+
+        return result
 
     async def exists_for_manager(self, manager_id: int, application_type: ApplicationType, **kwargs) -> bool:
         """
@@ -105,4 +114,9 @@ class RestaurantApplicationRepository(SQLAlchemyRepository[RestaurantApplication
 
         stmt = self._get_exists_for_manager_stmt(manager_id, application_type, **kwargs)
         result = await self._session.execute(stmt)
-        return result.scalar()
+        result = result.scalar()
+
+        logger.debug(f"Checked if RestaurantManager with id={manager_id} has "
+                     f"an Application of type {str(application_type.value)}")
+
+        return result

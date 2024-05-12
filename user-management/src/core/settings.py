@@ -224,7 +224,8 @@ class Base(Configuration):
         'disable_existing_loggers': False,
         'formatters': {
             'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+                'format': '%(asctime)s | %(levelname)s | USER | %(name)s:%(filename)s:%(lineno)s '
+                          '| %(process)d %(thread)d | %(message)s',
             },
             'simple': {
                 'format': '%(levelname)s %(message)s',
@@ -240,6 +241,12 @@ class Base(Configuration):
                 'filename': BASE_DIR / 'logs.log',
                 'formatter': 'verbose',
             },
+            'graylog': {
+                'class': 'graypy.GELFUDPHandler',
+                'host': env('GRAYLOG_HOST'),
+                'port': int(env('GRAYLOG_UDP_PORT')),
+                'formatter': 'verbose',
+            }
         },
         'loggers': {
             'django': {
@@ -247,19 +254,19 @@ class Base(Configuration):
                 'level': 'INFO',
             },
             'users': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
             'tokens': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
             'producer': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
             'consumer': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
         },

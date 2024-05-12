@@ -2,6 +2,7 @@ from typing import Optional, List
 
 from sqlalchemy import select, Select
 from sqlalchemy.orm import selectinload
+from loguru import logger
 
 from models import Menu, MenuCategory, Restaurant
 from .generic import SQLAlchemyRepository
@@ -214,7 +215,11 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
 
         result = await self._session.execute(stmt)
 
-        return result.scalar_one_or_none()
+        result = result.scalar_one_or_none()
+
+        logger.debug(f"Retrieved current restaurant Menu with id={result.id} for Restaurant with id={restaurant_id}")
+
+        return result
 
     async def list_restaurant_menus(self,
                                     restaurant_id: int,
@@ -242,4 +247,8 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
 
         result = await self._session.execute(stmt)
 
-        return [r[0] for r in result.fetchall()]
+        result = [r[0] for r in result.fetchall()]
+
+        logger.debug(f"Retrieved list of Menu for Restaurant with id={restaurant_id}")
+
+        return result

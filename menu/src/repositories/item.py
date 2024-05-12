@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlalchemy import Select, select
+from loguru import logger
 
 from models import MenuItem
 from .generic import SQLAlchemyRepository
@@ -54,4 +55,8 @@ class MenuItemRepository(SQLAlchemyRepository[MenuItem]):
 
         result = await self._session.execute(stmt)
 
-        return [r[0] for r in result.fetchall()]
+        result = [r[0] for r in result.fetchall()]
+
+        logger.debug(f"Retrieved list of MenuItem for restaurant with id={restaurant_id}")
+
+        return result

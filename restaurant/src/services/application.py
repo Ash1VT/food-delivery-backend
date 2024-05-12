@@ -1,5 +1,7 @@
 from typing import Optional, List
 
+from loguru import logger
+
 from config import get_settings
 from exceptions import PermissionDeniedError, RestaurantApplicationNotFoundWithIdError, \
     RestaurantManagerNotFoundWithIdError
@@ -62,12 +64,16 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
 
         # Permission checks
         if not self._moderator:
+            logger.warning(f"User is not a moderator")
             raise PermissionDeniedError(ModeratorRole)
 
         retrieved_instance = await uow.restaurant_applications.retrieve(id, **kwargs)
 
         if not retrieved_instance:
+            logger.warning(f"RestaurantApplication with id={id} not found")
             raise RestaurantApplicationNotFoundWithIdError(id)
+
+        logger.info(f"Retrieved RestaurantApplication with id={id}")
 
         return retrieved_instance
 
@@ -87,9 +93,14 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
 
         # Permission checks
         if not self._moderator:
+            logger.warning(f"User is not a moderator")
             raise PermissionDeniedError(ModeratorRole)
 
-        return await uow.restaurant_applications.list(**kwargs)
+        retrieved_instances = await uow.restaurant_applications.list(**kwargs)
+
+        logger.info(f"Retrieved list of RestaurantApplications")
+
+        return retrieved_instances
 
     async def list_create_application_instances(self, uow: SqlAlchemyUnitOfWork,
                                                 **kwargs) -> List[RestaurantApplication]:
@@ -108,9 +119,14 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
 
         # Permission checks
         if not self._moderator:
+            logger.warning(f"User is not a moderator")
             raise PermissionDeniedError(ModeratorRole)
 
-        return await uow.restaurant_applications.list_create_applications(**kwargs)
+        retrieved_instances = await uow.restaurant_applications.list_create_applications(**kwargs)
+
+        logger.info(f"Retrieved list of create RestaurantApplications")
+
+        return retrieved_instances
 
     async def list_update_application_instances(self, uow: SqlAlchemyUnitOfWork,
                                                 **kwargs) -> List[RestaurantApplication]:
@@ -129,9 +145,14 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
 
         # Permission checks
         if not self._moderator:
+            logger.warning(f"User is not a moderator")
             raise PermissionDeniedError(ModeratorRole)
 
-        return await uow.restaurant_applications.list_update_applications(**kwargs)
+        retrieved_instances = await uow.restaurant_applications.list_update_applications(**kwargs)
+
+        logger.info(f"Retrieved list of update RestaurantApplications")
+
+        return retrieved_instances
 
     async def list_create_applications(self, uow: SqlAlchemyUnitOfWork,
                                        **kwargs) -> List[RestaurantApplicationRetrieveOut]:
@@ -167,15 +188,21 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
                               uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantApplication:
         # Permission checks
         if not self._moderator:
+            logger.warning(f"User is not a moderator")
             raise PermissionDeniedError(ModeratorRole)
 
         # Check if application exists
         if not await uow.restaurant_applications.exists(id):
+            logger.warning(f"RestaurantApplication with id={id} not found")
             raise RestaurantApplicationNotFoundWithIdError(id)
 
         # Update application
         data = item.model_dump()
-        return await uow.restaurant_applications.update(id, data, **kwargs)
+        updated_instance = await uow.restaurant_applications.update(id, data, **kwargs)
+
+        logger.info(f"Updated RestaurantApplication with id={id}")
+
+        return updated_instance
 
     async def confirm_application(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -210,6 +237,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         restaurant_manager = await uow.managers.retrieve(restaurant_manager_id)
 
         if not restaurant_manager:
+            logger.warning(f"RestaurantManager with id={restaurant_manager_id} not found")
             raise RestaurantManagerNotFoundWithIdError(restaurant_manager_id)
 
         # Create or update restaurant, delete an application and set restaurant manager to restaurant if created
@@ -220,6 +248,9 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             settings = get_settings()
             data['image_url'] = settings.default_restaurant_logo
             restaurant = await uow.restaurants.create(data)
+
+            logger.info(f"Created restaurant with id={restaurant.id}")
+
             restaurant_manager.restaurant_id = restaurant.id
 
             publisher.publish(
@@ -231,6 +262,8 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         elif application_type == ApplicationType.update:
             restaurant = await uow.restaurants.update(restaurant_manager.restaurant_id, data)
 
+            logger.info(f"Updated restaurant with id={restaurant.id}")
+
             publisher.publish(
                 RestaurantUpdatedEvent(id=restaurant.id,
                                        address=restaurant.address,
@@ -238,6 +271,7 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
             )
 
         await uow.restaurant_applications.delete(id)
+        logger.info(f"RestaurantApplication with id={id} confirmed and deleted")
 
     async def decline_application(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -254,9 +288,12 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
 
         # Permission checks
         if not self._moderator:
+            logger.warning(f"User is not a moderator")
             raise PermissionDeniedError(ModeratorRole)
 
         if not await uow.restaurant_applications.exists(id):
+            logger.warning(f"RestaurantApplication with id={id} not found")
             raise RestaurantApplicationNotFoundWithIdError(id)
 
         await uow.restaurant_applications.delete(id, **kwargs)
+        logger.info(f"RestaurantApplication with id={id} declined and deleted")

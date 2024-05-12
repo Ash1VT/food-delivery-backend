@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     web_app_host: str
     web_app_port: int
     reload: bool
+    graylog_host: str
+    graylog_udp_port: int
     roles_grpc_server_host: str
     roles_grpc_server_port: str
     kafka_bootstrap_server_host: str

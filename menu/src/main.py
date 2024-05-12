@@ -2,6 +2,7 @@ import os
 
 import uvicorn
 
+from setup.logger import logger
 from config import get_settings
 
 if __name__ == "__main__":

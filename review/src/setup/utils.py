@@ -1,4 +1,5 @@
 from setup.settings.server import get_server_settings
+from setup.sqlalchemy.admin import admin
 
 
 def start_app():

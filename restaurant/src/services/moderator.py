@@ -1,3 +1,5 @@
+from loguru import logger
+
 from models import Moderator
 from schemas.moderator import ModeratorRetrieveOut, ModeratorCreateIn, ModeratorCreateOut
 from uow import SqlAlchemyUnitOfWork
@@ -44,8 +46,10 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
         retrieved_instance = await uow.moderators.retrieve(id, **kwargs)
 
         if not retrieved_instance:
+            logger.warning(f"Moderator with id={id} not found")
             raise ModeratorNotFoundWithIdError(id)
 
+        logger.info(f"Retrieved Moderator with id={id}.")
         return retrieved_instance
 
     async def create_instance(self, item: ModeratorCreateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> Moderator:
@@ -64,11 +68,16 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
         """
 
         if await uow.moderators.exists(item.id):
+            logger.warning(f"Moderator with id={item.id} already exists")
             raise ModeratorAlreadyExistsWithIdError(item.id)
 
         data = item.model_dump()
 
-        return await uow.moderators.create(data, **kwargs)
+        created_instance = await uow.moderators.create(data, **kwargs)
+
+        logger.info(f"Created moderator with id={created_instance.id}.")
+
+        return created_instance
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -83,6 +92,8 @@ class ModeratorService(RetrieveMixin[Moderator, ModeratorRetrieveOut],
         """
 
         if not await uow.moderators.exists(id):
+            logger.warning(f"Moderator with id={id} not found")
             raise ModeratorNotFoundWithIdError(id)
 
         await uow.moderators.delete(id, **kwargs)
+        logger.info(f"Deleted moderator with id={id}.")

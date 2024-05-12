@@ -3,6 +3,7 @@ from typing import TypeVar, Optional, Generic, List
 
 from sqlalchemy import select, insert, update, delete, Select, Insert, Update, Delete, exists
 from sqlalchemy.ext.asyncio import AsyncSession
+from loguru import logger
 
 from models import CustomBase
 
@@ -191,6 +192,17 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         return delete(self.model).where(self.model.id == id)
 
     def _get_exists_stmt(self, id: int, **kwargs) -> Select:
+        """
+        Create a SELECT statement to check if a record exists by its ID.
+
+        Args:
+            id (int): The ID of the record to check.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Select: The SELECT statement to check if the record exists.
+        """
+
         stmt = self._get_retrieve_stmt(id, **kwargs)
         return select(exists(stmt))
 
@@ -198,31 +210,56 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
         stmt = self._get_retrieve_stmt(id=id, **kwargs)
 
         result = await self._session.execute(stmt)
+        result = result.scalar_one_or_none()
 
-        return result.scalar_one_or_none()
+        if result:
+            logger.debug(f"Retrieved {self.model.__name__} with id={id}")
+            return result
+
+        logger.warning(f"Requested {self.model.__name__} with id={id} but it not found")
 
     async def list(self, **kwargs) -> List[Model]:
         stmt = self._get_list_stmt(**kwargs)
         result = await self._session.execute(stmt)
 
-        return [r[0] for r in result.fetchall()]
+        result = [r[0] for r in result.fetchall()]
+
+        logger.debug(f"Retrieved list of {self.model.__name__}")
+
+        return result
 
     async def create(self, data: dict, **kwargs) -> Model:
         stmt = self._get_create_stmt(data=data, **kwargs)
         result = await self._session.execute(stmt)
 
-        return result.scalar_one()
+        result = result.scalar_one()
+
+        logger.debug(f"Created {self.model.__name__} with id={result.id}")
+
+        return result
 
     async def update(self, id: int, data: dict, **kwargs) -> Optional[Model]:
         stmt = self._get_update_stmt(id=id, data=data, **kwargs)
         result = await self._session.execute(stmt)
-        return result.scalar_one_or_none()
+        result = result.scalar_one_or_none()
+
+        if result:
+            logger.debug(f"Updated {self.model.__name__} with id={id}")
+            return result
+
+        logger.warning(f"Requested to update {self.model.__name__} with id={id} but it not found")
 
     async def delete(self, id: int, **kwargs):
         stmt = self._get_delete_stmt(id=id, **kwargs)
         await self._session.execute(stmt)
+        logger.debug(f"Deleted {self.model.__name__} with id={id}")
 
     async def exists(self, id: int, **kwargs) -> bool:
         stmt = self._get_exists_stmt(id, **kwargs)
         result = await self._session.execute(stmt)
-        return result.scalar()
+        result = result.scalar()
+
+        logger.debug(f"Checked for existence {self.model.__name__} with id={id}")
+
+        return result
+

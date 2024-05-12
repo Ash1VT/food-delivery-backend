@@ -1,5 +1,7 @@
 from typing import Optional
 
+from loguru import logger
+
 from exceptions import WorkingHoursNotFoundWithIdError, WorkingHoursAlreadyExistsWithDayError, \
     WorkingHoursTimeConflictError, \
     PermissionDeniedError, RestaurantNotFoundWithIdError
@@ -62,10 +64,12 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning("User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(item.restaurant_id):
+            logger.warning(f"Restaurant with id={item.restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(item.restaurant_id)
 
         # Check if restaurant manager owns a restaurant
@@ -73,15 +77,20 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Check if working hours with such day not already exists for restaurant
         if await uow.working_hours.exists_with_restaurant(item.restaurant_id, item.day_of_week):
+            logger.warning(f"Working hours with day={str(item.day_of_week.value)} already exists for restaurant")
             raise WorkingHoursAlreadyExistsWithDayError(item.day_of_week)
 
         # Check that opening time is before closing time
         if item.opening_time >= item.closing_time:
+            logger.warning(f"Opening time {item.opening_time.strftime('%H:%M')} is "
+                           f"after closing time {item.closing_time.strftime('%H:%M')}")
             raise WorkingHoursTimeConflictError(item.opening_time, item.closing_time)
 
         # Create
         data = item.model_dump()
         working_hours_instance = await uow.working_hours.create(data, **kwargs)
+
+        logger.info(f"Created working hours with id={working_hours_instance.id}")
 
         publisher.publish(WorkingHoursCreatedEvent(
             id=working_hours_instance.id,
@@ -115,12 +124,14 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning("User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check working hours for existence
         retrieved_working_hours = await uow.working_hours.retrieve(id, **kwargs)
 
         if not retrieved_working_hours:
+            logger.warning(f"Working hours with id={id} not found")
             raise WorkingHoursNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -129,11 +140,15 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Check that opening time is before closing time
         if item.opening_time >= item.closing_time:
+            logger.warning(f"Opening time {item.opening_time.strftime('%H:%M')} is "
+                           f"after closing time {item.closing_time.strftime('%H:%M')}")
             raise WorkingHoursTimeConflictError(item.opening_time, item.closing_time)
 
         # Update
         data = item.model_dump()
         working_hours_instance = await uow.working_hours.update(id, data, **kwargs)
+
+        logger.info(f"Updated working hours with id={working_hours_instance.id}")
 
         publisher.publish(WorkingHoursUpdatedEvent(
             id=working_hours_instance.id,
@@ -158,12 +173,14 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning("User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check working hours for existence
         retrieved_working_hours = await uow.working_hours.retrieve(id, **kwargs)
 
         if not retrieved_working_hours:
+            logger.warning(f"Working hours with id={id} not found")
             raise WorkingHoursNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -172,6 +189,7 @@ class WorkingHoursService(CreateMixin[WorkingHours, WorkingHoursCreateIn, Workin
 
         # Delete
         await uow.working_hours.delete(id, **kwargs)
+        logger.info(f"Deleted working hours with id={id}")
 
         publisher.publish(WorkingHoursDeletedEvent(
             id=id

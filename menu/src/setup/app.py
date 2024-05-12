@@ -1,7 +1,8 @@
 from fastapi import FastAPI
+from loguru import logger
+
 from api import api_router
 from config import get_settings
-
 from consumer import consumer_creator
 from setup.kafka.consumer import init_kafka_receivers
 from setup.kafka.producer import init_producer_events
@@ -27,18 +28,19 @@ def startup_event():
         kafka_receivers = init_kafka_receivers(consumer_creator, settings)
         for kafka_receiver in kafka_receivers:
             kafka_receiver.start_receiving()
+        logger.info("Kafka receivers initialized")
     except Exception as e:
-        print(e)
+        logger.error(f"Error initializing kafka receivers: {e}")
 
     try:
-        settings = get_settings()
         init_producer_events(settings)
+        logger.info("Kafka producer events initialized")
     except Exception as e:
-        print(e)
+        logger.error(f"Error initializing kafka producer events: {e}")
 
     try:
         from setup.firebase import init_firebase
-        settings = get_settings()
         init_firebase(settings)
+        logger.info("Firebase initialized")
     except Exception as e:
-        print(e)
+        logger.error(f"Error initializing firebase: {e}")

@@ -1,5 +1,9 @@
+import logging
+
 from django.conf import settings
 from django.utils.module_loading import import_string
+
+logger = logging.getLogger(__name__)
 
 
 def init_producer_events():
@@ -10,3 +14,5 @@ def init_producer_events():
                                        for topic, serializer_str in producer_topics_str_serializers.items()}
 
         producer_event.extend_topics_serializers(producer_topics_serializers)
+
+    logger.info(f"Initialized producer events")

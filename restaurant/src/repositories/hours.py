@@ -1,3 +1,4 @@
+from loguru import logger
 from sqlalchemy import select, Select, exists
 
 from models import WorkingHours, DayOfWeek
@@ -47,4 +48,8 @@ class WorkingHoursRepository(SQLAlchemyRepository[WorkingHours]):
 
         stmt = self._get_exists_with_restaurant_stmt(restaurant_id, day_of_week, **kwargs)
         result = await self._session.execute(stmt)
-        return result.scalar()
+        result = result.scalar()
+
+        logger.debug(f"Checked if Restaurant with id={restaurant_id} has working hours of day {str(day_of_week.value)}")
+
+        return result

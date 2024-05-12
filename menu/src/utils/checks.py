@@ -1,3 +1,5 @@
+from loguru import logger
+
 from exceptions import RestaurantManagerOwnershipError
 from models import RestaurantManager
 
@@ -24,4 +26,6 @@ def check_restaurant_manager_ownership_on_restaurant(restaurant_manager: Restaur
     """
 
     if restaurant_id != restaurant_manager.restaurant_id:
+        logger.warning(f"RestaurantManager with id={restaurant_manager.id} is not the owner "
+                       f"of the Restaurant with id={restaurant_id}")
         raise RestaurantManagerOwnershipError(restaurant_manager, restaurant_id)

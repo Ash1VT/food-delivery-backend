@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from loguru import logger
 from sqlalchemy import Select, select
 from sqlalchemy.orm import selectinload
 
@@ -166,4 +167,8 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
         stmt = self._get_list_active_restaurants_stmt(fetch_working_hours=fetch_working_hours, **kwargs)
         result = await self._session.execute(stmt)
-        return [r[0] for r in result.fetchall()]
+        result = [r[0] for r in result.fetchall()]
+
+        logger.debug(f"Retrieved list of active restaurants")
+
+        return result

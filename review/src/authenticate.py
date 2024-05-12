@@ -54,7 +54,7 @@ async def authenticate(access_token: Optional[str],
         return user
 
     except RpcError as e:
-        logger.error("Error communicating with User microservice: %s", e.details())
+        logger.error(f"Error communicating with User microservice: {e.details()}")
         raise HTTPException(
             status_code=grpc_status_to_http(e.code()),
             detail=e.details()

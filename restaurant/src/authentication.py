@@ -2,6 +2,7 @@ from typing import Union, Optional, Dict
 
 from fastapi import HTTPException
 from grpc import RpcError
+from loguru import logger
 
 from grpc_files import grpc_roles_client
 from models import RestaurantManager, Moderator
@@ -41,6 +42,7 @@ async def authenticate(access_token: Optional[str],
 
     try:
         if not access_token or len(access_token) == 0:
+            logger.info("Authenticated as anonymous user")
             return
 
         grpc_response = grpc_roles_client.get_user_role(access_token)
@@ -48,9 +50,14 @@ async def authenticate(access_token: Optional[str],
         for role in microservice_roles:
             if role.grpc_role == grpc_response.role:
                 user_id = int(grpc_response.user_id)
-                return await microservice_roles[role].retrieve_instance(user_id, uow)
+                user = await microservice_roles[role].retrieve_instance(user_id, uow)
+                logger.info(f"Authenticated as user with id={user.id} and role={str(role)}")
+                return user
 
+        logger.warning(f"User role {str(grpc_response.role)} is not supported in this microservice")
+        logger.info("Authenticated as anonymous user")
     except RpcError as e:
+        logger.error(f"Error communicating with User microservice: {e.details()}")
         raise HTTPException(
             status_code=grpc_status_to_http(e.code()),
             detail=e.details()

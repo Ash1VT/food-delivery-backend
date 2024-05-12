@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from fastapi import UploadFile
+from loguru import logger
 
 from producer import publisher, RestaurantCreatedEvent, RestaurantUpdatedEvent
 from user_roles import ModeratorRole, RestaurantManagerRole
@@ -78,13 +79,17 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Check for existence
         if not retrieved_instance:
+            logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
         # Permission checks if not active
         if not retrieved_instance.is_active:
             if not self._restaurant_manager and not self._moderator:
+                logger.warning(f"Restaurant with id={id} is not active and "
+                               f"the authenticated user is not a Moderator or RestaurantManager.")
                 raise RestaurantNotActiveError(retrieved_instance.id)
 
+        logger.info(f"Retrieved restaurant with id={id}.")
         return retrieved_instance
 
     async def list_instances(self, uow: SqlAlchemyUnitOfWork, **kwargs) -> List[Restaurant]:
@@ -100,9 +105,14 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if self._moderator:
+            logger.info(f"Listing all restaurants for Moderator with id={self._moderator.id}.")
             return await uow.restaurants.list(fetch_working_hours=True, **kwargs)
 
-        return await uow.restaurants.list_active_restaurants(fetch_working_hours=True, **kwargs)
+        active_restaurants = await uow.restaurants.list_active_restaurants(fetch_working_hours=True, **kwargs)
+
+        logger.info(f"Listing all active restaurants.")
+
+        return active_restaurants
 
     async def create_instance(self, item: RestaurantCreateIn,
                               uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantApplication:
@@ -125,22 +135,31 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager.")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check if restaurant manager already has a restaurant
         # if await uow.restaurants.exists(self._restaurant_manager.restaurant_id):
         if self._restaurant_manager.restaurant_id is not None:
+            logger.warning(f"RestaurantManager with id={self._restaurant_manager.id} already has a "
+                           f"Restaurant with id={self._restaurant_manager.restaurant_id}.")
             raise RestaurantManagerAlreadyHaveRestaurantError(self._restaurant_manager)
 
         # Check if restaurant manager already has create application
         if await uow.restaurant_applications.exists_for_manager(self._restaurant_manager.id, ApplicationType.create):
+            logger.warning(f"RestaurantManager with id={self._restaurant_manager.id} "
+                           f"already has an application of type create.")
             raise RestaurantManagerAlreadyHaveApplicationError(self._restaurant_manager, ApplicationType.create)
 
         # Create an application for create
         data = item.model_dump()
         data["restaurant_manager_id"] = self._restaurant_manager.id
         data["type"] = ApplicationType.create
-        return await uow.restaurant_applications.create(data)
+        created_instance = await uow.restaurant_applications.create(data)
+
+        logger.info(f"Created RestaurantApplication with id={created_instance.id} and type=create.")
+
+        return created_instance
 
     async def update_instance(self, id: int, item: RestaurantUpdateIn,
                               uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantApplication:
@@ -163,10 +182,12 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager.")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check for existence
         if not await uow.restaurants.exists(id):
+            logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -174,13 +195,19 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Check if restaurant manager already has an update application
         if await uow.restaurant_applications.exists_for_manager(self._restaurant_manager.id, ApplicationType.update):
+            logger.warning(f"RestaurantManager with id={self._restaurant_manager.id} "
+                           f"already has an application of type update.")
             raise RestaurantManagerAlreadyHaveApplicationError(self._restaurant_manager, ApplicationType.update)
 
         # Create an application for update
         data = item.model_dump()
         data["restaurant_manager_id"] = self._restaurant_manager.id
         data["type"] = ApplicationType.update
-        return await uow.restaurant_applications.create(data)
+        created_instance = await uow.restaurant_applications.create(data)
+
+        logger.info(f"Created RestaurantApplication with id={created_instance.id} and type=update.")
+
+        return created_instance
 
     async def upload_image(self, id: int, file: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -198,10 +225,12 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager.")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check for existence
         if not await uow.restaurants.exists(id):
+            logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -214,6 +243,8 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         await uow.restaurants.update(id, {
             'image_url': image_url
         })
+
+        logger.info(f"Uploaded image for restaurant with id={id}.")
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -230,10 +261,12 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if not self._restaurant_manager and not self._moderator:
+            logger.warning(f"User is not a restaurant manager or moderator.")
             raise PermissionDeniedError(RestaurantManagerRole, ModeratorRole)
 
         # Check for existence
         if not await uow.restaurants.exists(id):
+            logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -242,6 +275,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Delete
         await uow.restaurants.delete(id, **kwargs)
+        logger.info(f"Deleted restaurant with id={id}.")
 
     async def activate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -259,11 +293,13 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if not self._restaurant_manager and not self._moderator:
+            logger.warning(f"User is not a restaurant manager or moderator.")
             raise PermissionDeniedError(RestaurantManagerRole, ModeratorRole)
 
         retrieved_restaurant = await uow.restaurants.retrieve(id, **kwargs)
 
         if not retrieved_restaurant:
+            logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -272,9 +308,12 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Check if restaurant is not active already
         if retrieved_restaurant.is_active:
+            logger.warning(f"Restaurant with id={id} is already active.")
             raise RestaurantAlreadyActiveError(retrieved_restaurant.id)
 
         retrieved_restaurant.is_active = True
+
+        logger.info(f"Activated restaurant with id={id}.")
 
         publisher.publish(
             RestaurantUpdatedEvent(
@@ -299,11 +338,13 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Permission checks
         if not self._restaurant_manager and not self._moderator:
+            logger.warning(f"User is not a restaurant manager or moderator.")
             raise PermissionDeniedError(RestaurantManagerRole, ModeratorRole)
 
         retrieved_restaurant = await uow.restaurants.retrieve(id, **kwargs)
 
         if not retrieved_restaurant:
+            logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
         # Check if restaurant manager owns a restaurant
@@ -312,9 +353,12 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         # Check if restaurant is active already
         if not retrieved_restaurant.is_active:
+            logger.warning(f"Restaurant with id={id} is already not active.")
             raise RestaurantAlreadyNotActiveError(retrieved_restaurant.id)
 
         retrieved_restaurant.is_active = False
+
+        logger.info(f"Deactivated restaurant with id={id}.")
 
         publisher.publish(
             RestaurantUpdatedEvent(

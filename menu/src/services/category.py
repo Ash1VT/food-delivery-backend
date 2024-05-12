@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import UploadFile
+from loguru import logger
 
 from config import get_settings
 from exceptions.menu import MenuNotFoundWithIdError
@@ -65,10 +66,12 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check menu for existence
         if not await uow.menus.exists(item.menu_id):
+            logger.warning(f"Menu with id={item.menu_id} not found")
             raise MenuNotFoundWithIdError(item.menu_id)
 
         # Get restaurant by menu
@@ -81,7 +84,11 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         data = item.model_dump()
         settings = get_settings()
         data['image_url'] = settings.default_menu_category_image_url
-        return await uow.categories.create(data, **kwargs)
+        menu_category = await uow.categories.create(data, **kwargs)
+
+        logger.info(f"Created MenuCategory with id={menu_category.id}")
+
+        return menu_category
 
     async def update_instance(self, id: int, item: MenuCategoryUpdateIn,
                               uow: SqlAlchemyUnitOfWork,
@@ -104,10 +111,12 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check category for existence
         if not await uow.categories.exists(id):
+            logger.warning(f"MenuCategory with id={id} not found")
             raise MenuCategoryNotFoundWithIdError(id)
 
         # Get restaurant by category
@@ -118,7 +127,11 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Update
         data = item.model_dump()
-        return await uow.categories.update(id, data, **kwargs)
+        menu_category = await uow.categories.update(id, data, **kwargs)
+
+        logger.info(f"Updated MenuCategory with id={menu_category.id}")
+
+        return menu_category
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -135,10 +148,12 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check category for existence
         if not await uow.categories.exists(id):
+            logger.warning(f"MenuCategory with id={id} not found")
             raise MenuCategoryNotFoundWithIdError(id)
 
         # Get restaurant by category
@@ -149,6 +164,7 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Delete
         await uow.categories.delete(id, **kwargs)
+        logger.info(f"Deleted MenuCategory with id={id}")
 
     async def add_menu_item(self, category_id: int, item_id: int,
                             uow: SqlAlchemyUnitOfWork,
@@ -170,12 +186,14 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Get menu item
         menu_item = await uow.items.retrieve(item_id)
 
         if not menu_item:
+            logger.warning(f"MenuItem with id={item_id} not found")
             raise MenuItemNotFoundWithIdError(item_id)
 
         # Check if restaurant manager owns restaurant of a menu item
@@ -185,6 +203,7 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         menu_category = await uow.categories.retrieve(category_id, fetch_items=True)
 
         if not menu_category:
+            logger.warning(f"MenuCategory with id={category_id} not found")
             raise MenuCategoryNotFoundWithIdError(category_id)
 
         # Get restaurant by category
@@ -195,10 +214,13 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Check if menu item is already in menu category
         if menu_item in menu_category.items:
+            logger.warning(f"MenuItem with id={item_id} is already in MenuCategory with id={category_id}")
             raise MenuItemAlreadyInCategoryError(category_id)
 
         # Append
         menu_category.items.add(menu_item)
+
+        logger.info(f"Added MenuItem with id={item_id} to MenuCategory with id={category_id}")
 
     async def remove_menu_item(self, category_id: int, item_id: int,
                                uow: SqlAlchemyUnitOfWork,
@@ -220,12 +242,14 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Get menu item
         item = await uow.items.retrieve(item_id)
 
         if not item:
+            logger.warning(f"MenuItem with id={item_id} not found")
             raise MenuItemNotFoundWithIdError(item_id)
 
         # Check if restaurant manager owns restaurant of a menu item
@@ -235,6 +259,7 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         menu_category = await uow.categories.retrieve(category_id, fetch_items=True)
 
         if not menu_category:
+            logger.warning(f"MenuCategory with id={category_id} not found")
             raise MenuCategoryNotFoundWithIdError(category_id)
 
         # Get restaurant by category
@@ -245,19 +270,24 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         # Check if menu item is not already in menu category
         if item not in menu_category.items:
+            logger.warning(f"MenuItem with id={item_id} is not in MenuCategory with id={category_id}")
             raise MenuItemNotInCategoryError(category_id)
 
         # Remove
         menu_category.items.remove(item)
 
+        logger.info(f"Removed MenuItem with id={item_id} from MenuCategory with id={category_id}")
+
     async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
 
         # Permission checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check category for existence
         if not await uow.categories.exists(id):
+            logger.warning(f"MenuCategory with id={id} not found")
             raise MenuCategoryNotFoundWithIdError(id)
 
         # Get restaurant by category
@@ -273,3 +303,5 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         await uow.categories.update(id, {
             'image_url': image_url
         })
+
+        logger.info(f"Uploaded image for MenuCategory with id={id}")

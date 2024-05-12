@@ -1,3 +1,5 @@
+from loguru import logger
+
 from config import get_settings
 from .events import *
 from .creator import *
@@ -17,5 +19,6 @@ try:
     producer = producer_sasl_creator.create()
     publisher = KafkaPublisher(producer)
 except Exception as e:
+    logger.error(f"Failed to create Kafka publisher: {e}")
     publisher = DummyPublisher()
-    print(e)
+    logger.info("Using dummy publisher")

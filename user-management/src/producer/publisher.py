@@ -55,8 +55,12 @@ class KafkaPublisher(AbstractPublisher):
         """
 
         for topic in event.get_topics():
-            self._producer.send(topic, key=event.get_event_name(), value=event.get_data(topic))
-            logger.info(f"Published event {event.get_event_name()} to topic: {topic}")
+            key = event.get_event_name()
+            data = event.get_data(topic)
+            self._producer.send(topic, key=key, value=data)
+
+            data_string = ", ".join(f"{key}={value}" for key, value in data.items())
+            logger.info(f"Published event {key} to topic: {topic} with data: {data_string}")
 
 
 class DummyPublisher(AbstractPublisher):
@@ -73,4 +77,7 @@ class DummyPublisher(AbstractPublisher):
         """
 
         for topic in event.get_topics():
-            logger.info(f"Published event {event.get_event_name()} to topic: {topic}")
+            key = event.get_event_name()
+            data = event.get_data(topic)
+            data_string = ", ".join(f"{key}={value}" for key, value in data.items())
+            logger.info(f"Published dummy event {key} to topic: {topic} with data: {data_string}")
