@@ -134,6 +134,7 @@ model DeliveryInformation {
   deliveryType         DeliveryType? @map("delivery_type")
   deliveryDistance     Float?        @map("delivery_distance")
   supposedDeliveryTime Int?          @map("supposed_delivery_time")
+  deliveryPrice        Float?        @map("delivery_price")
 
   originAddress      String @map("origin_address")
   destinationAddress String @map("destination_address")
