@@ -1,5 +1,4 @@
 import IPromocodeService from "../../../interfaces/IPromocodeService";
-import IPromotionService from "../../../interfaces/IPromotionService";
 import IPromotionServiceFactory from "../../interfaces/IPromotionServiceFactory";
 import { PrismaClient } from "@prisma/client";
 import IPromotionMapperFactory from "@src/modules/promotions/mappers/factories/interfaces/IPromotionMapperFactory";
@@ -8,7 +7,6 @@ import IPromotionRepositoryFactory from "@src/modules/promotions/repositories/fa
 import PrismaPromotionRepositoryFactory from "@src/modules/promotions/repositories/factories/implementations/prisma/PrismaPromotionRepositoryFactory";
 import PrismaRestaurantRepositoryFactory from "@src/modules/restaurants/repositories/factories/implementations/prisma/PrismaRestaurantRepositoryFactory";
 import IRestaurantRepositoryFactory from "@src/modules/restaurants/repositories/factories/interfaces/IRestaurantRepositoryFactory";
-import PromotionService from "../../../implementations/PromotionService";
 import PromocodeService from "../../../implementations/PromocodeService";
 
 export default class PrismaPromotionServiceFactory implements IPromotionServiceFactory {
@@ -21,13 +19,6 @@ export default class PrismaPromotionServiceFactory implements IPromotionServiceF
         this.restaurantRepositoryFactory = new PrismaRestaurantRepositoryFactory(prismaClient)
     }
 
-    public createPromotionService(): IPromotionService {
-        return new PromotionService(
-            this.promotionMapperFactory.createPromotionCreateMapper(),
-            this.promotionRepositoryFactory.createPromotionRepository(),
-        )
-    }
-    
     public createPromocodeService(): IPromocodeService {
         return new PromocodeService(
             this.promotionMapperFactory.createPromocodeGetMapper(),
