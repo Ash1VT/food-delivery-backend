@@ -1,3 +1,4 @@
+import getLogger from "@src/core/setup/logger";
 import { OrderCreateInputDto, OrderCreateOutputDto, OrderGetOutputDto, OrderUpdateOutputDto } from "../../dto/order.dto";
 import { OrderCreateInput, OrderModel } from "../../models/order.models";
 import { OrderAdditionalData } from "../additionalData";
@@ -5,6 +6,9 @@ import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper, IDeliv
 import { IOrderGetMapper, IOrderCreateMapper, IOrderUpdateMapper } from "../interfaces/order.mappers";
 import { IOrderItemCreateMapper, IOrderItemGetMapper, IOrderItemUpdateMapper } from "../interfaces/orderItem.mappers";
 import { IPriceInformationCreateMapper, IPriceInformationGetMapper, IPriceInformationUpdateMapper } from "../interfaces/priceInformation.mappers";
+
+
+const logger = getLogger(module)
 
 export class OrderGetMapper implements IOrderGetMapper {
 
@@ -15,7 +19,7 @@ export class OrderGetMapper implements IOrderGetMapper {
     ) {}
 
     toDto(dbModel: OrderModel): OrderGetOutputDto {
-        return {
+        const data = {
             ...dbModel,
             id: dbModel.id.toString(),
             customerId: dbModel.customerId.toString(),
@@ -26,6 +30,10 @@ export class OrderGetMapper implements IOrderGetMapper {
             priceInformation: dbModel.priceInformation ? this.priceInformationGetMapper.toDto(dbModel.priceInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
         }
+
+        logger.debug(`Mapped database OrderModel with id=${dbModel.id} to OrderGetOutputDto`)
+
+        return data
     }
 
 }
@@ -39,7 +47,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
     ) {}
 
     toDto(dbModel: OrderModel): OrderCreateOutputDto {
-        return {
+        const data = {
             ...dbModel,
             id: dbModel.id.toString(),
             customerId: dbModel.customerId.toString(),
@@ -50,10 +58,14 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             priceInformation: dbModel.priceInformation ? this.priceInformationCreateMapper.toDto(dbModel.priceInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemCreateMapper.toDto(orderItem))
         }
+
+        logger.debug(`Mapped database OrderModel with id=${dbModel.id} to OrderCreateOutputDto`)
+
+        return data
     }
 
     toDbModel(dtoModel: OrderCreateInputDto, additionalData: OrderAdditionalData): OrderCreateInput {
-        return {
+        const data = {
             customerId: additionalData.customerId,
             restaurantId: dtoModel.restaurantId,
             deliveryInformationId: additionalData.deliveryInformationId,
@@ -65,6 +77,10 @@ export class OrderCreateMapper implements IOrderCreateMapper {
                 })
             }
         }
+
+        logger.debug(`Mapped OrderCreateInputDto to database OrderCreateInput`)
+
+        return data
     }
 
 }
@@ -78,7 +94,7 @@ export class OrderUpdateMapper implements IOrderUpdateMapper {
     ) {}
 
     toDto(dbModel: OrderModel): OrderUpdateOutputDto {
-        return {
+        const data = {
             ...dbModel,
             id: dbModel.id.toString(),
             customerId: dbModel.customerId.toString(),
@@ -89,6 +105,10 @@ export class OrderUpdateMapper implements IOrderUpdateMapper {
             priceInformation: dbModel.priceInformation ? this.priceInformationUpdateMapper.toDto(dbModel.priceInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemUpdateMapper.toDto(orderItem))
         }
+
+        logger.debug(`Mapped database OrderModel with id=${dbModel.id} to OrderUpdateOutputDto`)
+
+        return data
     }
 
 }

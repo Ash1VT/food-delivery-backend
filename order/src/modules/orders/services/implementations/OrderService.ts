@@ -25,7 +25,6 @@ import { CustomerAddressNotApprovedError, CustomerAddressNotFoundWithIdError } f
 import { MenuItemNotFoundWithIdError, MenuItemAllNotInSameRestaurantError } from '@src/modules/menu/errors/menuItem.errors';
 import { publisher } from '@src/core/setup/kafka/publisher';
 import { OrderFinishedEvent } from '../../producer/events/order.events';
-import { getDayOfWeek } from '../../utils/daysOfWeek';
 import IWorkingHoursRepository from '@src/modules/restaurants/repositories/interfaces/IWorkingHoursRepository';
 import { PromocodeModel } from '@src/modules/promotions/models/promocode.models';
 import { CustomerModel } from '@src/modules/users/models/customer.models';
@@ -36,6 +35,9 @@ import getAcrossDistance from '../../utils/getAcrossDistance';
 import { PriceInformationModel, PriceInformationUpdateInput } from '../../models/priceInformation.models';
 import { calculateOrderPrice } from '../../utils/price';
 import { OrderModel } from '../../models/order.models';
+import getLogger from '@src/core/setup/logger';
+
+const logger = getLogger(module)
 
 export default class OrderService extends BaseService implements IOrderService {
 
@@ -60,50 +62,71 @@ export default class OrderService extends BaseService implements IOrderService {
 
         // Check if user is moderator
         if (!this.moderator) {
+            logger.warn('User is not authenticated as Moderator')
             throw new PermissionDeniedError()
         }
         
         const orderInstances = await this.orderRepository.getMany(true, true, true, status)
-        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+        const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+
+        logger.info(`Retrieved list of Orders`)
+
+        return orderDtos
     }
 
     public async getReadyOrders(): Promise<OrderGetOutputDto[]> {
 
         // Check if user is courier
         if (!this.courier) {
+            logger.warn('User is not authenticated as Courier')
             throw new PermissionDeniedError()
         }
 
         const orderInstances = await this.orderRepository.getMany(true, true, true, "READY")
-        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+        const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+
+        logger.info(`Retrieved list of Ready Orders`)
+
+        return orderDtos
     }
 
     public async getCurrentCourierOrders(status?: OrderStatus): Promise<OrderGetOutputDto[]> {
         
         // Check if user is courier
         if(!this.courier) {
+            logger.warn('User is not authenticated as Courier')
             throw new PermissionDeniedError()
         }
 
         const orderInstances = await this.orderRepository.getCourierOrders(this.courier.id, true, true, true, status)
-        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+        const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+
+        logger.info(`Retrieved list of Orders for Courier with id=${this.courier.id}`)
+
+        return orderDtos
     }
 
     public async getCurrentCustomerOrders(status?: OrderStatus): Promise<OrderGetOutputDto[]> {
 
         // Check if user is customer
         if(!this.customer) {
+            logger.warn('User is not authenticated as Customer')
             throw new PermissionDeniedError()
         }
         
         const orderInstances = await this.orderRepository.getCustomerOrders(this.customer.id, true, true, true, status)
-        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+        const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+
+        logger.info(`Retrieved list of Orders for Customer with id=${this.customer.id}`)
+
+        return orderDtos
     }
 
     public async getRestaurantOrders(restaurantId: bigint, status?: OrderStatus): Promise<OrderGetOutputDto[]> {
         
         // Check if user is restaurant manager
         if(!this.restaurantManager) {
+            logger.warn('User is not authenticated as RestaurantManager')
             throw new PermissionDeniedError()
         }
 
@@ -111,22 +134,29 @@ export default class OrderService extends BaseService implements IOrderService {
         const restaurantInstance = await this.restaurantRepository.getOne(restaurantId)
 
         if (!restaurantInstance) {
+            logger.warn(`Restaurant with id=${restaurantId} does not exist`)
             throw new RestaurantNotFoundWithIdError(restaurantId)
         }
 
         // Check if restaurant manager has ownership on restaurant
         if(this.restaurantManager.restaurantId !== restaurantInstance.id) {
+            logger.warn(`Restaurant with id=${restaurantId} does not belong to RestaurantManager with id=${this.restaurantManager.id}`)
             throw new RestaurantManagerOwnershipError(this.restaurantManager.id, restaurantId)
         }
 
         const orderInstances = await this.orderRepository.getRestaurantOrders(restaurantId, true, true, true, status)
-        return orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+        const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
+
+        logger.info(`Retrieved list of Orders for Restaurant with id=${restaurantId}`)
+
+        return orderDtos
     }
 
     public async confirmOrder(orderId: bigint): Promise<OrderUpdateOutputDto> {
         
         // Check if user is moderator
         if (!this.restaurantManager) {
+            logger.warn('User is not authenticated as RestaurantManager')
             throw new PermissionDeniedError()
         }
 
@@ -134,16 +164,19 @@ export default class OrderService extends BaseService implements IOrderService {
         const orderInstance = await this.orderRepository.getOne(orderId)
 
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if manager has ownership on order
         if (this.restaurantManager.restaurantId !== orderInstance.restaurantId) {
+            logger.warn(`Order with id=${orderId} does not belong to RestaurantManager with id=${this.restaurantManager.id}`)
             throw new RestaurantManagerOwnershipError(this.restaurantManager.id, orderInstance.restaurantId)
         }
 
         // Check if order is pending
         if (orderInstance.status !== "PENDING") {
+            logger.warn(`Order with id=${orderId} is not in 'Pending' status`)
             throw new OrderNotPendingError(orderId)
         }
 
@@ -153,13 +186,18 @@ export default class OrderService extends BaseService implements IOrderService {
             status: "PREPARING"
         }) as OrderModel
 
-        return this.orderUpdateMapper.toDto(updatedOrder)
+        const orderDto = this.orderUpdateMapper.toDto(updatedOrder)
+
+        logger.info(`Order with id=${orderId} confirmed`)
+
+        return orderDto
     }
 
     public async prepareOrder(orderId: bigint): Promise<OrderUpdateOutputDto> {
         
         // Check if user is restaurant manager
         if (!this.restaurantManager) {
+            logger.warn('User is not authenticated as RestaurantManager')
             throw new PermissionDeniedError()
         }
 
@@ -167,16 +205,19 @@ export default class OrderService extends BaseService implements IOrderService {
         const orderInstance = await this.orderRepository.getOne(orderId)
 
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if manager has ownership on order
         if (this.restaurantManager.restaurantId !== orderInstance.restaurantId) {
+            logger.warn(`Order with id=${orderId} does not belong to RestaurantManager with id=${this.restaurantManager.id}`)
             throw new RestaurantManagerOwnershipError(this.restaurantManager.id, orderInstance.restaurantId)
         }
 
         // Check if order is preparing
         if (orderInstance.status !== "PREPARING") {
+            logger.warn(`Order with id=${orderId} is not in 'Preparing' status`)
             throw new OrderNotPreparingError(orderId)
         }
 
@@ -186,12 +227,17 @@ export default class OrderService extends BaseService implements IOrderService {
             status: "READY"
         }) as OrderModel
 
-        return this.orderUpdateMapper.toDto(updatedOrder)
+        const orderDto = this.orderUpdateMapper.toDto(updatedOrder)
+
+        logger.info(`Order with id=${orderId} prepared`)
+
+        return orderDto
     }
 
     public async cancelOrder(orderId: bigint): Promise<OrderUpdateOutputDto> {
         // Check if user is moderator
         if (!this.moderator) {
+            logger.warn('User is not authenticated as Moderator')
             throw new PermissionDeniedError()
         }
 
@@ -199,11 +245,13 @@ export default class OrderService extends BaseService implements IOrderService {
         const orderInstance = await this.orderRepository.getOne(orderId)
 
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if order is pending
         if (orderInstance.status !== "PENDING") {
+            logger.warn(`Order with id=${orderId} is not in 'Pending' status`)
             throw new OrderNotPendingError(orderId)
         }
 
@@ -213,13 +261,18 @@ export default class OrderService extends BaseService implements IOrderService {
             status: "CANCELLED"
         }) as OrderModel
 
-        return this.orderUpdateMapper.toDto(updatedOrder)
+        const orderDto = this.orderUpdateMapper.toDto(updatedOrder)
+
+        logger.info(`Order with id=${orderId} cancelled`)
+
+        return orderDto
     }
 
     public async makeOrder(orderData: OrderCreateInputDto): Promise<OrderCreateOutputDto> {
 
         // Check if user is customer
         if (!this.customer) {
+            logger.warn('User is not authenticated as Customer')
             throw new PermissionDeniedError()
         }
         
@@ -227,11 +280,13 @@ export default class OrderService extends BaseService implements IOrderService {
         const restaurantInstance = await this.restaurantRepository.getOne(orderData.restaurantId)
 
         if (!restaurantInstance){
+            logger.warn(`Restaurant with id=${orderData.restaurantId} does not exist`)
             throw new RestaurantNotFoundWithIdError(orderData.restaurantId)
         }
 
         // Check if restaurant is active
         if (!restaurantInstance.isActive) {
+            logger.warn(`Restaurant with id=${orderData.restaurantId} is not active`)
             throw new RestaurantNotActiveError(orderData.restaurantId)
         }
 
@@ -260,6 +315,7 @@ export default class OrderService extends BaseService implements IOrderService {
             const menuItemInstance = await this.menuItemRepository.getOne(orderItem.menuItemId)
 
             if (!menuItemInstance) {
+                logger.warn(`MenuItem with id=${orderItem.menuItemId} does not exist`)
                 throw new MenuItemNotFoundWithIdError(orderItem.menuItemId)
             }
             
@@ -270,12 +326,13 @@ export default class OrderService extends BaseService implements IOrderService {
         // Check if all menu items are from one restaurant
         const result = menuItems.every((menuItem, index, array) => {
             if (index < array.length - 1) {
-                return menuItem.restaurantId === array[index + 1].restaurantId;
+                return menuItem.restaurantId === array[index + 1].restaurantId && menuItem.restaurantId === orderData.restaurantId;
             }
             return true;
         });
 
         if(!result) {
+            logger.warn(`Not all menu items are from the same Restaurant with id=${orderData.restaurantId}`)
             throw new MenuItemAllNotInSameRestaurantError()
         }
         
@@ -331,12 +388,17 @@ export default class OrderService extends BaseService implements IOrderService {
         })
         
         const orderInstance = await this.orderRepository.create(orderInput)
-        return this.orderCreateMapper.toDto(orderInstance)
+        const orderDto = this.orderCreateMapper.toDto(orderInstance)
+
+        logger.info(`Order with id=${orderDto.id} created`)
+
+        return orderDto
     }
 
     public async updateOrder(orderId: bigint, orderData: OrderUpdateInputDto): Promise<OrderUpdateOutputDto> {
         // Check if user is customer
         if (!this.customer) {
+            logger.warn('User is not authenticated as Customer')
             throw new PermissionDeniedError()
         }
 
@@ -344,11 +406,13 @@ export default class OrderService extends BaseService implements IOrderService {
 
         // Check if order exists
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if order belongs to customer
         if (orderInstance.customerId !== this.customer.id) {
+            logger.warn(`Order with id=${orderId} does not belong to Customer with id=${this.customer.id}`)
             throw new CustomerOrderOwnershipError(this.customer.id, orderInstance.id)
         }
 
@@ -371,6 +435,7 @@ export default class OrderService extends BaseService implements IOrderService {
             const destinationPointCoordinates = await getCoordinates(fullCustomerAddress, this.bingApiKey)
 
             if (!originPointCoordinates || !destinationPointCoordinates) {
+                logger.error("Failed to calculate delivery distance")
                 throw new Error("Failed to calculate delivery distance")
             }
 
@@ -413,13 +478,18 @@ export default class OrderService extends BaseService implements IOrderService {
         orderInstance.deliveryInformation = updatedDeliveryInformation
         orderInstance.priceInformation = updatedPriceInformation
 
-        return this.orderUpdateMapper.toDto(orderInstance)
+        const orderDto = this.orderUpdateMapper.toDto(orderInstance)
+
+        logger.info(`Order with id=${orderDto.id} updated`)
+
+        return orderDto
     }
 
     public async placeOrder(orderId: bigint): Promise<OrderUpdateOutputDto> {
 
         // Check if user is customer
         if (!this.customer) {
+            logger.warn('User is not authenticated as Customer')
             throw new PermissionDeniedError()
         }
 
@@ -427,22 +497,26 @@ export default class OrderService extends BaseService implements IOrderService {
 
         // Check if order exists
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if order belongs to customer
         if (orderInstance.customerId !== this.customer.id) {
+            logger.warn(`Order with id=${orderId} does not belong to Customer with id=${this.customer.id}`)
             throw new CustomerOrderOwnershipError(this.customer.id, orderInstance.id)
         }
 
         // Check if order status is PLACING
         if (orderInstance.status !== "PLACING") {
+            logger.warn(`Order with id=${orderId} is not in 'Placing' status`)
             throw new OrderNotPlacingError(orderId)
         }
 
         // Check if order has destination address
         const deliveryInformation = orderInstance.deliveryInformation as DeliveryInformationModel
         if (!deliveryInformation.destinationAddress) {
+            logger.warn(`Order with id=${orderId} has no destination address`)
             throw new OrderHasNoDestinationAddressError(orderId)
         }
 
@@ -451,13 +525,18 @@ export default class OrderService extends BaseService implements IOrderService {
             status: "PENDING"
         })
 
-        return this.orderUpdateMapper.toDto(orderInstance)
+        const orderDto = this.orderUpdateMapper.toDto(orderInstance)
+
+        logger.info(`Order with id=${orderDto.id} placed`)
+
+        return orderDto
     }
 
     public async takeOrder(orderId: bigint, deliveryType: DeliveryType): Promise<OrderUpdateOutputDto> {
 
         // Check if user is courier
         if (!this.courier) {
+            logger.warn('User is not authenticated as Courier')
             throw new PermissionDeniedError()
         }
 
@@ -465,11 +544,13 @@ export default class OrderService extends BaseService implements IOrderService {
         const orderInstance = await this.orderRepository.getOne(orderId, false, true)
 
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if order status is READY
         if (orderInstance.status !== "READY") {
+            logger.warn(`Order with id=${orderId} is not in 'Ready' status`)
             throw new OrderNotReadyError(orderId)
         }
 
@@ -495,13 +576,18 @@ export default class OrderService extends BaseService implements IOrderService {
             status: "DELIVERING"
         }) as OrderModel
 
-        return this.orderUpdateMapper.toDto(updatedOrder)
+        const orderDto = this.orderUpdateMapper.toDto(updatedOrder)
+
+        logger.info(`Order with id=${orderDto.id} taken by Courier with id=${this.courier.id}`)
+
+        return orderDto
     }
 
     public async finishOrderDelivery(orderId: bigint): Promise<OrderUpdateOutputDto> {
 
         // Check if user is courier
         if (!this.courier) {
+            logger.warn('User is not authenticated as Courier')
             throw new PermissionDeniedError()
         }
 
@@ -509,16 +595,19 @@ export default class OrderService extends BaseService implements IOrderService {
         const orderInstance = await this.orderRepository.getOne(orderId, false, true)
 
         if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} does not exist`)
             throw new OrderNotFoundWithIdError(orderId)
         }
 
         // Check if order status is DELIVERING
         if (orderInstance.status !== "DELIVERING") {
+            logger.warn(`Order with id=${orderId} is not in 'Delivering' status`)
             throw new OrderNotDeliveringError(orderId)
         }
 
         // Check if courier has ownership on order
         if (orderInstance.courierId !== this.courier.id) {
+            logger.warn(`Order with id=${orderId} does not belong to Courier with id=${this.courier.id}`)
             throw new CourierOwnershipError(this.courier.id, orderId)
         }
 
@@ -547,33 +636,43 @@ export default class OrderService extends BaseService implements IOrderService {
             courierId: orderInstance.courierId
         }))
 
-        return this.orderUpdateMapper.toDto(updatedOrder)
+        const orderDto = this.orderUpdateMapper.toDto(updatedOrder)
+
+        logger.info(`Order with id=${orderDto.id} was delivered by Courier with id=${this.courier.id}`)
+
+        return orderDto
     }
 
     protected async checkPromocode(promocodeName: string, restaurantId: bigint, currentDate: Date): Promise<PromocodeModel> {
         const promocodeInstance = await this.promocodeRepository.getOneByName(promocodeName)
             
         if(!promocodeInstance) {
+            logger.warn(`Promocode with name=${promocodeName} does not exist`)
             throw new PromocodeNotFoundWithNameError(promocodeName)
         }
 
         if (promocodeInstance.restaurantId !== restaurantId) {
+            logger.warn(`Promocode with name=${promocodeName} does not belong to Restaurant with id=${restaurantId}`)
             throw new PromocodeNotBelongsToRestaurantError(promocodeInstance.id, restaurantId)
         }
 
         if (!promocodeInstance.isActive) {
+            logger.warn(`Promocode with name=${promocodeName} is not active`)
             throw new PromocodeNotActiveError(promocodeInstance.id)
         }
 
         if (promocodeInstance.currentUsageCount >= promocodeInstance.maxUsageCount) {
+            logger.warn(`Promocode with name=${promocodeName} has reached max usage count`)
             throw new PromocodeAmountUsageError(promocodeInstance.id)
         }
 
         if (currentDate < promocodeInstance.validFrom) {
+            logger.warn(`Promocode with name=${promocodeName} has not started yet`)
             throw new PromocodeNotStartUsageError(promocodeInstance.id)
         }
 
         if (currentDate > promocodeInstance.validUntil) {
+            logger.warn(`Promocode with name=${promocodeName} has expired`)
             throw new PromocodeExpiredUsageError(promocodeInstance.id)
         }
 
@@ -585,16 +684,19 @@ export default class OrderService extends BaseService implements IOrderService {
 
         // Check if customer address exists
         if (!customerAddress) {
+            logger.warn(`CustomerAddress with id=${customerAddressId} does not exist`)
             throw new CustomerAddressNotFoundWithIdError(customerAddressId)
         }
 
         // Check if customer has ownership on address
         if (customerAddress.customerId !== customer.id) {
+            logger.warn(`CustomerAddress with id=${customerAddressId} does not belong to Customer with id=${customer.id}`)
             throw new CustomerAddressOwnershipError(customer.id, customerAddressId)
         }
 
         // Check if customer address is approved
         if (customerAddress.approvalStatus !== "APPROVED") {
+            logger.warn(`CustomerAddress with id=${customerAddressId} is not approved`)
             throw new CustomerAddressNotApprovedError(customerAddressId)
         }
 

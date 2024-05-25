@@ -1,5 +1,9 @@
 import { KafkaConsumerEventConstructor } from "@src/config/types/settings";
+import getLogger from "@src/core/setup/logger";
 import { Consumer } from "kafkajs";
+
+
+const logger = getLogger(module)
 
 export default class KafkaReceiver {
     
@@ -26,21 +30,21 @@ export default class KafkaReceiver {
                 const eventName = message.key?.toString()
                 
                 if (!eventName) {
-                    console.log("Error: No event name")
+                    logger.error(`Event name is empty`)
                     return
                 }
 
                 const consumerEventConstructor = this.getConsumerEvent(eventName)
 
                 if (!consumerEventConstructor) {
-                    console.log("Error: Unknown event")
+                    logger.error(`Event with name=${eventName} not found`)
                     return
                 }
                 
                 const data = JSON.parse(message.value?.toString() || '{}')
                 
                 if (!data) {
-                    console.log("Error: No data")
+                    logger.error(`Event data is empty`)
                     return
                 }
 
@@ -49,8 +53,7 @@ export default class KafkaReceiver {
                     await consumerEvent.action()
                 }
                 catch (error) {
-                    console.log("Critical error. This should never happen")
-                    console.error(error)
+                    logger.crit(`Critical error. ${error}`)
                 }
             }
         })

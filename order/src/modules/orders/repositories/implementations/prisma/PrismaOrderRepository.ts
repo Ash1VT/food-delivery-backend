@@ -4,6 +4,10 @@ import PrismaBaseRepository from "@src/core/repositories/prisma/PrismaBaseReposi
 import IOrderRepository from "../../interfaces/IOrderRepository";
 import { OrderDelegate } from "./delegates";
 import { OrderStatus } from "../../../models/orderStatus.models";
+import getLogger from "@src/core/setup/logger";
+
+
+const logger = getLogger(module)
 
 export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDelegate, OrderModel, OrderCreateInput, OrderUpdateInput> implements IOrderRepository {
 
@@ -13,7 +17,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
 
     
     public async getOne(id: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean): Promise<OrderModel | null> {
-        return await this.delegate.findFirst({
+        const order = await this.delegate.findFirst({
             where: {
                 id
             },
@@ -23,10 +27,14 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
                 priceInformation: !!includePriceInformation
             }
         })
+
+        order ? logger.debug(`Retrieved Order with id=${id}`) : logger.debug(`Order with id=${id} not found`)
+
+        return order
     }
 
     public async getMany(includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
-        return await this.delegate.findMany({
+        const orders = await this.delegate.findMany({
             where: {
                 status
             },
@@ -36,10 +44,14 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
                 priceInformation: !!includePriceInformation
             }
         })
+
+        logger.debug(`Retrieved list of Orders`)
+
+        return orders
     }
 
     public async create(data: OrderCreateInput): Promise<OrderModel> {
-        return await this.delegate.create({
+        const createdOrder = await this.delegate.create({
             data,
             include: {
                 items: true,
@@ -47,10 +59,14 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
                 priceInformation: true
             }                
         })
+
+        logger.debug(`Created Order with id=${createdOrder.id}`)
+
+        return createdOrder
     }
 
     public async getCustomerOrders(customerId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
-        return await this.delegate.findMany({
+        const orders = await this.delegate.findMany({
             where: {
                 customerId,
                 status
@@ -61,10 +77,14 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
                 priceInformation: !!includePriceInformation
             }
         })
+
+        logger.debug(`Retrieved list of Orders for Customer with id=${customerId}`)
+
+        return orders
     }
 
     public async getRestaurantOrders(restaurantId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
-        return await this.delegate.findMany({
+        const orders = await this.delegate.findMany({
             where: {
                 restaurantId,
                 status
@@ -75,10 +95,14 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
                 priceInformation: !!includePriceInformation
             }
         })
+
+        logger.debug(`Retrieved list of Orders for Restaurant with id=${restaurantId}`)
+
+        return orders
     }
     
     public async getCourierOrders(courierId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
-        return await this.delegate.findMany({
+        const orders = await this.delegate.findMany({
             where: {
                 courierId,
                 status
@@ -89,5 +113,9 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
                 priceInformation: !!includePriceInformation
             }
         })
+
+        logger.debug(`Retrieved list of Orders for Courier with id=${courierId}`)
+
+        return orders
     }
 }

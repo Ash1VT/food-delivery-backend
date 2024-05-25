@@ -1,12 +1,16 @@
+import getLogger from "@src/core/setup/logger";
 import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto, OrderItemUpdateOutputDto } from "../../dto/orderItem.dto";
 import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../models/orderItem.models";
 import { OrderItemAdditionalData, OrderItemWithOrderAdditionalData } from "../additionalData";
 import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemUpdateMapper } from "../interfaces/orderItem.mappers";
 
+
+const logger = getLogger(module)
+
 export class OrderItemGetMapper implements IOrderItemGetMapper {
 
     toDto(dbModel: OrderItemModel): OrderItemGetOutputDto {
-        return {
+        const data = {
             id: dbModel.id.toString(),
             orderId: dbModel.orderId.toString(),
             menuItemName: dbModel.menuItemName,
@@ -14,6 +18,10 @@ export class OrderItemGetMapper implements IOrderItemGetMapper {
             menuItemPrice: dbModel.menuItemPrice,
             quantity: dbModel.quantity
         }
+
+        logger.debug(`Mapped database OrderItemModel with id=${dbModel.id} to OrderItemGetOutputDto`)
+
+        return data
     }
 
 }
@@ -21,7 +29,7 @@ export class OrderItemGetMapper implements IOrderItemGetMapper {
 export class OrderItemCreateMapper implements IOrderItemCreateMapper {
 
     toDto(dbModel: OrderItemModel): OrderItemCreateOutputDto {
-        return {
+        const data = {
             id: dbModel.id.toString(),
             orderId: dbModel.orderId.toString(),
             menuItemName: dbModel.menuItemName,
@@ -29,25 +37,37 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
             menuItemPrice: dbModel.menuItemPrice,
             quantity: dbModel.quantity
         }
+
+        logger.debug(`Mapped database OrderItemModel with id=${dbModel.id} to OrderItemCreateOutputDto`)
+
+        return data
     }
 
     toDbModel(dtoModel: OrderItemCreateInputDto, additionalData: OrderItemAdditionalData): OrderItemCreateInput {
-        return {
+        const data = {
             menuItemName: additionalData.menuItemName,
             menuItemImageUrl: additionalData.menuItemImageUrl,
             menuItemPrice: additionalData.menuItemPrice,
             orderId: additionalData.orderId,
             quantity: dtoModel.quantity
         }
+
+        logger.debug(`Mapped OrderItemCreateInputDto to database OrderItemCreateInput`)
+
+        return data
     }
 
     toDbModelWithOrder(dtoModel: OrderItemCreateInputDto, additionalData: OrderItemWithOrderAdditionalData): OrderItemWithOrderCreateInput {
-        return {
+        const data =  {
             menuItemName: additionalData.menuItemName,
             menuItemImageUrl: additionalData.menuItemImageUrl,
             menuItemPrice: additionalData.menuItemPrice,
             quantity: dtoModel.quantity
         }
+
+        logger.debug(`Mapped OrderItemCreateInputDto to database OrderItemWithOrderCreateInput`)
+
+        return data
     }
 
 }
@@ -55,7 +75,7 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
 export class OrderItemUpdateMapper implements IOrderItemUpdateMapper {
 
     toDto(dbModel: OrderItemModel): OrderItemUpdateOutputDto {
-        return {
+        const data = {
             id: dbModel.id.toString(),
             orderId: dbModel.orderId.toString(),
             menuItemName: dbModel.menuItemName,
@@ -63,6 +83,10 @@ export class OrderItemUpdateMapper implements IOrderItemUpdateMapper {
             menuItemPrice: dbModel.menuItemPrice,
             quantity: dbModel.quantity
         }
+
+        logger.debug(`Mapped database OrderItemModel with id=${dbModel.id} to OrderItemUpdateOutputDto`)
+
+        return data
     }
 
 }

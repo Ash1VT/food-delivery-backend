@@ -1,5 +1,9 @@
 import { Producer } from "kafkajs";
 import KafkaProducerBaseEvent from "../events/KafkaProducerBaseEvent";
+import getLogger from "@src/core/setup/logger";
+
+
+const logger = getLogger(module)
 
 export default class KafkaPublisher {
 
@@ -17,6 +21,9 @@ export default class KafkaPublisher {
                     value: JSON.stringify(event.getData(topic))
                 }]
             })
+
+            logger.info(`Event ${EventClass.getEventName()} sent to topic ${topic}`)
+
         }
     }
 }

@@ -3,7 +3,10 @@ import { OrderItemCreateInput, OrderItemModel, OrderItemUpdateInput } from "../.
 import PrismaBaseRepository from "@src/core/repositories/prisma/PrismaBaseRepository";
 import IOrderItemRepository from "../../interfaces/IOrderItemRepository";
 import { OrderItemDelegate } from "./delegates";
+import getLogger from "@src/core/setup/logger";
 
+
+const logger = getLogger(module)
 
 export default class PrismaOrderItemRepository extends PrismaBaseRepository<OrderItemDelegate, OrderItemModel, OrderItemCreateInput, OrderItemUpdateInput> implements IOrderItemRepository {
 
@@ -12,11 +15,15 @@ export default class PrismaOrderItemRepository extends PrismaBaseRepository<Orde
     }
 
     public async getOrderItems(orderId: bigint): Promise<OrderItemModel[]> {
-        return await this.delegate.findMany({
+        const orderItems = await this.delegate.findMany({
             where: {
                 orderId
             }
         })
+
+        logger.debug(`Retrieved list of OrderItems for Order with id=${orderId}`)
+
+        return orderItems
     }
     
 }

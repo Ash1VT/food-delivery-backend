@@ -1,5 +1,10 @@
 import IPrismaDelegate from "../interfaces/IPrismaDelegate"
 import IBaseRepository from "../interfaces/IBaseRepository"
+import getLogger from "@src/core/setup/logger"
+
+
+const logger = getLogger(module)
+
 
 export default abstract class PrismaBaseRepository<
     Delegate extends IPrismaDelegate,
@@ -13,30 +18,45 @@ export default abstract class PrismaBaseRepository<
     ) {}
 
     public async getOne(id: bigint): Promise<Model | null> {
-        return await this.delegate.findFirst({
+        const record = await this.delegate.findFirst({
             where: {
                 id
             }
         })
+        
+        record ? logger.debug(`Retrieved record with id=${id}`) : logger.debug(`Record with id=${id} not found`)
+        return record
     }
 
     public async getMany(): Promise<Model[]> {
-        return await this.delegate.findMany()
+        const records = await this.delegate.findMany()
+
+        logger.debug(`Retrieved list of records`)
+        
+        return records
     }
 
     public async create(data: CreateInput): Promise<Model> {
-        return await this.delegate.create({
+        const createdRecord = await this.delegate.create({
             data
         })
+
+        logger.debug(`Created record with id=${createdRecord.id}`)
+
+        return createdRecord
     }
 
     public async update(id: bigint, data: UpdateInput): Promise<Model | null> {
-        return await this.delegate.update({
+        const updatedRecord = await this.delegate.update({
             where: {
                 id
             },
             data
         })
+
+        updatedRecord ? logger.debug(`Updated record with id=${id}`) : logger.debug(`Record with id=${id} not found`)
+
+        return updatedRecord
     }
 
     public async delete(id: bigint) {
@@ -45,13 +65,19 @@ export default abstract class PrismaBaseRepository<
                 id
             }
         })
+
+        logger.debug(`Deleted record with id=${id}`)
     }
 
     public async exists(id: bigint): Promise<boolean> {
-        return await this.delegate.count({
+        const exists = await this.delegate.count({
             where: {
                 id
             }
         }) !== 0
+
+        logger.debug(`Checked if record with id=${id} exists`)
+        
+        return exists
     }
 }
