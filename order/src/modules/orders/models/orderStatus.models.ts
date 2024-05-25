@@ -1,1 +1,1 @@
-export type OrderStatus = "PENDING" | "PREPARING" | "READY" | "DELIVERING" | "DELIVERED" | "CANCELLED"
+export type OrderStatus = "PLACING" | "PENDING" | "PREPARING" | "READY" | "DELIVERING" | "DELIVERED" | "CANCELLED"

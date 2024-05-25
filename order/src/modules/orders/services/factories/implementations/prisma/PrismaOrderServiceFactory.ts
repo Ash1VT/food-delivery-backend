@@ -39,10 +39,12 @@ export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
         return new OrderService(
             this.orderMapperFactory.createOrderGetMapper(),
             this.orderMapperFactory.createOrderCreateMapper(),
+            this.orderMapperFactory.createOrderUpdateMapper(),
             this.orderRepositoryFactory.createOrderRepository(),
             this.promotionRepositoryFactory.createPromocodeRepository(),
             this.customerAddressRepositoryFactory.createCustomerAddressRepository(),
             this.orderRepositoryFactory.createDeliveryInformationRepository(),
+            this.orderRepositoryFactory.createPriceInformationRepository(),
             this.menuItemRepositoryFactory.createMenuItemRepository(),
             this.restaurantRepositoryFactory.createRestaurantRepository(),
             this.restaurantRepositoryFactory.createWorkingHoursRepository(),

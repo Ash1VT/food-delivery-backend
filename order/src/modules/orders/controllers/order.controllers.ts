@@ -1,4 +1,4 @@
-import { orderCreateValidator, orderStatusValidator } from '@src/modules/orders/validators/order.validators';
+import { orderCreateValidator, orderStatusValidator, orderUpdateValidator } from '@src/modules/orders/validators/order.validators';
 import { getPrismaClient } from "./../../../core/setup/prisma";
 import { Request, Response } from "express"
 import PrismaOrderServiceFactory from '../services/factories/implementations/prisma/PrismaOrderServiceFactory';
@@ -21,6 +21,39 @@ export const makeOrder = async (req: Request, res: Response) => {
     const orderCreateOutputDto = await orderService.makeOrder(orderCreateInputDto)
     
     res.status(201).json(orderCreateOutputDto)
+}
+
+export const updateOrder = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+
+    const orderId = idValidator.parse(req.params.orderId)
+    const orderUpdateInputDto = orderUpdateValidator.parse(req.body)
+    const appSettings = getSettings()
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderService = orderServiceFactory.createOrderService()
+    
+    await authenticateWithPrisma(req, prismaClient, orderService)
+
+    const orderUpdateOutputDto = await orderService.updateOrder(orderId, orderUpdateInputDto)
+    
+    res.status(201).json(orderUpdateOutputDto)
+}
+
+export const placeOrder = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+
+    const orderId = idValidator.parse(req.params.orderId)
+    const appSettings = getSettings()
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderService = orderServiceFactory.createOrderService()
+    
+    await authenticateWithPrisma(req, prismaClient, orderService)
+
+    const orderGetOutputDto = await orderService.placeOrder(orderId)
+    
+    res.status(201).json(orderGetOutputDto)
 }
 
 export const getAllOrders = async (req: Request, res: Response) => {

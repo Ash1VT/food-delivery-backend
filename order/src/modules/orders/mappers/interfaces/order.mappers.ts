@@ -1,4 +1,4 @@
-import { OrderCreateOutputDto, OrderCreateInputDto, OrderGetOutputDto } from "../../dto/order.dto";
+import { OrderCreateOutputDto, OrderCreateInputDto, OrderGetOutputDto, OrderUpdateOutputDto } from "../../dto/order.dto";
 import { OrderCreateInput, OrderModel } from "../../models/order.models";
 import { OrderAdditionalData } from "../additionalData";
 
@@ -11,6 +11,6 @@ export interface IOrderCreateMapper {
     toDbModel(dtoModel: OrderCreateInputDto, additionalData: OrderAdditionalData): OrderCreateInput
 }
 
-// export interface IOrderUpdateMapper extends IDatabaseToDtoMapper<OrderModel, OrderUpdateOutputDTO>,
-//                                               IDtoToDatabaseMapper<OrderUpdateInputDTO, OrderModel>,
-//                                               IObjectToDtoMapper<OrderUpdateInputDTO> {}
+export interface IOrderUpdateMapper {
+    toDto(dbModel: OrderModel): OrderUpdateOutputDto
+}

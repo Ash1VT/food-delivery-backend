@@ -12,26 +12,28 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
     }
 
     
-    public async getOne(id: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean): Promise<OrderModel | null> {
+    public async getOne(id: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean): Promise<OrderModel | null> {
         return await this.delegate.findFirst({
             where: {
                 id
             },
             include: {
                 items: !!includeItems,
-                deliveryInformation: !!includeDeliveryInformation
+                deliveryInformation: !!includeDeliveryInformation,
+                priceInformation: !!includePriceInformation
             }
         })
     }
 
-    public async getMany(includeItems?: boolean, includeDeliveryInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getMany(includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 status
             },
             include: {
                 items: !!includeItems,
-                deliveryInformation: !!includeDeliveryInformation
+                deliveryInformation: !!includeDeliveryInformation,
+                priceInformation: !!includePriceInformation
             }
         })
     }
@@ -41,12 +43,13 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             data,
             include: {
                 items: true,
-                deliveryInformation: true
+                deliveryInformation: true,
+                priceInformation: true
             }                
         })
     }
 
-    public async getCustomerOrders(customerId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getCustomerOrders(customerId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 customerId,
@@ -54,12 +57,13 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             },
             include: {
                 items: !!includeItems,
-                deliveryInformation: !!includeDeliveryInformation
+                deliveryInformation: !!includeDeliveryInformation,
+                priceInformation: !!includePriceInformation
             }
         })
     }
 
-    public async getRestaurantOrders(restaurantId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getRestaurantOrders(restaurantId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 restaurantId,
@@ -67,12 +71,13 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             },
             include: {
                 items: !!includeItems,
-                deliveryInformation: !!includeDeliveryInformation
+                deliveryInformation: !!includeDeliveryInformation,
+                priceInformation: !!includePriceInformation
             }
         })
     }
     
-    public async getCourierOrders(courierId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getCourierOrders(courierId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         return await this.delegate.findMany({
             where: {
                 courierId,
@@ -80,7 +85,8 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             },
             include: {
                 items: !!includeItems,
-                deliveryInformation: !!includeDeliveryInformation
+                deliveryInformation: !!includeDeliveryInformation,
+                priceInformation: !!includePriceInformation
             }
         })
     }

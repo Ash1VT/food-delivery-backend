@@ -5,14 +5,16 @@ import { OrderStatus } from "../models/orderStatus.models";
 
 export const orderCreateValidator = z.object({
     restaurantId: idValidator,
-    promotionId: idValidator.optional(),
-    customerAddressId: idValidator,
-    promocode: z.string().optional(),
     items: orderItemCreateValidator.array().min(1, {
         message: "Must be at least one order item in order"
     })
 }).refine((order) => new Set(order.items.map((item) => item.menuItemId)).size === order.items.length, {
     message: "Menu items mustn't repeat"
+})
+
+export const orderUpdateValidator = z.object({
+    promocodeName: z.string().optional(),
+    customerAddressId: idValidator.optional()
 })
 
 export const orderStatusValidator = z.enum([

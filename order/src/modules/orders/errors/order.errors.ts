@@ -18,6 +18,18 @@ export class OrderAlreadyExistsWithIdError extends DatabaseInstanceAlreadyExists
 
 }
 
+export class OrderNotPlacingError extends AppError {
+
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} is not in 'Placing' status`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+
+}
+
 export class OrderNotReadyError extends AppError {
 
     constructor(orderId: bigint) {
@@ -65,4 +77,16 @@ export class OrderNotDeliveringError extends AppError {
         return 400
     }
 
+}
+
+
+export class OrderHasNoDestinationAddressError extends AppError {
+
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} has no destination address`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
 }

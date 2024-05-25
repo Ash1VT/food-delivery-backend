@@ -1,7 +1,7 @@
 import { asyncHandler } from "@src/core/utils/asyncHandler";
 import { Request, Response, Router } from "express";
-import { cancelOrder, confirmOrder, finishOrderDelivery, getAllOrders, getAvailableForDeliveryOrders, getCurrentCourierOrders, getCurrentCustomerOrders, makeOrder, prepareOrder, takeOrder } from "../controllers/order.controllers";
-import { addOrderItem, getOrderItems } from "../controllers/orderItem.controllers";
+import { cancelOrder, confirmOrder, finishOrderDelivery, getAllOrders, getAvailableForDeliveryOrders, getCurrentCourierOrders, getCurrentCustomerOrders, makeOrder, placeOrder, prepareOrder, takeOrder, updateOrder } from "../controllers/order.controllers";
+import { addOrderItem, getOrderItems, removeOrderItem } from "../controllers/orderItem.controllers";
 
 
 /**
@@ -33,6 +33,13 @@ import { addOrderItem, getOrderItems } from "../controllers/orderItem.controller
  *       schema:
  *         type: integer
  *       description: Order ID
+ *     orderItemId:      
+ *       in: path
+ *       name: orderItemId
+ *       required: true
+ *       schema:
+ *         type: integer
+ *       description: Order Item ID
  *   schemas:
  *     OrderItemCreate:
  *       type: object
@@ -52,19 +59,23 @@ import { addOrderItem, getOrderItems } from "../controllers/orderItem.controller
  *           type: integer
  *           description: The restaurant ID.
  *           example: 0
- *         promotionId:
- *           type: integer
- *           description: The promotion ID.
- *           required: false
- *           example: 0
- *         promocode:
- *           type: string
- *           description: The promocode.
- *           example: SUMMER20
  *         items:
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/OrderItemCreate'
+ *     OrderUpdate:
+ *       type: object
+ *       properties:
+ *         promocodeName:
+ *           type: string
+ *           description: The promocode name.
+ *           required: false
+ *           example: SUMMER20
+ *         customerAddressId:
+ *           type: integer
+ *           description: The customer address ID.
+ *           required: false
+ *           example: 0
 */
 
 export const orderRouter = Router()
@@ -183,6 +194,30 @@ orderRouter.post("/", asyncHandler(makeOrder))
 
 /**
  * @swagger
+ * /orders:
+ *   patch:
+ *     summary: Updates an order.
+ *     description: Updates an order. Can be used only by customers.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/OrderUpdate'
+ *     responses:
+ *       201:
+ *         description: An updated order.
+ *       403:
+ *         description: Error connected with authorization.
+*/
+orderRouter.post("/:orderId", asyncHandler(updateOrder))
+
+/**
+ * @swagger
  * /orders/{orderId}/items:
  *   post:
  *     summary: Adds an order item to an existing order.
@@ -207,10 +242,49 @@ orderRouter.post("/:orderId/items", asyncHandler(addOrderItem))
 
 /**
  * @swagger
+ * /orders/{orderId}/items/{orderItemId}:
+ *   delete:
+ *     summary: Removes an order item from an existing order.
+ *     description: Removes an order item from an existing order. Can be used only by customers.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *       - $ref: '#/components/parameters/orderItemId'
+ *     responses:
+ *       201:
+ *         description: Empty response.
+ *       403:
+ *         description: Error connected with authorization.
+*/
+orderRouter.post("/:orderId/items/:orderItemId", asyncHandler(removeOrderItem))
+
+/**
+ * @swagger
+ * /orders/{orderId}/place:
+ *   patch:
+ *     summary: Places an order.
+ *     description: Places an order. Can be used only by customers.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     responses:
+ *       200:
+ *         description: Empty response.
+ *       403:
+ *         description: Error connected with authorization.
+ *       404:
+ *         description: Order not found.
+*/
+orderRouter.patch("/:orderId/place", asyncHandler(placeOrder))
+
+/**
+ * @swagger
  * /orders/{orderId}/confirm:
  *   patch:
  *     summary: Confirms an order.
- *     description: Confirms an order. Can be used only by moderators.
+ *     description: Confirms an order. Can be used only by restaurant managers.
  *     tags:
  *       - "orders"
  *     parameters:

@@ -1,5 +1,6 @@
-import { DeliveryInformationGetOutputDto } from "./deliveryInformation.dto"
-import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto } from "./orderItem.dto"
+import { DeliveryInformationCreateOutputDto, DeliveryInformationGetOutputDto, DeliveryInformationUpdateOutputDto } from "./deliveryInformation.dto"
+import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto, OrderItemUpdateOutputDto } from "./orderItem.dto"
+import { PriceInformationCreateOutputDto, PriceInformationGetOutputDto, PriceInformationUpdateOutputDto } from "./priceInformation.dto"
 
 interface OrderBaseDto {
 }
@@ -11,38 +12,37 @@ interface OrderBaseOutputDto extends OrderBaseDto {
     restaurantId: string
     promocodeName?: string
     promocodeDiscount?: number
-    promotionId?: string
     status: string
     
     createdAt: string
-    totalPrice: number
-    decountedPrice: number
 }
 
 
 export interface OrderGetOutputDto extends OrderBaseOutputDto {
     items?: OrderItemGetOutputDto[]
     deliveryInformation?: DeliveryInformationGetOutputDto
+    priceInformation?: PriceInformationGetOutputDto
 }
 
 export interface OrderCreateInputDto extends OrderBaseDto {
-    promotionId?: bigint
     restaurantId: bigint
-    promocode?: string
-    customerAddressId: bigint
     
     items: OrderItemCreateInputDto[]
 }
 
 export interface OrderCreateOutputDto extends OrderBaseOutputDto {
     items?: OrderItemCreateOutputDto[]
-    deliveryInformation?: DeliveryInformationGetOutputDto
+    deliveryInformation?: DeliveryInformationCreateOutputDto
+    priceInformation?: PriceInformationCreateOutputDto
 }
 
-// export interface OrderUpdateInputDTO {
+export interface OrderUpdateInputDto extends OrderBaseDto {
+    promocodeName?: string
+    customerAddressId?: bigint
+}
 
-// }
-
-// export interface OrderUpdateOutputDTO {
-
-// }
+export interface OrderUpdateOutputDto extends OrderBaseOutputDto {
+    items?: OrderItemUpdateOutputDto[]
+    deliveryInformation?: DeliveryInformationUpdateOutputDto
+    priceInformation?: PriceInformationUpdateOutputDto
+}
