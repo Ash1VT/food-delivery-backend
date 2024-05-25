@@ -1,6 +1,6 @@
-import { DeliveryInformationCreateOutputDto, DeliveryInformationGetOutputDto } from "../../dto/deliveryInformation.dto";
+import { DeliveryInformationCreateOutputDto, DeliveryInformationGetOutputDto, DeliveryInformationUpdateOutputDto } from "../../dto/deliveryInformation.dto";
 import { DeliveryInformationModel } from "../../models/deliveryInformation.models";
-import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper } from "../interfaces/deliveryInformation.mappers";
+import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper, IDeliveryInformationUpdateMapper } from "../interfaces/deliveryInformation.mappers";
 
 export class DeliveryInformationGetMapper implements IDeliveryInformationGetMapper {
 
@@ -9,7 +9,7 @@ export class DeliveryInformationGetMapper implements IDeliveryInformationGetMapp
             ...dbModel,
             id: dbModel.id.toString(),
             deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
-            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString()
+            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString(),
         }
     }
 
@@ -17,6 +17,18 @@ export class DeliveryInformationGetMapper implements IDeliveryInformationGetMapp
 
 export class DeliveryInformationCreateMapper implements IDeliveryInformationCreateMapper {
     toDto(dbModel: DeliveryInformationModel): DeliveryInformationCreateOutputDto {
+        return {
+            ...dbModel,
+            id: dbModel.id.toString(),
+            deliveryAcceptedAt: dbModel.deliveryAcceptedAt?.toISOString(),
+            deliveryFinishedAt: dbModel.deliveryFinishedAt?.toISOString()
+        }
+    }
+}
+
+
+export class DeliveryInformationUpdateMapper implements IDeliveryInformationUpdateMapper {
+    toDto(dbModel: DeliveryInformationModel): DeliveryInformationUpdateOutputDto {
         return {
             ...dbModel,
             id: dbModel.id.toString(),

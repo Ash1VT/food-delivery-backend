@@ -7,7 +7,7 @@ export type DeliveryInformationModel = {
     supposedDeliveryTime?: number | null
 
     originAddress: string
-    destinationAddress: string
+    destinationAddress?: string | null
 
     deliveryAcceptedAt?: Date | null
     actualDeliveryTime?: number | null
@@ -19,8 +19,10 @@ export type DeliveryInformationCreateInput = {
     deliveryType?: DeliveryType | null
     deliveryDistance?: number | null
     supposedDeliveryTime?: number | null
+
     originAddress: string
-    destinationAddress: string
+    destinationAddress?: string | null
+    
     deliveryAcceptedAt?: Date | null
     actualDeliveryTime?: number | null
     deliveryFinishedAt?: Date | null
@@ -32,8 +34,10 @@ export type DeliveryInformationUpdateInput = {
     deliveryType?: DeliveryType | null
     deliveryDistance?: number | null
     supposedDeliveryTime?: number | null
+    
     originAddress?: string
-    destinationAddress?: string
+    destinationAddress?: string | null
+    
     deliveryAcceptedAt?: Date | null
     actualDeliveryTime?: number | null
     deliveryFinishedAt?: Date | null

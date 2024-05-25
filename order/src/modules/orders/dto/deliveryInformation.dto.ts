@@ -6,7 +6,7 @@ interface DeliveryInformationBaseDto {
     supposedDeliveryTime?: number | null
 
     originAddress: string
-    destinationAddress: string
+    destinationAddress?: string | null
 
     deliveryAcceptedAt?: string | null
     actualDeliveryTime?: number | null
@@ -22,5 +22,9 @@ export interface DeliveryInformationGetOutputDto extends DeliveryInformationBase
 }
 
 export interface DeliveryInformationCreateOutputDto extends DeliveryInformationBaseOutputDto {
+
+}
+
+export interface DeliveryInformationUpdateOutputDto extends DeliveryInformationBaseOutputDto {
 
 }
