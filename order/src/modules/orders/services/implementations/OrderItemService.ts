@@ -4,13 +4,14 @@ import IOrderItemRepository from "../../repositories/interfaces/IOrderItemReposi
 import IOrderItemService from "../interfaces/IOrderItemService";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
-import { OrderNotFoundWithIdError, OrderNotPendingError } from "../../errors/order.errors";
+import { OrderNotFoundWithIdError, OrderNotPendingError, OrderNotPlacingError } from "../../errors/order.errors";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions.errors";
 import { OrderItemModel } from "../../models/orderItem.models";
 import { CourierOwnershipError } from "@src/modules/users/errors/courier.errors";
 import { CustomerOrderOwnershipError } from "@src/modules/users/errors/customer.errors";
 import BaseService from "@src/core/services/BaseService";
 import { MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError, MenuItemAlreadyInOrderError } from "@src/modules/menu/errors/menuItem.errors";
+import { OrderItemNotFoundWithIdError, OrderItemNotInOrderError } from "../../errors/orderItem.errors";
 
 export class OrderItemService extends BaseService implements IOrderItemService {
     
@@ -67,11 +68,9 @@ export class OrderItemService extends BaseService implements IOrderItemService {
             throw new OrderNotFoundWithIdError(orderId)
         }
 
-        const orderItemsInstances = orderInstance.items as OrderItemModel[]
-
-        // Check that order is in PENDING status
-        if (orderInstance.status !== "PENDING") {
-            throw new OrderNotPendingError(orderId)
+        // Check that order is in PLACING status
+        if (orderInstance.status !== "PLACING") {
+            throw new OrderNotPlacingError(orderId)
         }
 
         // Check that menu item exists
@@ -91,6 +90,8 @@ export class OrderItemService extends BaseService implements IOrderItemService {
             throw new MenuItemNotInSameOrderRestaurantError(menuItemInstance.name, orderId)
         }
 
+        const orderItemsInstances = orderInstance.items as OrderItemModel[]
+
         // Check that menu item is not already in order
         const orderItem = orderItemsInstances.find((orderItem) => orderItem.menuItemName === menuItemInstance.name && 
                                                     orderItem.menuItemImageUrl === menuItemInstance.imageUrl && 
@@ -109,6 +110,47 @@ export class OrderItemService extends BaseService implements IOrderItemService {
 
         const orderItemInstance = await this.orderItemRepository.create(orderItemInput)
         return this.orderItemCreateMapper.toDto(orderItemInstance)
+    }
+
+    
+    public async removeOrderItem(orderId: bigint, orderItemId: bigint): Promise<void> {
+        // Check if user is customer
+        if (!this.customer) {
+            throw new PermissionDeniedError()
+        }
+
+        // Check that order exists
+        const orderInstance = await this.orderRepository.getOne(orderId, true)
+
+        if (!orderInstance) {
+            throw new OrderNotFoundWithIdError(orderId)
+        }
+
+        // Check that order is in PLACING status
+        if (orderInstance.status !== "PLACING") {
+            throw new OrderNotPlacingError(orderId)
+        }
+
+        // Check that customer owns this order
+        if (orderInstance.customerId !== this.customer.id) {
+            throw new CustomerOrderOwnershipError(this.customer.id, orderId)
+        }
+
+        // Check that order item exists
+        const orderItemInstance = await this.orderItemRepository.getOne(orderItemId)
+
+        if (!orderItemInstance) {
+            throw new OrderItemNotFoundWithIdError(orderItemId)
+        }
+
+        // Check that order item is in order
+        const orderItem = (orderInstance.items as OrderItemModel[]).find((orderItem) => orderItem.id === orderItemId)
+
+        if (!orderItem) {
+            throw new OrderItemNotInOrderError(orderId, orderItemId)
+        }
+
+        await this.orderItemRepository.delete(orderItemId)
     }
 
 }

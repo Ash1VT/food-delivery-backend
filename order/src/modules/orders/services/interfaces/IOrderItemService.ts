@@ -9,4 +9,7 @@ export default interface IOrderItemService extends IBaseService {
     
     // Customer
     addOrderItem(orderId: bigint, orderItemData: OrderItemCreateInputDto): Promise<OrderItemCreateOutputDto>
+
+    // Customer
+    removeOrderItem(orderId: bigint, orderItemId: bigint): Promise<void>
 }

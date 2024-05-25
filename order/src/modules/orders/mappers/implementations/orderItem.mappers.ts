@@ -1,7 +1,7 @@
-import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto } from "../../dto/orderItem.dto";
+import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto, OrderItemUpdateOutputDto } from "../../dto/orderItem.dto";
 import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../models/orderItem.models";
 import { OrderItemAdditionalData, OrderItemWithOrderAdditionalData } from "../additionalData";
-import { IOrderItemGetMapper, IOrderItemCreateMapper } from "../interfaces/orderItem.mappers";
+import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemUpdateMapper } from "../interfaces/orderItem.mappers";
 
 export class OrderItemGetMapper implements IOrderItemGetMapper {
 
@@ -47,6 +47,21 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
             menuItemImageUrl: additionalData.menuItemImageUrl,
             menuItemPrice: additionalData.menuItemPrice,
             quantity: dtoModel.quantity
+        }
+    }
+
+}
+
+export class OrderItemUpdateMapper implements IOrderItemUpdateMapper {
+
+    toDto(dbModel: OrderItemModel): OrderItemUpdateOutputDto {
+        return {
+            id: dbModel.id.toString(),
+            orderId: dbModel.orderId.toString(),
+            menuItemName: dbModel.menuItemName,
+            menuItemImageUrl: dbModel.menuItemImageUrl,
+            menuItemPrice: dbModel.menuItemPrice,
+            quantity: dbModel.quantity
         }
     }
 

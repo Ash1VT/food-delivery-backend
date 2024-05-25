@@ -39,3 +39,20 @@ export const addOrderItem = async (req: Request, res: Response) => {
     
     res.json(orderItemCreateOutputDto)
 }
+
+export const removeOrderItem = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+    
+    const orderId = idValidator.parse(req.params.orderId)
+    const orderItemId = idValidator.parse(req.params.orderItemId)
+    const appSettings = getSettings()
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderItemService = orderServiceFactory.createOrderItemService()
+
+    await authenticateWithPrisma(req, prismaClient, orderItemService)
+
+    await orderItemService.removeOrderItem(orderId, orderItemId)
+    
+    res.json({})
+}

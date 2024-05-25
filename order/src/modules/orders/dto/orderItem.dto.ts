@@ -20,3 +20,7 @@ export interface OrderItemCreateInputDto extends OrderItemBaseDto {
 export interface OrderItemCreateOutputDto extends OrderItemBaseOutputDto {
     orderId: string
 }
+
+export interface OrderItemUpdateOutputDto extends OrderItemBaseOutputDto {
+    orderId: string
+}
