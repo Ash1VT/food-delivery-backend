@@ -4,7 +4,7 @@ import { idValidator } from "@src/core/validators/idValidator"
 import PrismaOrderServiceFactory from "../services/factories/implementations/prisma/PrismaOrderServiceFactory"
 import { orderItemCreateValidator } from "../validators/orderItem.validators"
 import { authenticateWithPrisma } from "@src/modules/authentication/utils/prisma/auhenticateWithPrisma"
-import getSettings from "@src/core/utils/getSettings"
+import appSettings from "@src/core/setup/settings/appSettings"
 
 
 export const getOrderItems = async (req: Request, res: Response) => {
@@ -12,7 +12,6 @@ export const getOrderItems = async (req: Request, res: Response) => {
     
     const orderId = idValidator.parse(req.params.orderId)
 
-    const appSettings = getSettings()
     const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderItemService = orderServiceFactory.createOrderItemService()
 
@@ -28,7 +27,6 @@ export const addOrderItem = async (req: Request, res: Response) => {
     
     const orderId = idValidator.parse(req.params.orderId)
     const orderItemCreateInputDto = orderItemCreateValidator.parse(req.body)
-    const appSettings = getSettings()
 
     const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderItemService = orderServiceFactory.createOrderItemService()
@@ -45,7 +43,6 @@ export const removeOrderItem = async (req: Request, res: Response) => {
     
     const orderId = idValidator.parse(req.params.orderId)
     const orderItemId = idValidator.parse(req.params.orderItemId)
-    const appSettings = getSettings()
 
     const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
     const orderItemService = orderServiceFactory.createOrderItemService()

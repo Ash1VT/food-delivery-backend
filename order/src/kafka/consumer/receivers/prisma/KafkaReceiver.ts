@@ -1,4 +1,4 @@
-import { KafkaConsumerEventConstructor } from "@src/config/types/settings";
+import { KafkaConsumerEventConstructor } from "@src/config/settings/types/settings";
 import getLogger from "@src/core/setup/logger";
 import { Consumer } from "kafkajs";
 

@@ -1,8 +1,7 @@
 import { credentials } from "@grpc/grpc-js";
 import { RolesServiceClient } from "./generated/roles/roles_grpc_pb";
-import getSettings from "@src/core/utils/getSettings";
+import serverSettings from "@src/core/setup/settings/serverSettings";
 
-const settings = getSettings()
-const host = `${settings.variables.rolesGrpcServerHost}:${settings.variables.rolesGrpcServerPort}`
+const host = `${serverSettings.variables.rolesGrpcServerHost}:${serverSettings.variables.rolesGrpcServerPort}`
 
 export const client = new RolesServiceClient(host, credentials.createInsecure())
