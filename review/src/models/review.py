@@ -11,7 +11,7 @@ class ReviewBaseModel(ABC):
     """
 
     rating: int
-    comment: str
+    comment: Optional[str]
 
 
 @dataclass

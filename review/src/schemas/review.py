@@ -10,7 +10,7 @@ class ReviewBaseSchema(BaseModel):
     """
 
     rating: int = Field(ge=0, le=5, examples=[1, 2, 3, 4, 5])
-    comment: str = Field(max_length=255, examples=["Good", "Bad"])
+    comment: Optional[str] = Field(max_length=255, examples=["Good", "Bad"])
 
 
 class ReviewRetrieveOutSchema(BaseModel):

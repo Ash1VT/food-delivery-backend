@@ -41,16 +41,21 @@ services:
       - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
       - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
       - BING_API_KEY=${BING_API_KEY}
+      - GRAYLOG_HOST=graylog
+      - GRAYLOG_UDP_PORT=12201
     depends_on:
       - db
     networks:
       - order_network
       - user_grpc_network
       - kafka_kafka_network
+      - graylog_graylog_network
 
 networks:
   kafka_kafka_network:
     external: true
   user_grpc_network:
+    external: true
+  graylog_graylog_network:
     external: true
   order_network:

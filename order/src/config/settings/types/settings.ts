@@ -51,5 +51,5 @@ export type ServerSettingsOptions = {
     rolesGrpcServerHost: string
     rolesGrpcServerPort: number
     grayLogHost: string
-    grayLogPort: number
+    grayLogUdpPort: number
 } & BaseSettingsOptions

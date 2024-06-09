@@ -15,7 +15,7 @@ class Review(Base):
 
     id = Column(BigInteger, primary_key=True)
     rating = Column(SmallInteger, nullable=False)
-    comment = Column(String, nullable=False)
+    comment = Column(String, nullable=True)
 
     customer_id = Column(BigInteger, ForeignKey('customers.id', name='fk_customer_id'), nullable=False)
     order_id = Column(BigInteger, ForeignKey('orders.id', name='fk_order_id'), nullable=True, unique=True)

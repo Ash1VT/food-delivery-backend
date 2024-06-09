@@ -46,7 +46,7 @@ const getLogger = (module: any) => {
             servers: [
               {
                 host: serverSettings.variables.grayLogHost,
-                port: serverSettings.variables.grayLogPort
+                port: serverSettings.variables.grayLogUdpPort
               }
             ]
           }

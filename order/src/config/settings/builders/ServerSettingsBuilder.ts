@@ -17,7 +17,7 @@ export class ServerSettingsBuilder implements ISettingsBuilder {
             "rolesGrpcServerHost": EnvManager.getVariable("ROLES_GRPC_SERVER_HOST"),
             "rolesGrpcServerPort": Number(EnvManager.getVariable("ROLES_GRPC_SERVER_PORT")),
             "grayLogHost": EnvManager.getVariable("GRAYLOG_HOST"),
-            "grayLogPort": Number(EnvManager.getVariable("GRAYLOG_PORT")),
+            "grayLogUdpPort": Number(EnvManager.getVariable("GRAYLOG_UDP_PORT")),
         })
     }
 }

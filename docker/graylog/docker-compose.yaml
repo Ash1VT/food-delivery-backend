@@ -9,6 +9,8 @@ services:
     volumes:
       - "mongodb_data:/data/db"
     restart: "on-failure"
+    networks:
+      - graylog_network
 
   # For DataNode setup, graylog starts with a preflight UI, this is a change from just using OpenSearch/Elasticsearch.
   # Please take a look at the README at the top of this repo or the regular docs for more info.
@@ -34,10 +36,13 @@ services:
     volumes:
       - "graylog-datanode:/var/lib/graylog-datanode"
     restart: "on-failure"
+    networks:
+      - graylog_network
 
   graylog:
     hostname: "server"
     image: "${GRAYLOG_IMAGE:-graylog/graylog:5.2}"
+    container_name: graylog
     depends_on:
       mongodb:
         condition: "service_started"
@@ -66,9 +71,14 @@ services:
       - "graylog_data:/usr/share/graylog/data/data"
       - "graylog_journal:/usr/share/graylog/data/journal"
     restart: "on-failure"
+    networks:
+      - graylog_network
 
 volumes:
   mongodb_data:
   graylog-datanode:
   graylog_data:
   graylog_journal:
+
+networks:
+  graylog_network:
