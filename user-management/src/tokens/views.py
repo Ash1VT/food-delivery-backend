@@ -9,7 +9,9 @@ from .utils import move_tokens_from_data
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        move_tokens_from_data(response)
+        expires_session = response.data.pop('expires_session')
+        print(expires_session)
+        move_tokens_from_data(response, expires_session)
         csrf.get_token(request)
         return response
 

@@ -30,6 +30,7 @@ class Base(Configuration):
         'rest_framework',
         'rest_framework_simplejwt',
         'django_grpc',
+        'corsheaders',
 
         'users',
         'tokens',
@@ -42,6 +43,7 @@ class Base(Configuration):
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -49,6 +51,12 @@ class Base(Configuration):
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ]
 
+    # CORS
+
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:3000',
+    ]
     # Urls
 
     ROOT_URLCONF = 'core.urls'
@@ -111,7 +119,7 @@ class Base(Configuration):
         "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
         "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
-        "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+        "TOKEN_OBTAIN_SERIALIZER": "tokens.serializers.CookieTokenObtainPairSerializer",
         "TOKEN_REFRESH_SERIALIZER": "tokens.serializers.CookieTokenRefreshSerializer",
         "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
         "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",

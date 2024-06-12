@@ -35,20 +35,26 @@ def generate_jwt_token_pair(user: User) -> tuple[AccessToken, RefreshToken]:
         raise
 
 
-def set_access_cookie(response: Response, access_token: str):
+def set_access_cookie(response: Response, access_token: str, expires_session: bool):
     """
     Places the access token into the response cookie.
 
     Args:
         response (Response): The response object.
         access_token (str): The access token to be placed in the cookie.
+        expires_session (bool): Whether to set the cookie to expire at the end of the session.
     """
+
+    token_max_age = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] if not expires_session else None
+    expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] if not expires_session else None
+
     try:
         if access_token:
             response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE_ACCESS'],
                 value=access_token,
-                expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                max_age=token_max_age,
+                expires=expires,
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
@@ -61,20 +67,26 @@ def set_access_cookie(response: Response, access_token: str):
         raise
 
 
-def set_refresh_cookie(response: Response, refresh_token: str):
+def set_refresh_cookie(response: Response, refresh_token: str, expires_session: bool):
     """
     Places the refresh token into the response cookie.
 
     Args:
         response (Response): The response object.
         refresh_token (str): The refresh token to be placed in the cookie.
+        expires_session (bool): Whether the refresh token should expire after the current session.
     """
+
+    token_max_age = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'] if not expires_session else None
+    expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'] if not expires_session else None
+
     try:
         if refresh_token:
             response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
                 value=refresh_token,
-                expires=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+                max_age=token_max_age,
+                expires=expires,
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
@@ -117,22 +129,23 @@ def pop_refresh_token_from_response_data(response: Response) -> Optional[str]:
         return response.data.pop('refresh', None)
 
 
-def move_tokens_from_data(response: Response):
+def move_tokens_from_data(response: Response, expires_session: bool = False):
     """
     Extracts access and refresh tokens from the response data and sets them as cookies in the response.
 
     Args:
         response (Response): The response object.
+        expires_session (bool): Whether to set the cookies to expire at the end of the session.
     """
 
     access_token = pop_access_token_from_response_data(response)
     refresh_token = pop_refresh_token_from_response_data(response)
 
     if access_token:
-        set_access_cookie(response, access_token)
+        set_access_cookie(response, access_token, expires_session)
 
     if refresh_token:
-        set_refresh_cookie(response, refresh_token)
+        set_refresh_cookie(response, refresh_token, expires_session)
 
     logger.info("Tokens moved from data to response cookies")
 

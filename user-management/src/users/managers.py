@@ -28,6 +28,8 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, role, **extra_fields):
+        if role == UserRole.MODERATOR:
+            return self._create_user(email, password, role, True, False, False, True, **extra_fields)
         return self._create_user(email, password, role, True, False, False, False, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):

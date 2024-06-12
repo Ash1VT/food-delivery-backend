@@ -16,12 +16,12 @@ class UserService:
 
     @classmethod
     def _create_user_profile(cls, user: User, user_profile_data: dict) -> UserProfile:
-        image = user_profile_data.pop('image', None)
-
-        if image:
-            image_url = upload_to_firebase(user=user, image=image)
-        else:
-            image_url = settings.DEFAULT_USER_AVATAR_URL
+        # image = user_profile_data.pop('image', None)
+        #
+        # if image:
+        #     image_url = upload_to_firebase(user=user, image=image)
+        # else:
+        image_url = settings.DEFAULT_USER_AVATAR_URL
 
         user_profile_data['image_url'] = image_url
 
@@ -34,11 +34,11 @@ class UserService:
     @classmethod
     def _update_user_profile(cls, user: User, user_profile: UserProfile, user_profile_data: dict) -> UserProfile:
         if user_profile_data:
-            image = user_profile_data.pop('image', None)
-
-            if image:
-                image_url = upload_to_firebase(user=user, image=image)
-                user_profile_data['image_url'] = image_url
+            # image = user_profile_data.pop('image', None)
+            #
+            # if image:
+            #     image_url = upload_to_firebase(user=user, image=image)
+            #     user_profile_data['image_url'] = image_url
 
             for key, value in user_profile_data.items():
                 setattr(user_profile, key, value)
@@ -84,6 +84,14 @@ class UserService:
                 'full_name': user_profile.full_name,
                 'image_url': user_profile.image_url
             }))
+        return user
+
+    @classmethod
+    def upload_user_avatar(cls, user: User, image):
+        image_url = upload_to_firebase(user=user, image=image)
+        user.user_profile.image_url = image_url
+        user.user_profile.save()
+
         return user
 
     @classmethod

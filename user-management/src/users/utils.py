@@ -114,7 +114,16 @@ def generate_email_verification_url(user: User) -> str:
 def upload_to_firebase(user: User, image: Any) -> str:
     bucket = storage.bucket()
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    blob = bucket.blob(f'users/avatars/{uid}.jpeg')
+    image_number = 0
+
+    if user.user_profile.image_url != settings.DEFAULT_USER_AVATAR_URL:
+        image_file_name = user.user_profile.image_url.split('/')[-1]
+        image_number = int(image_file_name.split('.')[0].split('_')[1])
+        blob = bucket.blob(f'users/avatars/{uid}_{image_number}.jpeg')
+        blob.delete()
+        image_number += 1
+
+    blob = bucket.blob(f'users/avatars/{uid}_{image_number}.jpeg')
     blob.upload_from_file(image, content_type='image/jpeg')
     blob.make_public()
     return blob.public_url
