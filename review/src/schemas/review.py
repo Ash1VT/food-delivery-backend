@@ -13,7 +13,7 @@ class ReviewBaseSchema(BaseModel):
     comment: Optional[str] = Field(max_length=255, examples=["Good", "Bad"])
 
 
-class ReviewRetrieveOutSchema(BaseModel):
+class ReviewRetrieveOutSchema(ReviewBaseSchema):
     """
     Schema class for output representation of a retrieved review.
     """

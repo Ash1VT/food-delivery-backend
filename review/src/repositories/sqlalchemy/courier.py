@@ -2,10 +2,11 @@ from dataclasses import asdict
 from typing import Optional
 
 from loguru import logger
-from sqlalchemy import Select, select, Insert, insert, Delete, delete, Update
+from sqlalchemy import Select, select, Insert, insert, Delete, delete, Update, func
 
-from db.sqlalchemy.models import Courier
+from db.sqlalchemy.models import Courier, Order, Review
 from models.courier import CourierCreateModel, CourierModel
+from models.rating import RatingModel
 from repositories.interfaces.courier import ICourierRepository
 from repositories.sqlalchemy.base import SqlAlchemyRepository
 from repositories.sqlalchemy.mappers import to_courier_model
@@ -28,6 +29,22 @@ class CourierRepository(ICourierRepository, SqlAlchemyRepository):
         """
 
         return select(Courier).where(Courier.id == id)
+
+    def _get_retrieve_courier_rating_stmt(self, courier_id: int) -> Select:
+        """
+        Create a SELECT statement to retrieve a courier rating by its ID.
+
+        Args:
+            courier_id (int): The ID of the courier to retrieve.
+
+        Returns:
+            Select: The SELECT statement to retrieve the courier rating.
+        """
+
+        return select(
+            func.count(Review.id).label('reviews_count'),
+            func.avg(Review.rating).label('average_rating')
+        ).join(Order).where(Order.courier_id == courier_id)
 
     def _get_create_stmt(self, courier: CourierCreateModel) -> Insert:
         """
@@ -63,6 +80,20 @@ class CourierRepository(ICourierRepository, SqlAlchemyRepository):
         if courier:
             logger.debug(f"Retrieved courier with id={courier.id}")
             return to_courier_model(courier)
+
+    async def retrieve_courier_rating(self, courier_id: int) -> Optional[RatingModel]:
+        stmt = self._get_retrieve_courier_rating_stmt(courier_id)
+        result = await self._session.execute(stmt)
+
+        result = result.one()
+
+        logger.debug(f"Retrieved courier rating for courier with id={courier_id}")
+
+        return RatingModel(
+            id=courier_id,
+            rating=result.average_rating,
+            review_count=result.reviews_count,
+        )
 
     async def create(self, courier: CourierCreateModel) -> CourierModel:
         stmt = self._get_create_stmt(courier)

@@ -3,19 +3,22 @@ from typing import List, Optional
 from loguru import logger
 
 from exceptions.base import PermissionDeniedError
-from exceptions.courier import CourierOwnershipError
+from exceptions.courier import CourierOwnershipError, CourierNotFoundError
 from exceptions.customer import CustomerOwnershipError
 from exceptions.menu_item import MenuItemNotFoundError
 from exceptions.order import OrderNotFoundError
 from exceptions.restaurant import RestaurantNotFoundError, RestaurantNotActiveError
 from exceptions.review import ReviewAlreadyExistsError, ReviewNotFoundError
+from kafka_files.producer.events import MenuItemRatingUpdatedEvent, RestaurantRatingUpdatedEvent
 from models.courier import CourierModel
 from models.customer import CustomerModel
 from models.review import ReviewCreateModel, ReviewUpdateModel
 from roles import CourierRole, CustomerRole
+from schemas.rating import RatingRetrieveOutSchema
 from schemas.review import ReviewUpdateInSchema, ReviewUpdateOutSchema, ReviewCreateInSchema, ReviewCreateOutSchema, \
     ReviewRetrieveOutSchema
 from services.interfaces.review import IReviewService
+from setup.kafka.producer.publisher import publisher
 from uow.generic import GenericUnitOfWork
 
 
@@ -43,6 +46,43 @@ class ReviewService(IReviewService):
 
         return [ReviewRetrieveOutSchema.model_validate(review) for review in courier_review_models]
 
+    async def get_courier_rating(self, courier_id: int, uow: GenericUnitOfWork) -> RatingRetrieveOutSchema:
+
+        courier = await uow.couriers.retrieve(courier_id)
+
+        if not courier:
+            logger.warning(f"Courier with id={courier_id} does not exist.")
+            raise CourierNotFoundError(courier_id)
+
+        courier_rating = await uow.couriers.retrieve_courier_rating(courier_id)
+
+        logger.info(f"Retrieved courier rating for courier_id={courier_id}.")
+
+        return RatingRetrieveOutSchema.model_validate(courier_rating)
+
+    async def get_customer_restaurant_review(self, restaurant_id: int,
+                                             uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
+
+        if not self._customer:
+            logger.warning(f"User is not a customer.")
+            raise PermissionDeniedError(CustomerRole)
+
+        # Check if restaurant exists
+        restaurant = await uow.restaurants.retrieve(restaurant_id)
+
+        if not restaurant:
+            logger.warning(f"Restaurant with id={restaurant_id} does not exist.")
+            raise RestaurantNotFoundError(restaurant_id)
+
+        customer_review = await uow.reviews.retrieve_by_customer_and_restaurant(self._customer.id, restaurant_id)
+
+        if not customer_review:
+            return None
+
+        logger.info(f"Retrieved customer review with customer_id={self._customer.id}.")
+
+        return ReviewRetrieveOutSchema.model_validate(customer_review)
+
     async def get_restaurant_reviews(self, restaurant_id: int, uow: GenericUnitOfWork) -> List[ReviewRetrieveOutSchema]:
 
         restaurant = await uow.restaurants.retrieve(restaurant_id)
@@ -61,6 +101,28 @@ class ReviewService(IReviewService):
         logger.info(f"Retrieved list of restaurant reviews with restaurant_id={restaurant_id}.")
 
         return [ReviewRetrieveOutSchema.model_validate(review) for review in restaurant_review_models]
+
+    async def get_customer_menu_item_review(self, menu_item_id: int,
+                                            uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
+
+        if not self._customer:
+            logger.warning(f"User is not a customer.")
+            raise PermissionDeniedError(CustomerRole)
+
+        menu_item = await uow.menu_items.retrieve(menu_item_id)
+
+        if not menu_item:
+            logger.warning(f"Menu item with id={menu_item_id} does not exist.")
+            raise MenuItemNotFoundError(menu_item_id)
+
+        customer_review = await uow.reviews.retrieve_by_customer_and_menu_item(self._customer.id, menu_item_id)
+
+        if not customer_review:
+            return None
+
+        logger.info(f"Retrieved customer review with customer_id={self._customer.id}.")
+
+        return ReviewRetrieveOutSchema.model_validate(customer_review)
 
     async def get_menu_item_reviews(self, menu_item_id: int, uow: GenericUnitOfWork) -> List[ReviewRetrieveOutSchema]:
 
@@ -153,6 +215,16 @@ class ReviewService(IReviewService):
 
         logger.info(f"Created review with id={created_review.id}.")
 
+        restaurant_rating = await uow.restaurants.retrieve_restaurant_rating(restaurant_id)
+
+        publisher.publish(
+            RestaurantRatingUpdatedEvent(
+                id=restaurant_id,
+                rating=restaurant_rating.rating,
+                reviews_count=restaurant_rating.reviews_count
+            )
+        )
+
         return ReviewCreateOutSchema.model_validate(created_review)
 
     async def add_menu_item_review(self, menu_item_id: int, review: ReviewCreateInSchema,
@@ -188,6 +260,16 @@ class ReviewService(IReviewService):
 
         logger.info(f"Created review with id={created_review.id}.")
 
+        menu_item_rating = await uow.menu_items.retrieve_menu_item_rating(menu_item_id)
+
+        publisher.publish(
+            MenuItemRatingUpdatedEvent(
+                id=menu_item_id,
+                rating=menu_item_rating.rating,
+                reviews_count=menu_item_rating.reviews_count
+            )
+        )
+
         return ReviewCreateOutSchema.model_validate(created_review)
 
     async def update_review(self, review_id: int, review: ReviewUpdateInSchema,
@@ -219,6 +301,27 @@ class ReviewService(IReviewService):
 
         logger.info(f"Updated review with id={updated_review.id}.")
 
+        if updated_review.menu_item_id:
+            menu_item_rating = await uow.menu_items.retrieve_menu_item_rating(updated_review.menu_item_id)
+
+            publisher.publish(
+                MenuItemRatingUpdatedEvent(
+                    id=updated_review.menu_item_id,
+                    rating=menu_item_rating.rating,
+                    reviews_count=menu_item_rating.reviews_count
+                )
+            )
+        elif updated_review.restaurant_id:
+            restaurant_rating = await uow.restaurants.retrieve_restaurant_rating(updated_review.restaurant_id)
+
+            publisher.publish(
+                RestaurantRatingUpdatedEvent(
+                    id=updated_review.restaurant_id,
+                    rating=restaurant_rating.rating,
+                    reviews_count=restaurant_rating.reviews_count
+                )
+            )
+
         return ReviewUpdateOutSchema.model_validate(updated_review)
 
     async def delete_review(self, review_id: int, uow: GenericUnitOfWork) -> None:
@@ -243,3 +346,24 @@ class ReviewService(IReviewService):
         await uow.reviews.delete(review_id)
 
         logger.info(f"Deleted review with id={review_id}.")
+
+        if retrieved_review.menu_item_id:
+            menu_item_rating = await uow.menu_items.retrieve_menu_item_rating(retrieved_review.menu_item_id)
+
+            publisher.publish(
+                MenuItemRatingUpdatedEvent(
+                    id=retrieved_review.menu_item_id,
+                    rating=menu_item_rating.rating,
+                    reviews_count=menu_item_rating.reviews_count
+                )
+            )
+        elif retrieved_review.restaurant_id:
+            restaurant_rating = await uow.restaurants.retrieve_restaurant_rating(retrieved_review.restaurant_id)
+
+            publisher.publish(
+                RestaurantRatingUpdatedEvent(
+                    id=retrieved_review.restaurant_id,
+                    rating=restaurant_rating.rating,
+                    reviews_count=restaurant_rating.reviews_count
+                )
+            )

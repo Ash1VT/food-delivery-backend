@@ -12,17 +12,18 @@ from producer import publisher
 from producer.events import MenuItemCreatedEvent, MenuItemDeletedEvent, MenuItemUpdatedEvent
 from user_roles import RestaurantManagerRole
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, MenuItemUpdateIn, MenuItemUpdateOut
-from uow import SqlAlchemyUnitOfWork
+from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
 from utils.firebase import upload_menu_item_image_to_firebase
-from .mixins import CreateMixin, UpdateMixin, DeleteMixin
+from .mixins import CreateMixin, UpdateMixin, DeleteMixin, RetrieveMixin, Model
 
 __all__ = [
     'MenuItemService',
 ]
 
 
-class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut],
+class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
+                      CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut],
                       UpdateMixin[MenuItem, MenuItemUpdateIn, MenuItemUpdateOut],
                       DeleteMixin[MenuItem]):
     """
@@ -48,6 +49,31 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
         """
 
         self._restaurant_manager = restaurant_manager
+
+    async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> Model:
+        """
+        Retrieve a menu item instance by its ID from the repository.
+
+        Args:
+            id (int): The ID of the menu item to retrieve.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuItemNotFoundWithIdError: If the menu item is not found.
+
+        Returns:
+            MenuItem: The retrieved menu item instance.
+        """
+
+        # Get menu item
+        menu_item = await uow.items.retrieve(id)
+
+        if not menu_item:
+            logger.warning(f"MenuItem with id={id} not found")
+            raise MenuItemNotFoundWithIdError(id)
+
+        return menu_item
 
     async def create_instance(self, item: MenuItemCreateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
         """
@@ -232,7 +258,7 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
         instance_list = await self.list_restaurant_items_instances(restaurant_id, uow, **kwargs)
         return [MenuItemRetrieveOut.model_validate(instance) for instance in instance_list]
 
-    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
+    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItemUpdateOut:
 
         # Permission checks
         if not self._restaurant_manager:
@@ -253,8 +279,10 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
         image_url = upload_menu_item_image_to_firebase(id, image)
 
         # Upload image
-        await uow.items.update(id, {
+        updated_menu_item = await uow.items.update(id, {
             'image_url': image_url
         })
 
         logger.info(f"Uploaded image for MenuItem with id={id}")
+
+        return self.schema_update_out.model_validate(updated_menu_item)

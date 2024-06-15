@@ -19,7 +19,7 @@ async def create_menu(menu: MenuCreateIn,
     return await menu_service.create(menu, uow)
 
 
-@router.put('/{menu_id}', response_model=MenuUpdateOut)
+@router.put('/{menu_id}/', response_model=MenuUpdateOut)
 @handle_app_errors
 async def update_menu(menu_id: int,
                       menu: MenuUpdateIn,
@@ -28,7 +28,7 @@ async def update_menu(menu_id: int,
     return await menu_service.update(menu_id, menu, uow)
 
 
-@router.delete('/{menu_id}')
+@router.delete('/{menu_id}/')
 @handle_app_errors
 async def delete_menu(menu_id: int,
                       menu_service: MenuService = Depends(get_menu_service),

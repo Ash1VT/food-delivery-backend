@@ -2,7 +2,7 @@ from typing import List
 
 from config.settings import Settings
 from consumer import KafkaReceiver, KafkaConsumerBaseCreator
-from utils import import_string
+from utils.import_string import import_string
 
 
 def init_kafka_receivers(consumer_creator: KafkaConsumerBaseCreator, settings: Settings) -> List[KafkaReceiver]:

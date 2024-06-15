@@ -19,7 +19,7 @@ async def create_category(menu_category: MenuCategoryCreateIn,
     return await menu_category_service.create(menu_category, uow)
 
 
-@router.put('/{category_id}', response_model=MenuCategoryUpdateOut)
+@router.put('/{category_id}/', response_model=MenuCategoryUpdateOut)
 @handle_app_errors
 async def update_category(category_id: int,
                           menu_category: MenuCategoryUpdateIn,
@@ -28,7 +28,7 @@ async def update_category(category_id: int,
     return await menu_category_service.update(category_id, menu_category, uow)
 
 
-@router.delete('/{category_id}')
+@router.delete('/{category_id}/')
 @handle_app_errors
 async def delete_category(category_id: int,
                           menu_category_service: MenuCategoryService = Depends(get_menu_category_service),
@@ -37,7 +37,7 @@ async def delete_category(category_id: int,
     return {}
 
 
-@router.post('/{category_id}/items/{item_id}')
+@router.post('/{category_id}/items/{item_id}/')
 @handle_app_errors
 async def add_item_to_category(category_id: int,
                                item_id: int,
@@ -47,7 +47,7 @@ async def add_item_to_category(category_id: int,
     return {}
 
 
-@router.delete('/{category_id}/items/{item_id}')
+@router.delete('/{category_id}/items/{item_id}/')
 @handle_app_errors
 async def remove_item_from_category(category_id: int,
                                     item_id: int,
@@ -57,7 +57,7 @@ async def remove_item_from_category(category_id: int,
     return {}
 
 
-@router.put('/{category_id}/image')
+@router.put('/{category_id}/image/', response_model=MenuCategoryUpdateOut)
 @handle_app_errors
 async def upload_category_image(category_id: int,
                                 image: UploadFile = File(...),
@@ -67,5 +67,4 @@ async def upload_category_image(category_id: int,
     if not image.content_type.startswith('image'):
         raise HTTPException(status_code=400, detail="Uploaded file is not an image")
 
-    await menu_category_service.upload_image(category_id, image, uow)
-    return {}
+    return await menu_category_service.upload_image(category_id, image, uow)

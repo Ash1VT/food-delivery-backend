@@ -5,6 +5,8 @@ from sqlalchemy import Select, select
 from sqlalchemy.orm import selectinload
 
 from models import Restaurant
+from models.pagination import PaginatedModel
+from utils.paginate import paginate
 from .generic import SQLAlchemyRepository
 
 __all__ = [
@@ -134,41 +136,51 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
     async def list(self,
                    fetch_working_hours: bool = False,
-                   **kwargs) -> List[Restaurant]:
+                   limit: int = 100,
+                   offset: int = 0,
+                   **kwargs) -> PaginatedModel[Restaurant]:
         """Retrieve a list of restaurants, with optional additional data.
 
         Args:
             fetch_working_hours (bool, optional): Whether to fetch associated working hours for restaurant.
                 Default is False.
+            limit (Optional[int]): The maximum number of restaurants to retrieve. Default is 100.
+            offset (Optional[int]): The offset to start retrieving restaurants from. Default is 0.
             **kwargs: Additional keyword arguments.
 
         Returns:
-            List[Menu]: List of menus.
+            PaginatedModel[Restaurant]: List of restaurants.
 
         Note:
             When `fetch_working_hours` is True, associated working hours are fetched for each restaurant in the list.
         """
 
-        return await super().list(fetch_working_hours=fetch_working_hours,
-                                  **kwargs)
+        stmt = self._get_list_stmt(**kwargs)
+        result = await paginate(stmt, self._session, limit=limit, offset=offset)
 
-    async def list_active_restaurants(self, fetch_working_hours: bool = False, **kwargs) -> List[Restaurant]:
+        logger.debug(f"Retrieved list of {self.model.__name__}")
+
+        return PaginatedModel(limit=limit, offset=offset, count=result['count'], items=result['items'])
+
+    async def list_active_restaurants(self, fetch_working_hours: bool = False,
+                                      limit: int = 100, offset: int = 0, **kwargs) -> PaginatedModel[Restaurant]:
         """
         Retrieve a list of active Restaurants, with optional additional data.
 
         Args:
             fetch_working_hours (bool, optional): Whether to fetch associated working hours for restaurant.
                 Default is False.
+            limit (Optional[int]): The maximum number of restaurants to retrieve. Default is 100.
+            offset (Optional[int]): The offset to start retrieving restaurants from. Default is 0.
             **kwargs: Additional keyword arguments.
 
         Returns:
-            List[Restaurant]: List of active Restaurants.
+            PaginatedModel[Restaurant]: List of active Restaurants.
         """
 
         stmt = self._get_list_active_restaurants_stmt(fetch_working_hours=fetch_working_hours, **kwargs)
-        result = await self._session.execute(stmt)
-        result = [r[0] for r in result.fetchall()]
+        result = await paginate(stmt, self._session, limit=limit, offset=offset)
 
         logger.debug(f"Retrieved list of active restaurants")
 
-        return result
+        return PaginatedModel(limit=limit, offset=offset, count=result['count'], items=result['items'])

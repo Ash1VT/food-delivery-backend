@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
@@ -12,6 +12,14 @@ from uow.generic import GenericUnitOfWork
 router = APIRouter(
     prefix='/items'
 )
+
+
+@router.get('/{menu_item_id}/reviews/current/', response_model=Optional[ReviewRetrieveOutSchema])
+@handle_app_errors
+async def get_customer_menu_item_review(menu_item_id: int,
+                                       review_service: IReviewService = Depends(get_review_service),
+                                       uow: GenericUnitOfWork = Depends(get_uow)):
+    return await review_service.get_customer_menu_item_review(menu_item_id, uow)
 
 
 @router.get('/{menu_item_id}/reviews', response_model=List[ReviewRetrieveOutSchema])

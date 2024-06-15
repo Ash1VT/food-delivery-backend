@@ -30,12 +30,14 @@ class BaseCreateUserView(CreateAPIView, abc.ABC):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        expires_session = serializer.validated_data.pop('expires_session')
+
         user = serializer.save()
         headers = self.get_success_headers(serializer.data)
 
         response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        set_jwt_cookies(response, user)
+        set_jwt_cookies(response, user, expires_session)
 
         return response
 
@@ -63,6 +65,17 @@ class CreateModeratorView(BaseCreateUserView):
     permission_classes = [IsModerator]
 
     serializer_class = ModeratorPostSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+
+        response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        return response
 
 
 class RetrieveUpdateCurrentUserView(RetrieveUpdateAPIView):
@@ -109,7 +122,7 @@ class ListUsersView(ListAPIView):
             elif role == 'rm':
                 queryset = queryset.filter(role=UserRole.RESTAURANT_MANAGER)
 
-        return queryset
+        return queryset.order_by('id')
 
 
 class RetrieveUpdateUserView(RetrieveUpdateAPIView):
@@ -132,6 +145,15 @@ class RetrieveUpdateUserView(RetrieveUpdateAPIView):
 
 
 class UploadUserImageView(UpdateAPIView):
+    permission_classes = [IsModerator]
+    serializer_class = UserUploadImageSerializer
+    queryset = User.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs, partial=False)
+
+
+class UploadCurrentUserImageView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserUploadImageSerializer
 

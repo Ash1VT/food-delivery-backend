@@ -2,9 +2,10 @@ from dataclasses import asdict
 from typing import Optional
 
 from loguru import logger
-from sqlalchemy import insert, select, delete, Delete, Insert, Select
+from sqlalchemy import insert, select, delete, Delete, Insert, Select, func
 
-from db.sqlalchemy.models import Restaurant
+from db.sqlalchemy.models import Restaurant, Review
+from models.rating import RatingModel
 from models.restaurant import RestaurantCreateModel, RestaurantModel
 from repositories.interfaces.restaurant import IRestaurantRepository
 from repositories.sqlalchemy.base import SqlAlchemyRepository
@@ -28,6 +29,22 @@ class RestaurantRepository(IRestaurantRepository, SqlAlchemyRepository):
         """
 
         return select(Restaurant).where(Restaurant.id == id)
+
+    def _get_retrieve_restaurant_rating_stmt(self, restaurant_id: int) -> Select:
+        """
+        Create a SELECT statement to retrieve a restaurant rating by its ID.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant to retrieve.
+
+        Returns:
+            Select: The SELECT statement to retrieve the restaurant rating.
+        """
+
+        return select(
+                    func.count(Review.id).label('reviews_count'),
+                    func.avg(Review.rating).label('average_rating')
+                ).where(Review.restaurant_id == restaurant_id)
 
     def _get_create_stmt(self, restaurant: RestaurantCreateModel) -> Insert:
         """
@@ -63,6 +80,20 @@ class RestaurantRepository(IRestaurantRepository, SqlAlchemyRepository):
         if restaurant:
             logger.debug(f"Retrieved restaurant with id={restaurant.id}")
             return to_restaurant_model(restaurant)
+
+    async def retrieve_restaurant_rating(self, restaurant_id: int) -> Optional[RatingModel]:
+        stmt = self._get_retrieve_restaurant_rating_stmt(restaurant_id)
+        result = await self._session.execute(stmt)
+
+        result = result.one()
+
+        logger.debug(f"Retrieved restaurant rating for restaurant with id={restaurant_id}")
+
+        return RatingModel(
+            id=restaurant_id,
+            rating=result.average_rating,
+            review_count=result.reviews_count,
+        )
 
     async def create(self, restaurant: RestaurantCreateModel) -> RestaurantModel:
         stmt = self._get_create_stmt(restaurant)

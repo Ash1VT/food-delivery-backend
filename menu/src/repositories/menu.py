@@ -217,9 +217,11 @@ class MenuRepository(SQLAlchemyRepository[Menu]):
 
         result = result.scalar_one_or_none()
 
-        logger.debug(f"Retrieved current restaurant Menu with id={result.id} for Restaurant with id={restaurant_id}")
+        if result:
+            logger.debug(f"Retrieved current restaurant Menu with id={result.id} for Restaurant with id={restaurant_id}")
+            return result
 
-        return result
+        logger.warning(f"Requested {self.model.__name__} with id={id} but it not found")
 
     async def list_restaurant_menus(self,
                                     restaurant_id: int,

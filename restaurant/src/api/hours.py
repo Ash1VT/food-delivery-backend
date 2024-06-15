@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('/', response_model=WorkingHoursCreateOut)
 @handle_app_errors
 async def create_working_hours(hours: WorkingHoursCreateIn,
                                service: WorkingHoursService = Depends(get_working_hours_service),
@@ -19,7 +19,7 @@ async def create_working_hours(hours: WorkingHoursCreateIn,
     return await service.create(hours, uow)
 
 
-@router.put('/{hours_id}')
+@router.put('/{hours_id}', response_model=WorkingHoursUpdateOut)
 @handle_app_errors
 async def update_working_hours(hours_id: int,
                                hours: WorkingHoursUpdateIn,

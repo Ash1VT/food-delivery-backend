@@ -1,8 +1,9 @@
 from abc import ABC
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from config.directories import ENV_DIRECTORY
+from config.directories import ENV_DIRECTORY, BASE_DIRECTORY
 from config.settings.db import PostgresSqlSettings, SqliteSettings
 
 
@@ -16,7 +17,9 @@ class ServerSettings(BaseSettings, ABC):
     roles_grpc_server_port: int
     kafka_bootstrap_server_host: str
     kafka_bootstrap_server_port: int
-    kafka_sasl_mechanism: str = 'PLAIN'
+    kafka_ssl_cafile: Optional[str] = f'{BASE_DIRECTORY}/cacert.pem'
+    kafka_ssl_certfile: Optional[str] = f'{BASE_DIRECTORY}/cert.pem'
+    kafka_ssl_keyfile: Optional[str] = f'{BASE_DIRECTORY}/key.pem'
     kafka_broker_user: str
     kafka_broker_password: str
 

@@ -11,7 +11,7 @@ from producer.events import WorkingHoursCreatedEvent, WorkingHoursUpdatedEvent, 
 from user_roles import RestaurantManagerRole
 from schemas import WorkingHoursUpdateIn, WorkingHoursCreateIn, WorkingHoursCreateOut, WorkingHoursUpdateOut
 from uow import SqlAlchemyUnitOfWork
-from utils import check_restaurant_manager_ownership_on_restaurant
+from utils.checks import check_restaurant_manager_ownership_on_restaurant
 from .mixins import CreateMixin, UpdateMixin, DeleteMixin
 
 

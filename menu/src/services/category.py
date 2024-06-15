@@ -278,7 +278,7 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
 
         logger.info(f"Removed MenuItem with id={item_id} from MenuCategory with id={category_id}")
 
-    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
+    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuCategoryUpdateOut:
 
         # Permission checks
         if not self._restaurant_manager:
@@ -300,8 +300,10 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         image_url = upload_menu_category_image_to_firebase(id, image)
 
         # Upload image
-        await uow.categories.update(id, {
+        updated_menu_category = await uow.categories.update(id, {
             'image_url': image_url
         })
 
         logger.info(f"Uploaded image for MenuCategory with id={id}")
+
+        return self.schema_update_out.model_validate(updated_menu_category)

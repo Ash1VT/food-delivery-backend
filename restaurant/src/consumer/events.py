@@ -6,13 +6,14 @@ from pydantic import BaseModel
 from schemas import RestaurantManagerCreateIn, ModeratorCreateIn
 from services import RestaurantManagerService, ModeratorService
 from uow import SqlAlchemyUnitOfWork
-from utils import uow_transaction_with_commit
-from .schemas import RestaurantManagerCreatedSchema, ModeratorCreatedSchema
+from utils.uow import uow_transaction_with_commit
+from .schemas import RestaurantManagerCreatedSchema, ModeratorCreatedSchema, RestaurantRatingUpdatedSchema
 
 __all__ = [
     "ConsumerEvent",
     "RestaurantManagerCreatedEvent",
     "ModeratorCreatedEvent",
+    "RestaurantRatingUpdatedEvent"
 ]
 
 BaseEventSchema = TypeVar("BaseEventSchema", bound=BaseModel)
@@ -105,3 +106,26 @@ class ModeratorCreatedEvent(ConsumerEvent[ModeratorCreatedSchema]):
         async with uow_transaction_with_commit(uow) as uow:
             moderator_data = ModeratorCreateIn(**self._data.model_dump())
             await moderator_service.create(moderator_data, uow)
+
+
+class RestaurantRatingUpdatedEvent(ConsumerEvent[RestaurantRatingUpdatedSchema]):
+    """
+    Event when rating of a restaurant is updated.
+    """
+
+    schema_class = RestaurantRatingUpdatedSchema
+
+    async def action(self, uow: SqlAlchemyUnitOfWork):
+        """
+        Updates a restaurant rating.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+        """
+
+        async with uow_transaction_with_commit(uow) as uow:
+            await uow.restaurants.update(self._data.id, {
+                "rating": self._data.rating,
+                "reviews_count": self._data.reviews_count
+            })
+

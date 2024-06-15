@@ -1,10 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Query
 
 from dependencies import get_uow, get_uow_with_commit, get_restaurant_service
 from schemas.application import RestaurantApplicationCreateOut
-from schemas.restaurant import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantUpdateIn
+from schemas.pagination import PaginatedResponse
+from schemas.restaurant import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantUpdateIn, RestaurantUpdateOut
 from services import RestaurantService
 from uow import SqlAlchemyUnitOfWork
 from decorators import handle_app_errors
@@ -14,14 +15,23 @@ router = APIRouter(
 )
 
 
-@router.get('/', response_model=List[RestaurantRetrieveOut])
+@router.get('/', response_model=PaginatedResponse[RestaurantRetrieveOut])
 @handle_app_errors
 async def get_all_restaurants(service: RestaurantService = Depends(get_restaurant_service),
-                              uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
-    return await service.list(uow)
+                              uow: SqlAlchemyUnitOfWork = Depends(get_uow),
+                              limit: int = Query(100, ge=1),
+                              offset: int = Query(0, ge=0)):
+    return await service.list(uow, limit=limit, offset=offset)
 
 
-@router.get('/{restaurant_id}', response_model=RestaurantRetrieveOut)
+@router.get('/current/', response_model=RestaurantRetrieveOut | None)
+@handle_app_errors
+async def get_current_restaurant(service: RestaurantService = Depends(get_restaurant_service),
+                                 uow: SqlAlchemyUnitOfWork = Depends(get_uow)):
+    return await service.retrieve_current_restaurant(uow)
+
+
+@router.get('/{restaurant_id}/', response_model=RestaurantRetrieveOut)
 @handle_app_errors
 async def get_restaurant(restaurant_id: int,
                          service: RestaurantService = Depends(get_restaurant_service),
@@ -37,7 +47,7 @@ async def create_restaurant(restaurant: RestaurantCreateIn,
     return await service.create(restaurant, uow)
 
 
-@router.put('/{restaurant_id}', response_model=RestaurantApplicationCreateOut)
+@router.put('/{restaurant_id}/', response_model=RestaurantApplicationCreateOut)
 @handle_app_errors
 async def update_restaurant(restaurant_id: int,
                             restaurant: RestaurantUpdateIn,
@@ -46,25 +56,23 @@ async def update_restaurant(restaurant_id: int,
     return await service.update(restaurant_id, restaurant, uow)
 
 
-@router.patch('/{restaurant_id}/activate')
+@router.patch('/{restaurant_id}/activate/', response_model=RestaurantUpdateOut)
 @handle_app_errors
 async def activate_restaurant(restaurant_id: int,
                               service: RestaurantService = Depends(get_restaurant_service),
                               uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
-    await service.activate_restaurant(restaurant_id, uow)
-    return {}
+    return await service.activate_restaurant(restaurant_id, uow)
 
 
-@router.patch('/{restaurant_id}/deactivate')
+@router.patch('/{restaurant_id}/deactivate/', response_model=RestaurantUpdateOut)
 @handle_app_errors
 async def deactivate_restaurant(restaurant_id: int,
                                 service: RestaurantService = Depends(get_restaurant_service),
                                 uow: SqlAlchemyUnitOfWork = Depends(get_uow_with_commit)):
-    await service.deactivate_restaurant(restaurant_id, uow)
-    return {}
+    return await service.deactivate_restaurant(restaurant_id, uow)
 
 
-@router.put('/{restaurant_id}/image')
+@router.put('/{restaurant_id}/image/', response_model=RestaurantUpdateOut)
 @handle_app_errors
 async def upload_restaurant_image(restaurant_id: int,
                                   image: UploadFile = File(...),
@@ -74,5 +82,4 @@ async def upload_restaurant_image(restaurant_id: int,
     if not image.content_type.startswith('image'):
         raise HTTPException(status_code=400, detail="Uploaded file is not an image")
 
-    await service.upload_image(restaurant_id, image, uow)
-    return {}
+    return await service.upload_image(restaurant_id, image, uow)

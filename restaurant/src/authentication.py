@@ -8,7 +8,7 @@ from grpc_files import grpc_roles_client
 from models import RestaurantManager, Moderator
 from user_roles import RestaurantManagerRole, ModeratorRole, UserRole
 from uow import SqlAlchemyUnitOfWork
-from utils import grpc_status_to_http
+from utils.grpc import grpc_status_to_http
 from services.manager import RestaurantManagerService
 from services.moderator import ModeratorService
 

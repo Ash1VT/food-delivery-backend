@@ -1,5 +1,7 @@
 from datetime import timedelta
 import os
+from typing import Optional
+
 from configurations import Configuration
 from pathlib import Path
 from .env import env
@@ -175,7 +177,9 @@ class Base(Configuration):
 
     KAFKA_BOOTSTRAP_SERVER_HOST = env('KAFKA_BOOTSTRAP_SERVER_HOST')
     KAFKA_BOOTSTRAP_SERVER_PORT = env('KAFKA_BOOTSTRAP_SERVER_PORT')
-    KAFKA_SASL_MECHANISM = 'PLAIN'
+    KAFKA_SSL_CAFILE: Optional[str] = f'{BASE_DIR}/cacert.pem'
+    KAFKA_SSL_CERTFILE: Optional[str] = f'{BASE_DIR}/cert.pem'
+    KAFKA_SSL_KEYFILE: Optional[str] = f'{BASE_DIR}/key.pem'
     KAFKA_BROKER_USER = env('KAFKA_BROKER_USER')
     KAFKA_BROKER_PASSWORD = env('KAFKA_BROKER_PASSWORD')
 

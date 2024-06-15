@@ -3,17 +3,19 @@ from typing import List, Optional
 from fastapi import UploadFile
 from loguru import logger
 
+from models.pagination import PaginatedModel
 from producer import publisher, RestaurantCreatedEvent, RestaurantUpdatedEvent
+from schemas.pagination import PaginatedResponse
 from user_roles import ModeratorRole, RestaurantManagerRole
 from exceptions import PermissionDeniedError
 from exceptions.manager import RestaurantManagerAlreadyHaveApplicationError, RestaurantManagerAlreadyHaveRestaurantError
 from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantNotActiveError, \
     RestaurantAlreadyActiveError, RestaurantAlreadyNotActiveError
-from schemas.restaurant import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantUpdateIn
+from schemas.restaurant import RestaurantRetrieveOut, RestaurantCreateIn, RestaurantUpdateIn, RestaurantUpdateOut
 from schemas.application import RestaurantApplicationCreateOut
 from models import Restaurant, Moderator, RestaurantManager, RestaurantApplication, ApplicationType
-from uow import SqlAlchemyUnitOfWork
-from utils import check_restaurant_manager_ownership_on_restaurant
+from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
+from utils.checks import check_restaurant_manager_ownership_on_restaurant
 from utils.firebase import upload_to_firebase
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
 
@@ -58,6 +60,42 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         self._restaurant_manager = restaurant_manager
         self._moderator = moderator
 
+    def get_list_schema(self, instance_list: PaginatedModel[Restaurant]) -> PaginatedResponse[RestaurantRetrieveOut]:
+        """
+        Get the output schema for the list of instances.
+
+        Args:
+            instance_list (PaginatedModel[Restaurant]): The list of instances.
+
+        Returns:
+            PaginatedResponse[RestaurantRetrieveOut]: List of validated schemas for output representation of instances.
+        """
+
+        return PaginatedResponse(limit=instance_list.limit,
+                                 offset=instance_list.offset,
+                                 count=instance_list.count,
+                                 items=[self.schema_retrieve_out.model_validate(instance)
+                                        for instance in instance_list.items])
+
+    async def list(self, uow: SqlAlchemyUnitOfWork,
+                   limit: int = 100,
+                   offset: int = 0, **kwargs) -> PaginatedResponse[RestaurantRetrieveOut]:
+        """
+        List all instances.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+            limit (int, optional): The maximum number of instances to return. Defaults to 100.
+            offset (int, optional): The offset of the first instance to return. Defaults to 0.
+
+        Returns:
+            List[RestaurantRetrieveOut]: List of instances.
+        """
+
+        instance_list = await self.list_instances(uow, limit=limit, offset=offset, **kwargs)
+
+        return self.get_list_schema(instance_list)
+
     async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> Restaurant:
         """
         Retrieves a restaurant instance by its ID.
@@ -92,12 +130,14 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         logger.info(f"Retrieved restaurant with id={id}.")
         return retrieved_instance
 
-    async def list_instances(self, uow: SqlAlchemyUnitOfWork, **kwargs) -> List[Restaurant]:
+    async def list_instances(self, uow: SqlAlchemyUnitOfWork, limit: int = 100, offset: int = 0, **kwargs) -> PaginatedModel[Restaurant]:
         """
         List instances of the Restaurant class.
 
         Args:
             uow (SqlAlchemyUnitOfWork): The unit of work instance.
+            limit (int, optional): The maximum number of instances to retrieve. Defaults to 100.
+            offset (int, optional): The number of instances to skip. Defaults to 0.
 
         Returns:
             List[Restaurant]: A list of Restaurant instances with the working hours fetched.
@@ -106,9 +146,9 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         # Permission checks
         if self._moderator:
             logger.info(f"Listing all restaurants for Moderator with id={self._moderator.id}.")
-            return await uow.restaurants.list(fetch_working_hours=True, **kwargs)
+            return await uow.restaurants.list(fetch_working_hours=True, limit=limit, offset=offset, **kwargs)
 
-        active_restaurants = await uow.restaurants.list_active_restaurants(fetch_working_hours=True, **kwargs)
+        active_restaurants = await uow.restaurants.list_active_restaurants(fetch_working_hours=True, limit=limit, offset=offset, **kwargs)
 
         logger.info(f"Listing all active restaurants.")
 
@@ -209,7 +249,35 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
 
         return created_instance
 
-    async def upload_image(self, id: int, file: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs):
+    async def retrieve_current_restaurant(self, uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantRetrieveOut | None:
+        """
+        Retrieves the current restaurant for the restaurant manager.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            RestaurantRetrieveOut: The current restaurant for the user.
+
+        Raises:
+            PermissionDeniedError: If the user is not the restaurant manager.
+        """
+
+        # Permission checks
+        if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager.")
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        retrieved_instance = await uow.restaurants.retrieve(self._restaurant_manager.restaurant_id,
+                                                            fetch_working_hours=True,
+                                                            **kwargs)
+
+        if not retrieved_instance:
+            return None
+
+        return self.get_retrieve_schema(retrieved_instance)
+
+    async def upload_image(self, id: int, file: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantUpdateOut:
         """
         Uploads an image for the restaurant with the given ID.
 
@@ -240,11 +308,13 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         image_url = upload_to_firebase(id, file)
 
         # Upload image
-        await uow.restaurants.update(id, {
+        updated_restaurant = await uow.restaurants.update(id, {
             'image_url': image_url
         })
 
         logger.info(f"Uploaded image for restaurant with id={id}.")
+
+        return RestaurantUpdateOut.model_validate(updated_restaurant)
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -277,7 +347,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         await uow.restaurants.delete(id, **kwargs)
         logger.info(f"Deleted restaurant with id={id}.")
 
-    async def activate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+    async def activate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantUpdateOut:
         """
         Activates a restaurant by setting its `is_active` attribute to True.
 
@@ -322,7 +392,9 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
             )
         )
 
-    async def deactivate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+        return RestaurantUpdateOut.model_validate(retrieved_restaurant)
+
+    async def deactivate_restaurant(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantUpdateOut:
         """
         Deactivates a restaurant by setting its `is_active` attribute to False.
 
@@ -366,3 +438,5 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
                 is_active=retrieved_restaurant.is_active
             )
         )
+
+        return RestaurantUpdateOut.model_validate(retrieved_restaurant)

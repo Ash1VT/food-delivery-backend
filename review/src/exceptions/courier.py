@@ -1,4 +1,4 @@
-from exceptions.base import AppError
+from exceptions.base import AppError, DatabaseInstanceNotFoundError
 
 
 class CourierOwnershipError(AppError):
@@ -10,3 +10,9 @@ class CourierOwnershipError(AppError):
     @property
     def message(self) -> str:
         return "This authenticated user is not right courier to perform this action"
+
+
+class CourierNotFoundError(DatabaseInstanceNotFoundError):
+
+    def __init__(self, courier_id: int):
+        super().__init__("id", courier_id, "Courier")

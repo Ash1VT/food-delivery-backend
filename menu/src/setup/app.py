@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from loguru import logger
+from starlette.middleware.cors import CORSMiddleware
 
 from api import api_router
 from config import get_settings
@@ -11,6 +12,16 @@ from setup.kafka.producer import init_producer_events
 
 app = FastAPI(
     title="Menu Microservice"
+)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include main api router #

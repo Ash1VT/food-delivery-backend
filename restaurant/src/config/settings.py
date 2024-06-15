@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from .cache import config_cache
@@ -20,7 +20,9 @@ class Settings(BaseSettings):
     roles_grpc_server_port: str
     kafka_bootstrap_server_host: str
     kafka_bootstrap_server_port: int
-    kafka_sasl_mechanism: str = 'PLAIN'
+    kafka_ssl_cafile: Optional[str] = f'{BASE_DIRECTORY}/cacert.pem'
+    kafka_ssl_certfile: Optional[str] = f'{BASE_DIRECTORY}/cert.pem'
+    kafka_ssl_keyfile: Optional[str] = f'{BASE_DIRECTORY}/key.pem'
     kafka_broker_user: str
     kafka_broker_password: str
 
@@ -29,6 +31,9 @@ class Settings(BaseSettings):
         'user_restaurant': [
             'consumer.events.RestaurantManagerCreatedEvent',
             'consumer.events.ModeratorCreatedEvent',
+        ],
+        'restaurant_review': [
+            'consumer.events.RestaurantRatingUpdatedEvent'
         ]
     }
 

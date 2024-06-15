@@ -150,19 +150,20 @@ def move_tokens_from_data(response: Response, expires_session: bool = False):
     logger.info("Tokens moved from data to response cookies")
 
 
-def set_jwt_cookies(response: Response, user: User):
+def set_jwt_cookies(response: Response, user: User, expires_session: bool = False):
     """
     Generates the JWT token pair for the given user and sets them as cookies in the response.
 
     Args:
         response (Response): The response object.
         user (User): The user object for whom to generate the tokens.
+        expires_session (bool): Whether to set the cookies to expire at the end of the session.
     """
 
     try:
         access_token, refresh_token = generate_jwt_token_pair(user)
-        set_access_cookie(response, str(access_token))
-        set_refresh_cookie(response, str(refresh_token))
+        set_access_cookie(response, str(access_token), expires_session)
+        set_refresh_cookie(response, str(refresh_token), expires_session)
 
         logger.info("JWT cookies set in the response")
 

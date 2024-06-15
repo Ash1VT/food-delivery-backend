@@ -5,10 +5,12 @@ from loguru import logger
 from config import get_settings
 from exceptions import PermissionDeniedError, RestaurantApplicationNotFoundWithIdError, \
     RestaurantManagerNotFoundWithIdError
-from models import RestaurantApplication, Moderator, ApplicationType
+from models import RestaurantApplication, Moderator, ApplicationType, RestaurantManager
+from models.pagination import PaginatedModel
 from producer import publisher, RestaurantCreatedEvent, RestaurantUpdatedEvent
 from schemas.application import RestaurantApplicationUpdateOut, RestaurantApplicationUpdateIn
-from user_roles import ModeratorRole
+from schemas.pagination import PaginatedResponse
+from user_roles import ModeratorRole, RestaurantManagerRole
 from schemas import RestaurantApplicationRetrieveOut
 from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
 from .mixins import RetrieveMixin, ListMixin, UpdateMixin
@@ -36,14 +38,16 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
     schema_update_out = RestaurantApplicationUpdateOut
     schema_retrieve_out = RestaurantApplicationRetrieveOut
 
-    def __init__(self, moderator: Optional[Moderator] = None):
+    def __init__(self, restaurant_manager: Optional[RestaurantManager] = None, moderator: Optional[Moderator] = None):
         """
         Initializes a new instance of the RestaurantApplicationService class.
 
         Args:
+            restaurant_manager (Optional[RestaurantManager]): An optional instance of the RestaurantManager class.
             moderator (Optional[Moderator]): An optional instance of the Moderator class.
         """
 
+        self._restaurant_manager = restaurant_manager
         self._moderator = moderator
 
     async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> RestaurantApplication:
@@ -154,6 +158,33 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
 
         return retrieved_instances
 
+    async def list_current_restaurant_manager_application_instances(self, uow: SqlAlchemyUnitOfWork,
+                                                                    **kwargs) -> List[RestaurantApplication]:
+        """
+        List all current restaurant manager applications from the database.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[RestaurantApplication]: A list of current restaurant applications.
+
+        Raises:
+            PermissionDeniedError: If the user is not a moderator.
+        """
+
+        # Permission checks
+        if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        retrieved_instances = await uow.restaurant_applications.list_restaurant_manager_applications(
+            self._restaurant_manager.id, **kwargs)
+
+        logger.info(f"Retrieved list of RestaurantApplications for authenticated restaurant manager")
+
+        return retrieved_instances
+
     async def list_create_applications(self, uow: SqlAlchemyUnitOfWork,
                                        **kwargs) -> List[RestaurantApplicationRetrieveOut]:
         """
@@ -182,6 +213,21 @@ class RestaurantApplicationService(RetrieveMixin[RestaurantApplication, Restaura
         """
 
         instance_list = await self.list_update_application_instances(uow, **kwargs)
+        return super().get_list_schema(instance_list)
+
+    async def list_current_restaurant_manager_applications(self, uow: SqlAlchemyUnitOfWork,
+                                                           **kwargs) -> List[RestaurantApplicationRetrieveOut]:
+        """
+        List all current restaurant manager applications.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Returns:
+            List[RestaurantApplicationRetrieveOut]: A list of current restaurant applications.
+        """
+
+        instance_list = await self.list_current_restaurant_manager_application_instances(uow, **kwargs)
         return super().get_list_schema(instance_list)
 
     async def update_instance(self, id: int, item: RestaurantApplicationUpdateIn,

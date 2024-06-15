@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
+from schemas.rating import RatingRetrieveOutSchema
 from schemas.review import ReviewCreateInSchema, ReviewUpdateInSchema, ReviewCreateOutSchema, ReviewUpdateOutSchema, \
     ReviewRetrieveOutSchema
 from uow.generic import GenericUnitOfWork
@@ -24,6 +25,37 @@ class IReviewService(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_courier_rating(self, courier_id: int, uow: GenericUnitOfWork) -> RatingRetrieveOutSchema:
+        """
+        Get rating of a courier.
+
+        Args:
+            courier_id (int): The ID of the courier.
+            uow (GenericUnitOfWork): The unit of work instance.
+
+        Returns:
+            RatingRetrieveOutSchema: The rating of the courier.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_customer_restaurant_review(self, restaurant_id: int,
+                                             uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
+        """
+        Get customer review for a restaurant.
+
+        Args:
+            restaurant_id (int): The ID of the restaurant.
+            uow (GenericUnitOfWork): The unit of work instance.
+
+        Returns:
+            Optional[ReviewRetrieveOutSchema]: The review or None if not found.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
     async def get_restaurant_reviews(self, restaurant_id: int, uow: GenericUnitOfWork) -> List[ReviewRetrieveOutSchema]:
         """
         Get all reviews for a restaurant.
@@ -34,6 +66,22 @@ class IReviewService(ABC):
 
         Returns:
             List[ReviewRetrieveOutSchema]: The list of reviews.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_customer_menu_item_review(self, menu_item_id: int,
+                                            uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
+        """
+        Get customer review for a menu item.
+
+        Args:
+            menu_item_id (int): The ID of the menu item.
+            uow (GenericUnitOfWork): The unit of work instance.
+
+        Returns:
+            Optional[ReviewRetrieveOutSchema]: The review or None if not found.
         """
 
         raise NotImplementedError

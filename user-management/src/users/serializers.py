@@ -25,10 +25,11 @@ class UserPostSerializer(serializers.ModelSerializer):
     """
 
     user_profile = UserProfileSerializer()
+    expires_session = serializers.BooleanField(default=False)
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'user_profile')
+        fields = ('email', 'password', 'expires_session', 'user_profile')
 
     def to_representation(self, instance):
         """
@@ -101,6 +102,12 @@ class RestaurantManagerPostSerializer(UserPostSerializer):
 
 class ModeratorPostSerializer(UserPostSerializer):
     """Moderator serializer for post requests."""
+
+    expires_session = None
+
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'user_profile')
 
     def create(self, validated_data):
         """

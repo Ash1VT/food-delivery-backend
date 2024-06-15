@@ -1,5 +1,5 @@
 from config.settings import Settings
-from utils import import_string
+from utils.import_string import import_string
 
 
 def init_producer_events(settings: Settings):

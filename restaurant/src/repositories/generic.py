@@ -12,6 +12,9 @@ __all__ = [
     "SQLAlchemyRepository",
 ]
 
+from models.pagination import PaginatedModel
+from utils.paginate import paginate
+
 Model = TypeVar("Model", bound=CustomBase)
 
 
@@ -229,7 +232,7 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
 
         logger.warning(f"Requested {self.model.__name__} with id={id} but it not found")
 
-    async def list(self, **kwargs) -> List[Model]:
+    async def list(self, limit: int = 100, offset: int = 0, **kwargs) -> List[Model]:
         stmt = self._get_list_stmt(**kwargs)
         result = await self._session.execute(stmt)
         result = [r[0] for r in result.fetchall()]
@@ -250,6 +253,8 @@ class SQLAlchemyRepository(GenericRepository[Model], ABC):
     async def update(self, id: int, data: dict, **kwargs) -> Optional[Model]:
         stmt = self._get_update_stmt(id=id, data=data, **kwargs)
         result = await self._session.execute(stmt)
+        result = result.scalar_one_or_none()
+
         if result:
             logger.debug(f"Updated {self.model.__name__} with id={id}")
             return result
