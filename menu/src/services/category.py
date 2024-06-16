@@ -286,7 +286,9 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check category for existence
-        if not await uow.categories.exists(id):
+        menu_category = await uow.categories.retrieve(id)
+
+        if not menu_category:
             logger.warning(f"MenuCategory with id={id} not found")
             raise MenuCategoryNotFoundWithIdError(id)
 
@@ -297,7 +299,7 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant.id)
 
         # Get image url
-        image_url = upload_menu_category_image_to_firebase(id, image)
+        image_url = upload_menu_category_image_to_firebase(menu_category, image)
 
         # Upload image
         updated_menu_category = await uow.categories.update(id, {

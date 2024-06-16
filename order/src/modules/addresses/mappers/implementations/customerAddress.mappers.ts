@@ -1,9 +1,9 @@
 import getLogger from "@src/core/setup/logger";
-import { CustomerAddressGetOutputDto } from "../../dto/customerAddresses.dto";
+import { CustomerAddressGetOutputDto, CustomerAddressUpdateInputDto, CustomerAddressUpdateOutputDto } from "../../dto/customerAddresses.dto";
 import { CustomerAddressCreateOutputDto, CustomerAddressCreateInputDto } from "../../dto/customerAddresses.dto";
-import { CustomerAddressModel, CustomerAddressCreateInput } from "../../models/customerAddress.models";
+import { CustomerAddressModel, CustomerAddressCreateInput, CustomerAddressUpdateInput } from "../../models/customerAddress.models";
 import { CustomerAddressAdditionalData } from "../additionalData";
-import { ICustomerAddressCreateMapper, ICustomerAddressGetMapper } from "../interfaces/customerAddress.mappers";
+import { ICustomerAddressCreateMapper, ICustomerAddressGetMapper, ICustomerAddressUpdateMapper } from "../interfaces/customerAddress.mappers";
 
 const logger = getLogger(module)
 
@@ -44,6 +44,32 @@ export class CustomerAddressCreateMapper implements ICustomerAddressCreateMapper
         }
 
         logger.debug(`Mapped CustomerAddressCreateInputDto to database CustomerAddressCreateInput`)
+
+        return data
+    }
+
+}
+
+export class CustomerAddressUpdateMapper implements ICustomerAddressUpdateMapper {
+
+    toDbModel(dtoModel: CustomerAddressUpdateInputDto): CustomerAddressUpdateInput {
+        const data = {
+            ...dtoModel
+        }
+
+        logger.debug(`Mapped CustomerAddressUpdateInputDto to database CustomerAddressUpdateInput`)
+
+        return data
+    }
+
+    toDto(dbModel: CustomerAddressModel): CustomerAddressUpdateOutputDto {
+        const data = {
+            ...dbModel,
+            id: dbModel.id.toString(),
+            customerId: dbModel.customerId?.toString()
+        }
+
+        logger.debug(`Mapped database CustomerAddressModel with id=${dbModel.id} to CustomerAddressUpdateOutputDto`)
 
         return data
     }

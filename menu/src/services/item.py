@@ -276,7 +276,7 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, menu_item.restaurant_id)
 
         # Get image url
-        image_url = upload_menu_item_image_to_firebase(id, image)
+        image_url = upload_menu_item_image_to_firebase(menu_item, image)
 
         # Upload image
         updated_menu_item = await uow.items.update(id, {

@@ -10,8 +10,6 @@ interface OrderBaseOutputDto extends OrderBaseDto {
     customerId: string
     courierId?: string
     restaurantId: string
-    promocodeName?: string
-    promocodeDiscount?: number
     status: string
     
     createdAt: string

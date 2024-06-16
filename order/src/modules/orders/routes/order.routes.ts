@@ -1,7 +1,7 @@
 import { asyncHandler } from "@src/core/utils/asyncHandler";
 import { Request, Response, Router } from "express";
-import { cancelOrder, confirmOrder, finishOrderDelivery, getAllOrders, getAvailableForDeliveryOrders, getCurrentCourierOrders, getCurrentCustomerOrders, makeOrder, placeOrder, prepareOrder, takeOrder, updateOrder } from "../controllers/order.controllers";
-import { addOrderItem, getOrderItems, removeOrderItem } from "../controllers/orderItem.controllers";
+import { cancelOrder, confirmOrder, finishOrderDelivery, getAllOrders, getAvailableForDeliveryOrders, getCurrentCourierOrders, getCurrentCustomerOrders, getOrder, makeOrder, placeOrder, prepareOrder, takeOrder, updateOrder } from "../controllers/order.controllers";
+import { addOrderItem, getOrderItems, removeOrderItem, updateOrderItem } from "../controllers/orderItem.controllers";
 
 
 /**
@@ -52,6 +52,13 @@ import { addOrderItem, getOrderItems, removeOrderItem } from "../controllers/ord
  *           type: integer
  *           description: Quantity of menu items.
  *           example: 4
+ *     OrderItemUpdate:
+ *       type: object
+ *       properties:
+ *         quantity:
+ *           type: integer
+ *           description: Quantity of menu items.
+ *           example: 4
  *     OrderCreate:
  *       type: object
  *       properties:
@@ -79,6 +86,24 @@ import { addOrderItem, getOrderItems, removeOrderItem } from "../controllers/ord
 */
 
 export const orderRouter = Router()
+
+/**
+ * @swagger
+ * /orders/{orderId}:
+ *   get:
+ *     summary: Retrieve an order
+ *     description: Retrieve an order. Can be used by customers, couriers, restaurant managers and moderators.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     responses:
+ *       200:
+ *         description: An order.
+ *       403:
+ *         description: Error connected with authorization.
+*/
+orderRouter.get("/:orderId", asyncHandler(getOrder))
 
 /**
  * @swagger
@@ -194,7 +219,7 @@ orderRouter.post("/", asyncHandler(makeOrder))
 
 /**
  * @swagger
- * /orders:
+ * /orders/{orderId}:
  *   patch:
  *     summary: Updates an order.
  *     description: Updates an order. Can be used only by customers.
@@ -214,7 +239,33 @@ orderRouter.post("/", asyncHandler(makeOrder))
  *       403:
  *         description: Error connected with authorization.
 */
-orderRouter.post("/:orderId", asyncHandler(updateOrder))
+orderRouter.patch("/:orderId", asyncHandler(updateOrder))
+
+/**
+ * @swagger
+ * /orders/{orderId}/items/{orderItemId}:
+ *   patch:
+ *     summary: Updates an order item of an existing order.
+ *     description: Updates an order item of an existing order. Can be used only by customers.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *       - $ref: '#/components/parameters/orderItemId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/OrderItemUpdate'
+ *     responses:
+ *       201:
+ *         description: An updated order item.
+ *       403:
+ *         description: Error connected with authorization.
+*/
+orderRouter.patch("/:orderId/items/:orderItemId", asyncHandler(updateOrderItem))
+
 
 /**
  * @swagger

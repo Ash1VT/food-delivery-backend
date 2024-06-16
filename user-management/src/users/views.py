@@ -4,7 +4,7 @@ import logging
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status, generics
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, CreateAPIView, UpdateAPIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -126,11 +126,15 @@ class ListUsersView(ListAPIView):
 
 
 class RetrieveUpdateUserView(RetrieveUpdateAPIView):
-    """View for retrieving user (IsModerator permission)
+    """View for retrieving user (AllowAny permission)
     or updating any user account's information (IsModerator permission)"""
 
-    permission_classes = [IsModerator]
     queryset = User.objects.all()
+
+    def get_permissions(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return [IsModerator()]
+        return [AllowAny()]
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:

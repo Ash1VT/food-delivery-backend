@@ -11,6 +11,7 @@ export default interface IOrderService extends IBaseService {
     getCurrentCourierOrders(status?: OrderStatus): Promise<OrderGetOutputDto[]>
 
     // Customer
+    getOrder(orderId: bigint): Promise<OrderGetOutputDto>
     getCurrentCustomerOrders(status?: OrderStatus): Promise<OrderGetOutputDto[]>
 
     // Courier

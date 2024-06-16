@@ -35,6 +35,23 @@ export const getCustomersAddresses = async (req: Request, res: Response) => {
     res.status(200).json(customersAddressesGetOutputDtos)
 }
 
+export const updateCustomerAddress = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+
+    const customerAddressId = idValidator.parse(req.params.customerAddressId)
+
+    const customerAddressUpdateInputDto = customerAddressCreateValidator.parse(req.body)
+
+    const customerAddressServiceFactory = new PrismaCustomerAddressServiceFactory(prismaClient)
+    const customerAddressService = customerAddressServiceFactory.createCustomerAddressService()
+
+    await authenticateWithPrisma(req, prismaClient, customerAddressService)
+
+    const customerAddressUpdateDto = await customerAddressService.updateCustomerAddress(customerAddressId, customerAddressUpdateInputDto)
+    
+    res.status(200).json(customerAddressUpdateDto)
+}
+
 export const approveCustomerAddress = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
 

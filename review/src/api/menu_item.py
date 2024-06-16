@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from decorators import handle_app_errors
 from dependencies.services import get_review_service
-from dependencies.uow import get_uow
+from dependencies.uow import get_uow, get_uow_with_commit
 from schemas.review import ReviewRetrieveOutSchema, ReviewCreateOutSchema, ReviewCreateInSchema
 from services.interfaces.review import IReviewService
 from uow.generic import GenericUnitOfWork
@@ -35,5 +35,5 @@ async def get_menu_item_reviews(menu_item_id: int,
 async def add_menu_item_review(menu_item_id: int,
                                review: ReviewCreateInSchema,
                                review_service: IReviewService = Depends(get_review_service),
-                               uow: GenericUnitOfWork = Depends(get_uow)):
+                               uow: GenericUnitOfWork = Depends(get_uow_with_commit)):
     return await review_service.add_menu_item_review(menu_item_id, review, uow)

@@ -74,6 +74,79 @@ export default class OrderService extends BaseService implements IOrderService {
         return orderDtos
     }
 
+    public async getOrder(orderId: bigint): Promise<OrderGetOutputDto> {
+        if (this.moderator) {
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+
+            // Check if order exists
+
+            if (!orderInstance) {
+                logger.warn(`Order with id=${orderId} does not exist`)
+                throw new OrderNotFoundWithIdError(orderId)
+            }
+        }
+        
+        if (this.restaurantManager) {
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+
+            // Check if order exists
+            if (!orderInstance) {
+                logger.warn(`Order with id=${orderId} does not exist`)
+                throw new OrderNotFoundWithIdError(orderId)
+            }
+
+            // Check if manager has ownership on order
+
+            if (orderInstance.restaurantId !== this.restaurantManager.restaurantId) {
+                logger.warn(`Manager with id=${this.restaurantManager.id} does not own Order with id=${orderId}`)
+                throw new RestaurantManagerOwnershipError(this.restaurantManager.id, orderInstance.restaurantId)
+            }
+
+            return this.orderGetMapper.toDto(orderInstance)
+        }
+
+        if (this.customer) {
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+
+            // Check if order exists
+            if (!orderInstance) {
+                logger.warn(`Order with id=${orderId} does not exist`)
+                throw new OrderNotFoundWithIdError(orderId)
+            }
+
+            // Check if customer has ownership on order
+
+            if (orderInstance.customerId !== this.customer.id) {
+                logger.warn(`Customer with id=${this.customer.id} does not own Order with id=${orderId}`)
+                throw new CustomerOrderOwnershipError(this.customer.id, orderInstance.customerId)
+            }
+
+            return this.orderGetMapper.toDto(orderInstance)
+        }
+
+        if (this.courier) {
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+
+            // Check if order exists
+            if (!orderInstance) {
+                logger.warn(`Order with id=${orderId} does not exist`)
+                throw new OrderNotFoundWithIdError(orderId)
+            }
+
+            // Check if courier has ownership on order
+
+            if (orderInstance.courierId !== this.courier.id) {
+                logger.warn(`Courier with id=${this.courier.id} does not own Order with id=${orderId}`)
+                throw new CourierOwnershipError(this.courier.id, orderInstance.id)
+            }
+
+            return this.orderGetMapper.toDto(orderInstance)
+        }
+
+        logger.warn('User is not authenticated as Moderator, Customer, Courier or RestaurantManager')
+        throw new PermissionDeniedError()
+    }
+
     public async getReadyOrders(): Promise<OrderGetOutputDto[]> {
 
         // Check if user is courier

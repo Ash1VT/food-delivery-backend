@@ -1,5 +1,5 @@
-import { OrderItemGetOutputDto, OrderItemCreateInputDto, OrderItemCreateOutputDto } from "../../dto/orderItem.dto";
-import { IOrderItemCreateMapper, IOrderItemGetMapper } from "../../mappers/interfaces/orderItem.mappers";
+import { OrderItemGetOutputDto, OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemUpdateOutputDto, OrderItemUpdateInputDto } from "../../dto/orderItem.dto";
+import { IOrderItemCreateMapper, IOrderItemGetMapper, IOrderItemUpdateMapper } from "../../mappers/interfaces/orderItem.mappers";
 import IOrderItemRepository from "../../repositories/interfaces/IOrderItemRepository";
 import IOrderItemService from "../interfaces/IOrderItemService";
 import IMenuItemRepository from "@src/modules/menu/repositories/interfaces/IMenuItemRepository";
@@ -22,12 +22,14 @@ export class OrderItemService extends BaseService implements IOrderItemService {
     constructor(
         protected orderItemGetMapper: IOrderItemGetMapper,
         protected orderItemCreateMapper: IOrderItemCreateMapper,
+        protected orderItemUpdateMapper: IOrderItemUpdateMapper,
         protected orderItemRepository: IOrderItemRepository,
         protected orderRepository: IOrderRepository,
         protected menuItemRepository: IMenuItemRepository
     ) {
         super()
     }
+
 
     public async getOrderItems(orderId: bigint): Promise<OrderItemGetOutputDto[]> {
 
@@ -66,6 +68,58 @@ export class OrderItemService extends BaseService implements IOrderItemService {
         return orderItemsDtos
     }
     
+    public async updateOrderItem(orderId: bigint, orderItemId: bigint, orderItemData: OrderItemUpdateInputDto): Promise<OrderItemUpdateOutputDto> {
+        // Check if user is customer
+        if (!this.customer) {
+            logger.warn("User is not authenticated as Customer")
+            throw new PermissionDeniedError()
+        }
+
+        // Check that order exists
+        const orderInstance = await this.orderRepository.getOne(orderId, true)
+
+        if (!orderInstance) {
+            logger.warn(`Order with id=${orderId} not found`)
+            throw new OrderNotFoundWithIdError(orderId)
+        }
+
+        // Check that order is in PLACING status
+        if (orderInstance.status !== "PLACING") {
+            logger.warn(`Order with id=${orderId} is not in 'Placing' status`)
+            throw new OrderNotPlacingError(orderId)
+        }
+
+        // Check that customer owns this order
+        if (orderInstance.customerId !== this.customer.id) {
+            logger.warn(`Customer with id=${this.customer.id} does not own Order with id=${orderId}`)
+            throw new CustomerOrderOwnershipError(this.customer.id, orderId)
+        }
+        
+        // Check that order item exists
+        const orderItemInstance = await this.orderItemRepository.getOne(orderItemId)
+
+        if (!orderItemInstance) {
+            logger.warn(`OrderItem with id=${orderItemId} not found`)
+            throw new OrderItemNotFoundWithIdError(orderItemId)
+        }
+
+        // Check that order item is in order
+        const orderItem = (orderInstance.items as OrderItemModel[]).find((orderItem) => orderItem.id === orderItemId)
+
+        if (!orderItem) {
+            logger.warn(`OrderItem with id=${orderItemId} is not in Order with id=${orderId}`)
+            throw new OrderItemNotInOrderError(orderId, orderItemId)
+        }
+
+        const orderItemUpdateInput = this.orderItemUpdateMapper.toDbModel(orderItemData)
+
+        const orderItemUpdated = await this.orderItemRepository.update(orderItemId, orderItemUpdateInput)
+
+        logger.info(`Updated OrderItem with id=${orderItemId}`)
+
+        return this.orderItemUpdateMapper.toDto(orderItemUpdated as OrderItemModel)
+    }
+
     public async addOrderItem(orderId: bigint, orderItemData: OrderItemCreateInputDto): Promise<OrderItemCreateOutputDto> {
 
         // Check if user is customer

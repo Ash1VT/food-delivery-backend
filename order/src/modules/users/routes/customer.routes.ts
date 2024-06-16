@@ -1,6 +1,6 @@
 import { asyncHandler } from "@src/core/utils/asyncHandler";
 import { Router } from "express";
-import { approveCustomerAddress, getCustomerAddresses, getCustomersAddresses, rejectCustomerAddress } from "../controllers/customer.controllers";
+import { approveCustomerAddress, getCustomerAddresses, getCustomersAddresses, rejectCustomerAddress, updateCustomerAddress } from "../controllers/customer.controllers";
 
 
 /**
@@ -14,6 +14,22 @@ import { approveCustomerAddress, getCustomerAddresses, getCustomersAddresses, re
  *       schema:
  *         type: integer
  *       description: Customer ID
+ *   schemas:
+ *     CustomerAddressUpdate:
+ *       type: object
+ *       properties:
+ *         country:
+ *           type: string
+ *           description: The country.
+ *           example: Беларусь
+ *         region:
+ *           type: string
+ *           description: The region.
+ *           example: Гродненская область
+ *         details:
+ *           type: string
+ *           description: The details about the address.
+ *           example: ул. Антонова, 10
 */
 export const customerRouter = Router()
 
@@ -45,6 +61,7 @@ customerRouter.get("/addresses", asyncHandler(getCustomersAddresses))
  *       - "customers"
  *     parameters:
  *       - $ref: '#/components/parameters/customerId'
+ *       - $ref: '#/components/parameters/approvalStatus'
  *     responses:
  *       200:
  *         description: A list of orders.
@@ -52,6 +69,32 @@ customerRouter.get("/addresses", asyncHandler(getCustomersAddresses))
  *         description: Error connected with authorization.
 */
 customerRouter.get("/:customerId/addresses", asyncHandler(getCustomerAddresses))
+
+/**
+ * @swagger
+ * /customers/addresses/{customerAddressId}:
+ *   put:
+ *     summary: Updates a customer address.
+ *     description: Updates a customer address. Can be used only by moderators.
+ *     tags:
+ *       - "customers"
+ *     parameters:
+ *       - $ref: '#/components/parameters/customerAddressId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CustomerAddressUpdate'
+ *     responses:
+ *       200:
+ *         description: Empty response.
+ *       403:
+ *         description: Error connected with authorization.
+ *       404:
+ *         description: Customer address not found.
+*/
+customerRouter.put("/addresses/:customerAddressId", asyncHandler(updateCustomerAddress))
 
 /**
  * @swagger

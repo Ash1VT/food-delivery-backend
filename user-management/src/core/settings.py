@@ -56,9 +56,8 @@ class Base(Configuration):
     # CORS
 
     CORS_ALLOW_CREDENTIALS = True
-    CORS_ALLOWED_ORIGINS = [
-        'http://localhost:3000',
-    ]
+    CORS_ALLOW_ALL_ORIGINS = True
+
     # Urls
 
     ROOT_URLCONF = 'core.urls'
@@ -132,7 +131,7 @@ class Base(Configuration):
         'AUTH_COOKIE_REFRESH': 'refresh_token',  # Cookie name. Enables cookies if value is set.
         'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
         'AUTH_COOKIE_SECURE': False,  # Whether the auth cookies should be secure (https:// only).
-        'AUTH_COOKIE_HTTP_ONLY': True,  # Http only cookie flag.It's not fetch by javascript.
+        'AUTH_COOKIE_HTTP_ONLY': False,  # Http only cookie flag.It's not fetch by javascript.
         'AUTH_COOKIE_PATH': '/',  # The path of the auth cookie.
         'AUTH_COOKIE_SAMESITE': 'Lax',  # Whether to set the flag restricting cookie leaks on cross-site requests.
 
@@ -299,9 +298,7 @@ class Develop(Base):
     DEBUG = True
 
     ALLOWED_HOSTS = [
-        'localhost',
-        '127.0.0.1',
-        '192.168.0.104'
+        '*'
     ]
 
     # Database

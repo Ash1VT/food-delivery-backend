@@ -1,7 +1,7 @@
 import { DeliveryInformationCreateMapper, DeliveryInformationGetMapper, DeliveryInformationUpdateMapper } from "../../implementations/deliveryInformation.mappers";
 import { OrderGetMapper, OrderCreateMapper, OrderUpdateMapper } from "../../implementations/order.mappers";
 import { OrderItemGetMapper, OrderItemCreateMapper, OrderItemUpdateMapper } from "../../implementations/orderItem.mappers";
-import { PriceInformationCreateMapper, PriceInformationGetMapper } from "../../implementations/priceInformation.mappers";
+import { PriceInformationCreateMapper, PriceInformationGetMapper, PriceInformationUpdateMapper } from "../../implementations/priceInformation.mappers";
 import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper, IDeliveryInformationUpdateMapper } from "../../interfaces/deliveryInformation.mappers";
 import { IOrderGetMapper, IOrderCreateMapper, IOrderUpdateMapper } from "../../interfaces/order.mappers";
 import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemUpdateMapper } from "../../interfaces/orderItem.mappers";
@@ -67,6 +67,6 @@ export class OrderMapperFactory implements IOrderMapperFactory {
     }
 
     public createPriceInformationUpdateMapper(): IPriceInformationUpdateMapper {
-        throw new Error("Method not implemented.");
+        return new PriceInformationUpdateMapper();
     }
 }

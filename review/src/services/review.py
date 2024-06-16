@@ -46,6 +46,23 @@ class ReviewService(IReviewService):
 
         return [ReviewRetrieveOutSchema.model_validate(review) for review in courier_review_models]
 
+    async def get_order_review(self, order_id: int, uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
+
+        order = await uow.orders.retrieve(order_id)
+
+        if not order:
+            logger.warning(f"Order with id={order_id} does not exist.")
+            raise OrderNotFoundError(order_id)
+
+        order_review = await uow.reviews.retrieve_by_order(order_id)
+
+        if not order_review:
+            return None
+
+        logger.info(f"Retrieved order review with order_id={order_id}.")
+
+        return ReviewRetrieveOutSchema.model_validate(order_review)
+
     async def get_courier_rating(self, courier_id: int, uow: GenericUnitOfWork) -> RatingRetrieveOutSchema:
 
         courier = await uow.couriers.retrieve(courier_id)

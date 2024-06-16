@@ -19,6 +19,6 @@ export interface CustomerAddressCreateInputDto extends CustomerAddressesBaseDto 
 
 export interface CustomerAddressCreateOutputDto extends CustomerAddressBaseOutputDto {}
 
-// export interface CustomerAddressUpdateInputDto extends CustomerAddressesBaseDto {}
+export interface CustomerAddressUpdateInputDto extends CustomerAddressesBaseDto {}
 
-// export interface CustomerAddressUpdateOutputDto extends CustomerAddressBaseOutputDto {}
+export interface CustomerAddressUpdateOutputDto extends CustomerAddressBaseOutputDto {}

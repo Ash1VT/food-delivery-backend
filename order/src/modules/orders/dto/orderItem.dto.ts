@@ -21,6 +21,8 @@ export interface OrderItemCreateOutputDto extends OrderItemBaseOutputDto {
     orderId: string
 }
 
+export interface OrderItemUpdateInputDto extends OrderItemBaseDto {}
+
 export interface OrderItemUpdateOutputDto extends OrderItemBaseOutputDto {
     orderId: string
 }

@@ -1,14 +1,15 @@
 import BaseService from "@src/core/services/BaseService";
 import ICustomerAddressService from "../interfaces/ICustomerAddressService";
-import { ICustomerAddressGetMapper, ICustomerAddressCreateMapper } from "../../mappers/interfaces/customerAddress.mappers";
+import { ICustomerAddressGetMapper, ICustomerAddressCreateMapper, ICustomerAddressUpdateMapper } from "../../mappers/interfaces/customerAddress.mappers";
 import ICustomerAddressRepository from "../../repositories/interfaces/ICustomerAddressRepository";
-import { CustomerAddressCreateInputDto, CustomerAddressCreateOutputDto, CustomerAddressGetOutputDto } from "../../dto/customerAddresses.dto";
+import { CustomerAddressCreateInputDto, CustomerAddressCreateOutputDto, CustomerAddressGetOutputDto, CustomerAddressUpdateOutputDto } from "../../dto/customerAddresses.dto";
 import { PermissionDeniedError } from "@src/modules/users/errors/permissions.errors";
 import ICustomerRepository from "@src/modules/users/repositories/interfaces/ICustomerRepository";
 import { CustomerAddressOwnershipError, CustomerNotFoundWithIdError } from "@src/modules/users/errors/customer.errors";
 import { CustomerAddressNotFoundWithIdError } from "../../errors/customerAddress.errors";
 import { CustomerAddressApprovalStatus } from "../../models/customerAddressApprovalStatus.models";
 import getLogger from "@src/core/setup/logger";
+import { CustomerAddressModel } from "../../models/customerAddress.models";
 
 
 const logger = getLogger(module)
@@ -18,6 +19,7 @@ export default class CustomerAddressService extends BaseService implements ICust
     constructor(
         protected customerAddressGetMapper: ICustomerAddressGetMapper,
         protected customerAddressCreateMapper: ICustomerAddressCreateMapper,
+        protected customerAddressUpdateMapper: ICustomerAddressUpdateMapper,
         protected customerAddressRepository: ICustomerAddressRepository,
         protected customerRepository: ICustomerRepository
     ) {
@@ -58,6 +60,31 @@ export default class CustomerAddressService extends BaseService implements ICust
         logger.info(`Created new CustomerAddress for the Customer with id=${this.customer.id}`)
 
         return customerAddressDto
+    }
+
+    public async updateCustomerAddress(customerAddressId: bigint, customerAddressData: CustomerAddressCreateInputDto): Promise<CustomerAddressUpdateOutputDto> {
+        // Check if moderator is authenticated
+        if (!this.moderator) {
+            logger.warn("User is not authenticated as Moderator")
+            throw new PermissionDeniedError()
+        }
+
+        const customerAddress = await this.customerAddressRepository.getOne(customerAddressId)
+
+        // Check if customer address exists
+        if (!customerAddress) {
+            logger.warn(`CustomerAddress with id=${customerAddressId} does not exist`)
+            throw new CustomerAddressNotFoundWithIdError(customerAddressId)
+        }
+
+        // Update customer address
+        const updatedCustomerAddress = await this.customerAddressRepository.update(customerAddressId, customerAddressData)
+        const customerAddressDto = this.customerAddressUpdateMapper.toDto(updatedCustomerAddress as CustomerAddressModel)
+
+        logger.info(`Updated CustomerAddress with id=${customerAddressId}`)
+
+        return customerAddressDto
+
     }
 
     public async deleteCustomerAddress(customerAddressId: bigint): Promise<void> {

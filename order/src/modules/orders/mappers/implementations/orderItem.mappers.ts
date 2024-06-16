@@ -1,6 +1,6 @@
 import getLogger from "@src/core/setup/logger";
-import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto, OrderItemUpdateOutputDto } from "../../dto/orderItem.dto";
-import { OrderItemCreateInput, OrderItemModel, OrderItemWithOrderCreateInput } from "../../models/orderItem.models";
+import { OrderItemCreateInputDto, OrderItemCreateOutputDto, OrderItemGetOutputDto, OrderItemUpdateInputDto, OrderItemUpdateOutputDto } from "../../dto/orderItem.dto";
+import { OrderItemCreateInput, OrderItemModel, OrderItemUpdateInput, OrderItemWithOrderCreateInput } from "../../models/orderItem.models";
 import { OrderItemAdditionalData, OrderItemWithOrderAdditionalData } from "../additionalData";
 import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemUpdateMapper } from "../interfaces/orderItem.mappers";
 
@@ -74,6 +74,16 @@ export class OrderItemCreateMapper implements IOrderItemCreateMapper {
 
 export class OrderItemUpdateMapper implements IOrderItemUpdateMapper {
 
+    toDbModel(dtoModel: OrderItemUpdateInputDto): OrderItemUpdateInput {
+        const data = {
+            quantity: dtoModel.quantity
+        }
+
+        logger.debug(`Mapped OrderItemUpdateInputDto to database OrderItemUpdateInput`)
+
+        return data
+    }
+    
     toDto(dbModel: OrderItemModel): OrderItemUpdateOutputDto {
         const data = {
             id: dbModel.id.toString(),

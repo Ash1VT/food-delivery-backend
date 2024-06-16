@@ -102,6 +102,21 @@ class IReviewService(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_order_review(self, order_id: int, uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
+        """
+        Get review for an order.
+
+        Args:
+            order_id (int): The ID of the order.
+            uow (GenericUnitOfWork): The unit of work instance.
+
+        Returns:
+            ReviewRetrieveOutSchema: The review.
+        """
+
+        raise NotImplementedError
+
+    @abstractmethod
     async def add_order_review(self, order_id: int, review: ReviewCreateInSchema,
                                uow: GenericUnitOfWork) -> ReviewCreateOutSchema:
         """

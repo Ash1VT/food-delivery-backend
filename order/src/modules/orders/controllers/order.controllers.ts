@@ -68,6 +68,21 @@ export const getAllOrders = async (req: Request, res: Response) => {
     res.status(200).json(orderGetOutputDtos)
 }
 
+export const getOrder = async (req: Request, res: Response) => {
+    const prismaClient = getPrismaClient()
+    
+    const orderId = idValidator.parse(req.params.orderId)
+
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderService = orderServiceFactory.createOrderService()
+
+    await authenticateWithPrisma(req, prismaClient, orderService)
+
+    const orderGetOutputDto = await orderService.getOrder(orderId)
+    
+    res.status(200).json(orderGetOutputDto)
+}
+
 export const getCurrentCustomerOrders = async (req: Request, res: Response) => {
     const prismaClient = getPrismaClient()
     

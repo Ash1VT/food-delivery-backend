@@ -3,9 +3,11 @@ import KafkaConsumerBuilder from "@src/kafka/consumer/builders/KafkaConsumerBuil
 import KafkaProducerBuilder from "@src/kafka/producer/builders/KafkaProducerBuilder"
 import { Kafka } from "kafkajs"
 
+const host = `${appSettings.variables.kafkaBootstrapServerHost}:${appSettings.variables.kafkaBootstrapServerPort}`
 
 export const kafka = new Kafka({
-    brokers: [`${appSettings.variables.kafkaBootstrapServerHost}:${appSettings.variables.kafkaBootstrapServerPort}`],
+    brokers: [host],
+    clientId: "order",
     sasl: {
         mechanism: "plain",
         username: appSettings.variables.kafkaBrokerUser,

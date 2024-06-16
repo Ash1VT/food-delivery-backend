@@ -1,6 +1,6 @@
 import { OrderItemWithOrderAdditionalData } from '../additionalData';
-import { OrderItemWithOrderCreateInput } from '../../models/orderItem.models';
-import { OrderItemCreateInputDto, OrderItemGetOutputDto, OrderItemUpdateOutputDto } from "../../dto/orderItem.dto";
+import { OrderItemUpdateInput, OrderItemWithOrderCreateInput } from '../../models/orderItem.models';
+import { OrderItemCreateInputDto, OrderItemGetOutputDto, OrderItemUpdateInputDto, OrderItemUpdateOutputDto } from "../../dto/orderItem.dto";
 import { OrderItemCreateInput, OrderItemModel } from "../../models/orderItem.models";
 import { OrderItemAdditionalData } from "../additionalData";
 
@@ -15,5 +15,6 @@ export interface IOrderItemCreateMapper {
 }
 
 export interface IOrderItemUpdateMapper {
+    toDbModel(dtoModel: OrderItemUpdateInputDto): OrderItemUpdateInput
     toDto(dbModel: OrderItemModel): OrderItemUpdateOutputDto
 }

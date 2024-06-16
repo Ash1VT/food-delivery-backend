@@ -14,3 +14,7 @@ export const orderItemCreateValidator = z.object({
     menuItemId: idValidator,
     quantity: orderItemQuantityValidator
 })
+
+export const orderItemUpdateValidator = z.object({
+    quantity: orderItemQuantityValidator
+})

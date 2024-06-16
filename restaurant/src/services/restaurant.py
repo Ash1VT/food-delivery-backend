@@ -16,7 +16,7 @@ from schemas.application import RestaurantApplicationCreateOut
 from models import Restaurant, Moderator, RestaurantManager, RestaurantApplication, ApplicationType
 from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
 from utils.checks import check_restaurant_manager_ownership_on_restaurant
-from utils.firebase import upload_to_firebase
+from utils.firebase import upload_to_firebase, upload_restaurant_image_to_firebase
 from .mixins import RetrieveMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin
 
 __all__ = [
@@ -297,7 +297,9 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check for existence
-        if not await uow.restaurants.exists(id):
+        restaurant = await uow.restaurants.retrieve(id, **kwargs)
+
+        if not restaurant:
             logger.warning(f"Restaurant with id={id} not found.")
             raise RestaurantNotFoundWithIdError(id)
 
@@ -305,7 +307,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, id)
 
         # Get image url
-        image_url = upload_to_firebase(id, file)
+        image_url = upload_restaurant_image_to_firebase(restaurant, file)
 
         # Upload image
         updated_restaurant = await uow.restaurants.update(id, {

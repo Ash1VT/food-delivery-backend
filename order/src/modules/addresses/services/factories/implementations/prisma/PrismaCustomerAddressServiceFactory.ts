@@ -22,6 +22,7 @@ export default class PrismaCustomerAddressServiceFactory implements ICustomerAdd
         return new CustomerAddressService(
             this.customerAddressMapperFactory.createCustomerAddressGetMapper(),
             this.customerAddressMapperFactory.createCustomerAddressCreateMapper(),
+            this.customerAddressMapperFactory.createCustomerAddressUpdateMapper(),
             this.customerAddressRepositoryFactory.createCustomerAddressRepository(),
             this.userRepositoryFactory.createCustomerRepository()
         )
