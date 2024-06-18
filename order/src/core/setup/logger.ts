@@ -34,23 +34,23 @@ const getLogger = (module: any) => {
             customFormat(module)
           ),
         }),
-        new WinstonGraylog({
-          level: 'debug',
-          format: combine(
-            timestamp({
-              format: 'YYYY-MM-DD hh:mm:ss.SSS A',
-            }),
-            customFormat(module)
-          ),
-          graylog: {
-            servers: [
-              {
-                host: serverSettings.variables.grayLogHost,
-                port: serverSettings.variables.grayLogUdpPort
-              }
-            ]
-          }
-        })
+//         new WinstonGraylog({
+//           level: 'debug',
+//           format: combine(
+//             timestamp({
+//               format: 'YYYY-MM-DD hh:mm:ss.SSS A',
+//             }),
+//             customFormat(module)
+//           ),
+//           graylog: {
+//             servers: [
+//               {
+//                 host: serverSettings.variables.grayLogHost,
+//                 port: serverSettings.variables.grayLogUdpPort
+//               }
+//             ]
+//           }
+//         })
       ]
     
     })
