@@ -13,7 +13,10 @@ app = FastAPI(
     title="Review Microservice"
 )
 
-origins = ["*"]
+origins = [
+    "https://ash1vt.github.io/food-delivery-frontend",
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,
