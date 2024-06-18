@@ -4,7 +4,7 @@ import cors from 'cors';
 export function registerCors(app: Express) {
     const corsOptions: cors.CorsOptions = {
         origin: [
-            "https://ash1vt.github.io/food-delivery-frontend",
+            "https://ash1vt.github.io",
             "http://localhost:3000",
         ],
         credentials: true

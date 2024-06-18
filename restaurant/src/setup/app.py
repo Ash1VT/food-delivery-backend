@@ -15,7 +15,7 @@ app = FastAPI(
 )
 
 origins = [
-    "https://ash1vt.github.io/food-delivery-frontend",
+    "https://ash1vt.github.io",
     "http://localhost:3000",
 ]
 
