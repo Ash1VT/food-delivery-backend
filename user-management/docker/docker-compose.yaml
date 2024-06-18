@@ -30,8 +30,8 @@ services:
           - SECRET_KEY=${SECRET_KEY}
           - DJANGO_CONFIGURATION=Develop
           - WEB_APP_PROTOCOL=http
-          - WEB_APP_HOST=user-app
-          - WEB_APP_PORT=8000
+          - WEB_APP_HOST=${WEB_APP_HOST}
+          - WEB_APP_PORT=${WEB_APP_PORT}
           - GRPC_SERVER_PORT=50051
           - PG_HOST=db
           - PG_PORT=5432

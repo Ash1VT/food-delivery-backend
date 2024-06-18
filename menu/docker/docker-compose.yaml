@@ -27,8 +27,8 @@ services:
           - "8001:8001"
         environment:
           - CONFIGURATION=Develop
-          - WEB_APP_HOST=0.0.0.0
-          - WEB_APP_PORT=8001
+          - WEB_APP_HOST=${WEB_APP_HOST}
+          - WEB_APP_PORT=${WEB_APP_PORT}
           - ROLES_GRPC_SERVER_HOST=user-app
           - ROLES_GRPC_SERVER_PORT=50051
           - PG_HOST=db
