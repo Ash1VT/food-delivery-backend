@@ -22,6 +22,7 @@ services:
       GRAYLOG_DATANODE_PASSWORD_SECRET: "${GRAYLOG_PASSWORD_SECRET:?Please configure GRAYLOG_PASSWORD_SECRET in the .env file}"
       GRAYLOG_DATANODE_ROOT_PASSWORD_SHA2: "${GRAYLOG_ROOT_PASSWORD_SHA2:?Please configure GRAYLOG_ROOT_PASSWORD_SHA2 in the .env file}"
       GRAYLOG_DATANODE_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+      JAVA_OPTS: -Xmx256m -XX:MaxPermSize=512m
     ulimits:
       memlock:
         hard: -1
