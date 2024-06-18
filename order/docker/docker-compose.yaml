@@ -35,7 +35,7 @@ services:
       - PG_DATABASE=order
       - PG_USER=${PG_USER}
       - PG_PASSWORD=${PG_PASSWORD}
-      - DATABASE_URL=postgresql://${PG_USER}:${PG_PASSWORD}@db:5435/${PG_DATABASE}
+      - DATABASE_URL=postgresql://${PG_USER}:${PG_PASSWORD}@db:5435/order
       - KAFKA_BOOTSTRAP_SERVER_HOST=kafka
       - KAFKA_BOOTSTRAP_SERVER_PORT=9092
       - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
