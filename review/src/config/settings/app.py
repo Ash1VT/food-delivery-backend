@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
 from kafka_files.consumer.events import CustomerUpdatedEvent, CustomerCreatedEvent, CourierCreatedEvent, \
-    MenuItemCreatedEvent, MenuItemDeletedEvent, RestaurantCreatedEvent, OrderFinishedEvent, ConsumerEvent
+    MenuItemCreatedEvent, MenuItemDeletedEvent, RestaurantCreatedEvent, OrderFinishedEvent, ConsumerEvent, \
+    RestaurantUpdatedEvent
 from kafka_files.producer.events import MenuItemRatingUpdatedEvent, ProducerEvent, RestaurantRatingUpdatedEvent
 from kafka_files.producer.schemas import MenuItemRatingUpdatedSchema, RestaurantRatingUpdatedSchema
 from roles import CustomerRole, CourierRole, UserRole
@@ -30,7 +31,8 @@ class AppSettings(BaseSettings):
             MenuItemDeletedEvent
         ],
         'restaurant_review': [
-            RestaurantCreatedEvent
+            RestaurantCreatedEvent,
+            RestaurantUpdatedEvent
         ],
         'order_review': [
             OrderFinishedEvent
@@ -39,9 +41,9 @@ class AppSettings(BaseSettings):
 
     kafka_producer_events_topics: Dict[Type[ProducerEvent], Dict[str, Type[BaseModel]]] = {
         MenuItemRatingUpdatedEvent: {
-            'menu_review': MenuItemRatingUpdatedSchema
+            'review_menu': MenuItemRatingUpdatedSchema
         },
         RestaurantRatingUpdatedEvent: {
-            'restaurant_review': RestaurantRatingUpdatedSchema
+            'review_restaurant': RestaurantRatingUpdatedSchema
         }
     }

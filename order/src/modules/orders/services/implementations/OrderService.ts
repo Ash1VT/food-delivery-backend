@@ -1,6 +1,6 @@
 import { RestaurantManagerOwnershipError } from '@src/modules/users/errors/restaurantManager.errors';
 import { OrderGetOutputDto, OrderCreateInputDto, OrderCreateOutputDto, OrderUpdateInputDto, OrderUpdateOutputDto } from "../../dto/order.dto";
-import { OrderHasNoDestinationAddressError, OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotPendingError, OrderNotPlacingError, OrderNotPreparingError, OrderNotReadyError } from "../../errors/order.errors";
+import { OrderHasNoDestinationAddressError, OrderNotDeliveringError, OrderNotFoundWithIdError, OrderNotPaidError, OrderNotPendingError, OrderNotPlacingError, OrderNotPreparingError, OrderNotReadyError } from "../../errors/order.errors";
 import { IOrderCreateMapper, IOrderGetMapper, IOrderUpdateMapper } from "../../mappers/interfaces/order.mappers";
 import IOrderRepository from "../../repositories/interfaces/IOrderRepository";
 import IOrderService from "../interfaces/IOrderService";
@@ -36,6 +36,12 @@ import { PriceInformationModel, PriceInformationUpdateInput } from '../../models
 import { calculateOrderPrice } from '../../utils/price';
 import { OrderModel } from '../../models/order.models';
 import getLogger from '@src/core/setup/logger';
+import { getDayOfWeek } from '../../utils/daysOfWeek';
+import isTimeBetween from '../../utils/isTimeBetween';
+import getStripe from '@src/core/setup/stripe';
+import stripe from '@src/core/setup/stripe';
+import IPaymentInformationRepository from '../../repositories/interfaces/IPaymentInformationRepository';
+import { PaymentInformationModel } from '../../models/paymentInformation.models';
 
 const logger = getLogger(module)
 
@@ -50,10 +56,12 @@ export default class OrderService extends BaseService implements IOrderService {
         protected customerAddressRepository: ICustomerAddressRepository,
         protected deliveryInformationRepository: IDeliveryInformationRepository,
         protected priceInformationRepository: IPriceInformationRepository,
+        protected paymentInformationRepository: IPaymentInformationRepository,
         protected menuItemRepository: IMenuItemRepository,
         protected restaurantRepository: IRestaurantRepository,
         protected workingHoursRepository: IWorkingHoursRepository,
-        protected bingApiKey: string
+        protected bingApiKey: string,
+        protected stripeSecretKey: string
     ) {
         super()
     }
@@ -66,7 +74,7 @@ export default class OrderService extends BaseService implements IOrderService {
             throw new PermissionDeniedError()
         }
         
-        const orderInstances = await this.orderRepository.getMany(true, true, true, status)
+        const orderInstances = await this.orderRepository.getMany(true, true, true, true, status)
         const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
 
         logger.info(`Retrieved list of Orders`)
@@ -76,7 +84,7 @@ export default class OrderService extends BaseService implements IOrderService {
 
     public async getOrder(orderId: bigint): Promise<OrderGetOutputDto> {
         if (this.moderator) {
-            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true, true)
 
             // Check if order exists
 
@@ -87,7 +95,7 @@ export default class OrderService extends BaseService implements IOrderService {
         }
         
         if (this.restaurantManager) {
-            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true, true)
 
             // Check if order exists
             if (!orderInstance) {
@@ -106,7 +114,7 @@ export default class OrderService extends BaseService implements IOrderService {
         }
 
         if (this.customer) {
-            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+            const orderInstance = await this.orderRepository.getOne(orderId, true, true, true, true)
 
             // Check if order exists
             if (!orderInstance) {
@@ -155,7 +163,7 @@ export default class OrderService extends BaseService implements IOrderService {
             throw new PermissionDeniedError()
         }
 
-        const orderInstances = await this.orderRepository.getMany(true, true, true, "READY")
+        const orderInstances = await this.orderRepository.getMany(true, true, true, false, "READY")
         const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
 
         logger.info(`Retrieved list of Ready Orders`)
@@ -187,7 +195,7 @@ export default class OrderService extends BaseService implements IOrderService {
             throw new PermissionDeniedError()
         }
         
-        const orderInstances = await this.orderRepository.getCustomerOrders(this.customer.id, true, true, true, status)
+        const orderInstances = await this.orderRepository.getCustomerOrders(this.customer.id, true, true, true, true, status)
         const orderDtos = orderInstances.map((orderInstance) => this.orderGetMapper.toDto(orderInstance))
 
         logger.info(`Retrieved list of Orders for Customer with id=${this.customer.id}`)
@@ -414,7 +422,6 @@ export default class OrderService extends BaseService implements IOrderService {
             const orderItem = orderItems[index]
             return acc + menuItem.price * orderItem.quantity
         }, 0)
-
         // let promocodeName: string | undefined = undefined
         // let promocodeDiscount: number | undefined = undefined
         // let decountedPrice = totalPrice
@@ -446,11 +453,25 @@ export default class OrderService extends BaseService implements IOrderService {
             decountedPrice: orderItemsPrice,
         })
 
+        // Create payment information
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: orderItemsPrice * 100,
+            currency: "usd",
+            payment_method_types: ["card"],
+        })
+
+        const paymentInformationInstance = await this.paymentInformationRepository.create({
+            paymentIntentId: paymentIntent.id,
+            clientSecretKey: paymentIntent.client_secret as string
+        })
+
         // Construct order input
         const orderInput = this.orderCreateMapper.toDbModel(orderData, {
             customerId: this.customer.id,
             deliveryInformationId: deliveryInformationInstance.id,
             priceInformationId: priceInformationInstance.id,
+            paymentInformationId: paymentInformationInstance.id,
             items: menuItems.map((menuItem) => {
                 return {
                     menuItemName: menuItem.name,
@@ -475,7 +496,7 @@ export default class OrderService extends BaseService implements IOrderService {
             throw new PermissionDeniedError()
         }
 
-        let orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+        let orderInstance = await this.orderRepository.getOne(orderId, true, true, true, true)
 
         // Check if order exists
         if (!orderInstance) {
@@ -520,7 +541,7 @@ export default class OrderService extends BaseService implements IOrderService {
 
             deliveryInformationUpdateInput = {
                 ...deliveryInformationUpdateInput,
-                originAddress: fullCustomerAddress,
+                destinationAddress: fullCustomerAddress,
             }
 
             priceInformationUpdateInput = {
@@ -548,6 +569,13 @@ export default class OrderService extends BaseService implements IOrderService {
         const updatedDeliveryInformation = await this.deliveryInformationRepository.update(orderInstance.deliveryInformationId, deliveryInformationUpdateInput) as DeliveryInformationModel
         const updatedPriceInformation = await this.priceInformationRepository.update(orderInstance.priceInformationId, priceInformationUpdateInput) as PriceInformationModel
         
+
+        // Update payment intent
+        const paymentInformation = orderInstance.paymentInformation as PaymentInformationModel
+        await stripe.paymentIntents.update(paymentInformation.paymentIntentId, {
+            amount: updatedPriceInformation.totalPrice * 100
+        })
+
         orderInstance.deliveryInformation = updatedDeliveryInformation
         orderInstance.priceInformation = updatedPriceInformation
 
@@ -566,7 +594,7 @@ export default class OrderService extends BaseService implements IOrderService {
             throw new PermissionDeniedError()
         }
 
-        const orderInstance = await this.orderRepository.getOne(orderId, true, true, true)
+        const orderInstance = await this.orderRepository.getOne(orderId, true, true, true, true)
 
         // Check if order exists
         if (!orderInstance) {
@@ -591,6 +619,31 @@ export default class OrderService extends BaseService implements IOrderService {
         if (!deliveryInformation.destinationAddress) {
             logger.warn(`Order with id=${orderId} has no destination address`)
             throw new OrderHasNoDestinationAddressError(orderId)
+        }
+
+        // Check if restaurant is open
+        const currentDate = new Date(Date.now())
+
+        const currentDayOfWeek = getDayOfWeek(currentDate.getDay())
+
+        const workingHours = await this.workingHoursRepository.getRestaurantWorkingHours(orderInstance.restaurantId, currentDayOfWeek)
+
+        if (!workingHours) {
+            throw new RestaurantNotWorkingError(orderInstance.restaurantId)
+        }
+
+        if (!isTimeBetween(currentDate, workingHours.openingTime, workingHours.closingTime)) {
+            throw new RestaurantNotWorkingError(orderInstance.restaurantId)
+        }
+
+        // Check if order is paid
+
+        const orderPaymentInformation = orderInstance.paymentInformation as PaymentInformationModel
+        const response = await stripe.paymentIntents.retrieve(orderPaymentInformation.paymentIntentId)
+
+        if (response.status !== "succeeded") {
+            logger.warn(`Order with id=${orderId} is not paid`)
+            throw new OrderNotPaidError(orderId)
         }
 
         // Update order status to PENDING
@@ -644,7 +697,6 @@ export default class OrderService extends BaseService implements IOrderService {
 
         // Update order
         const updatedOrder = await this.orderRepository.update(orderId, {
-            ...orderInstance,
             courierId: this.courier.id,
             status: "DELIVERING"
         }) as OrderModel
@@ -698,7 +750,6 @@ export default class OrderService extends BaseService implements IOrderService {
 
         // Update order
         const updatedOrder = await this.orderRepository.update(orderId, {
-            ...orderInstance,
             status: "DELIVERED"
         }) as OrderModel
 
@@ -739,12 +790,12 @@ export default class OrderService extends BaseService implements IOrderService {
             throw new PromocodeAmountUsageError(promocodeInstance.id)
         }
 
-        if (currentDate < promocodeInstance.validFrom) {
+        if (currentDate <= promocodeInstance.validFrom) {
             logger.warn(`Promocode with name=${promocodeName} has not started yet`)
             throw new PromocodeNotStartUsageError(promocodeInstance.id)
         }
 
-        if (currentDate > promocodeInstance.validUntil) {
+        if (currentDate >= promocodeInstance.validUntil) {
             logger.warn(`Promocode with name=${promocodeName} has expired`)
             throw new PromocodeExpiredUsageError(promocodeInstance.id)
         }
@@ -775,4 +826,5 @@ export default class OrderService extends BaseService implements IOrderService {
 
         return customerAddress
     }
+
 }

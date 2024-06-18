@@ -25,14 +25,16 @@ export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
     protected restaurantRepositoryFactory: IRestaurantRepositoryFactory
     protected customerAddressRepositoryFactory: ICustomerAddressRepositoryFactory
     protected bingApiKey: string
+    protected stripeSecretKey: string
 
-    constructor(prismaClient: PrismaClient, bingApiKey: string) {
+    constructor(prismaClient: PrismaClient, bingApiKey: string, stripeSecretKey: string) {
         this.orderRepositoryFactory = new PrismaOrderRepositoryFactory(prismaClient)
         this.promotionRepositoryFactory = new PrismaPromotionRepositoryFactory(prismaClient)
         this.menuItemRepositoryFactory = new PrismaMenuItemRepositoryFactory(prismaClient)
         this.restaurantRepositoryFactory = new PrismaRestaurantRepositoryFactory(prismaClient)
         this.customerAddressRepositoryFactory = new PrismaCustomerAddressRepositoryFactory(prismaClient)
         this.bingApiKey = bingApiKey
+        this.stripeSecretKey = stripeSecretKey
     }
 
     public createOrderService(): IOrderService {
@@ -45,10 +47,12 @@ export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
             this.customerAddressRepositoryFactory.createCustomerAddressRepository(),
             this.orderRepositoryFactory.createDeliveryInformationRepository(),
             this.orderRepositoryFactory.createPriceInformationRepository(),
+            this.orderRepositoryFactory.createPaymentInformationRepository(),
             this.menuItemRepositoryFactory.createMenuItemRepository(),
             this.restaurantRepositoryFactory.createRestaurantRepository(),
             this.restaurantRepositoryFactory.createWorkingHoursRepository(),
-            this.bingApiKey
+            this.bingApiKey,
+            this.stripeSecretKey
         )
     }
     
@@ -57,9 +61,11 @@ export default class PrismaOrderServiceFactory implements IOrderServiceFactory {
             this.orderMapperFactory.createOrderItemGetMapper(),
             this.orderMapperFactory.createOrderItemCreateMapper(),
             this.orderMapperFactory.createOrderItemUpdateMapper(),
+            this.orderMapperFactory.createOrderUpdateMapper(),
             this.orderRepositoryFactory.createOrderItemRepository(),
+            this.orderRepositoryFactory.createPriceInformationRepository(),
             this.orderRepositoryFactory.createOrderRepository(),
-            this.menuItemRepositoryFactory.createMenuItemRepository()
+            this.menuItemRepositoryFactory.createMenuItemRepository(),
         )
     }
 }

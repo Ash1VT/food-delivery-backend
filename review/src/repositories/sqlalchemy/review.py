@@ -3,6 +3,7 @@ from typing import Optional, List
 
 from loguru import logger
 from sqlalchemy import Delete, delete, update, insert, Insert, Update, Select, select
+from sqlalchemy.orm import selectinload
 
 from db.sqlalchemy.models import Review, Order, Customer
 from models.review import ReviewUpdateModel, ReviewModel, ReviewCreateModel
@@ -24,10 +25,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Select: The base SELECT statement to retrieve reviews.
         """
 
-        return select(Review,
-                      Customer.full_name.label("customer_full_name"),
-                      Customer.image_url.label("customer_image_url").
-                join(Customer, Customer.id == Review.customer_id))
+        return select(Review).options(selectinload(Review.customer))
 
     def _get_retrieve_stmt(self, id: int) -> Select:
         """
@@ -135,7 +133,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Insert: The INSERT statement to add the new review.
         """
 
-        return insert(Review).values(asdict(review)).returning(Review)
+        return insert(Review).values(asdict(review)).returning(Review).options(selectinload(Review.customer))
 
     def _get_update_stmt(self, id: int, review: ReviewUpdateModel) -> Update:
         """
@@ -149,7 +147,7 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
             Update: The UPDATE statement to modify the existing review.
         """
 
-        return update(Review).where(Review.id == id).values(asdict(review)).returning(Review)
+        return update(Review).where(Review.id == id).values(asdict(review)).returning(Review).options(selectinload(Review.customer))
 
     def _get_delete_stmt(self, id: int) -> Delete:
         """
@@ -243,6 +241,11 @@ class ReviewRepository(IReviewRepository, SqlAlchemyRepository):
 
         if review:
             logger.debug(f"Updated review with id={id}")
+
+            stmt = self._get_retrieve_stmt(review.id)
+            result = await self._session.execute(stmt)
+            review = result.scalar_one()
+
             return to_review_model(review)
 
     async def delete(self, id: int) -> None:

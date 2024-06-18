@@ -46,11 +46,11 @@ class KafkaReceiver:
         """
 
         for message in self._consumer:
-            logger.debug('Received event:', message.key)
+            logger.debug(f'Received event: {message.key}')
 
             event_class = get_consumer_event_by_name(message.key, self._consumer_events)
             if not event_class:
-                logger.error('Could not find event class for key:', message.key)
+                logger.error(f'Could not find event class for key: {message.key}')
                 continue
 
             event = event_class(message.value)
@@ -59,7 +59,7 @@ class KafkaReceiver:
             try:
                 await event.action(uow)
             except Exception as e:
-                logger.critical('Critical Error! This should never happen. Error:', e)
+                logger.critical(f'Critical Error! This should never happen. Error: {e}')
 
     def __between_callback(self):
         """

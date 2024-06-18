@@ -8,6 +8,8 @@ import IDeliveryInformationRepository from "../../../interfaces/IDeliveryInforma
 import PrismaDeliveryInformationRepository from "../../../implementations/prisma/PrismaDeliveryInformationRepository";
 import IPriceInformationRepository from "../../../interfaces/IPriceInformationRepository";
 import PrismaPriceInformationRepository from "../../../implementations/prisma/PrismaPriceInformationRepository";
+import IPaymentInformationRepository from "../../../interfaces/IPaymentInformationRepository";
+import PrismaPaymentInformationRepository from "../../../implementations/prisma/PrismaPaymentInformationRepository";
 
 export default class PrismaOrderRepositoryFactory implements IOrderRepositoryFactory {
     constructor(
@@ -28,5 +30,9 @@ export default class PrismaOrderRepositoryFactory implements IOrderRepositoryFac
 
     public createPriceInformationRepository(): IPriceInformationRepository {
         return new PrismaPriceInformationRepository(this.prismaClient)
+    }
+    
+    public createPaymentInformationRepository(): IPaymentInformationRepository {
+        return new PrismaPaymentInformationRepository(this.prismaClient)
     }
 }

@@ -26,4 +26,8 @@ export default class KafkaPublisher {
 
         }
     }
+
+    public async connect(): Promise<void> {
+        await this.kafkaProducer.connect()
+    }
 }

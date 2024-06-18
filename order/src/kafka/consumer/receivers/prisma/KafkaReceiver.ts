@@ -3,7 +3,6 @@ import getLogger from "@src/core/setup/logger";
 import { Consumer } from "kafkajs";
 
 
-const logger = getLogger(module)
 
 export default class KafkaReceiver {
     
@@ -26,7 +25,8 @@ export default class KafkaReceiver {
     public async run() {
         this.consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
-                
+                const logger = getLogger(module)
+
                 const eventName = message.key?.toString()
                 
                 if (!eventName) {

@@ -14,7 +14,7 @@ export class PriceInformationGetMapper implements IPriceInformationGetMapper {
             id: dbModel.id.toString(),
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            deliveryPrice: dbModel.deliveryPrice ? dbModel.deliveryPrice : undefined
+            deliveryPrice: dbModel.deliveryPrice !== null ? dbModel.deliveryPrice : undefined
         }
 
         logger.debug(`Mapped database PriceInformationModel with id=${dbModel.id} to PriceInformationGetOutputDto`)
@@ -32,7 +32,7 @@ export class PriceInformationCreateMapper implements IPriceInformationCreateMapp
             id: dbModel.id.toString(),
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            deliveryPrice: dbModel.deliveryPrice ? dbModel.deliveryPrice : undefined
+            deliveryPrice: dbModel.deliveryPrice !== null ? dbModel.deliveryPrice : undefined
         }
 
         logger.debug(`Mapped database PriceInformationModel with id=${dbModel.id} to PriceInformationCreateOutputDto`)
@@ -50,7 +50,7 @@ export class PriceInformationUpdateMapper implements IPriceInformationUpdateMapp
             id: dbModel.id.toString(),
             promocodeName: dbModel.promocodeName ? dbModel.promocodeName : undefined,
             promocodeDiscount: dbModel.promocodeDiscount ? dbModel.promocodeDiscount : undefined,
-            deliveryPrice: dbModel.deliveryPrice ? dbModel.deliveryPrice : undefined
+            deliveryPrice: dbModel.deliveryPrice !== null ? dbModel.deliveryPrice : undefined
         }
 
         logger.debug(`Mapped database PriceInformationModel with id=${dbModel.id} to PriceInformationUpdateOutputDto`)

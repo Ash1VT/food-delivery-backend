@@ -155,7 +155,7 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         logger.info(f"Deleted Menu with id={id}")
 
     async def retrieve_current_restaurant_menu_instance(self, restaurant_id: int, uow: SqlAlchemyUnitOfWork,
-                                                        **kwargs) -> Menu:
+                                                        **kwargs) -> Optional[Menu]:
         """
         Retrieve a current menu instance of a restaurant by its ID from the repository.
 
@@ -192,9 +192,9 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
                                                                         fetch_categories=True,
                                                                         **kwargs)
 
-        if not current_menu:
-            logger.warning(f"Current Menu for Restaurant with id={restaurant_id} not found")
-            raise RestaurantMissingCurrentMenuError(restaurant_id)
+        # if not current_menu:
+        #     logger.warning(f"Current Menu for Restaurant with id={restaurant_id} not found")
+        #     raise RestaurantMissingCurrentMenuError(restaurant_id)
 
         logger.info(f"Retrieved Current Menu for Restaurant with id={restaurant_id}")
 
@@ -239,7 +239,7 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         return menus
 
     async def retrieve_current_restaurant_menu(self, restaurant_id: int,
-                                               uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuRetrieveOut:
+                                               uow: SqlAlchemyUnitOfWork, **kwargs) -> Optional[MenuRetrieveOut]:
         """
         Retrieve a current menu schema restaurant's ID with associated categories.
 
@@ -252,7 +252,8 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         """
 
         retrieved_instance = await self.retrieve_current_restaurant_menu_instance(restaurant_id, uow, **kwargs)
-        return MenuRetrieveOut.model_validate(retrieved_instance)
+        if retrieved_instance:
+            return MenuRetrieveOut.model_validate(retrieved_instance)
 
     async def list_restaurant_menus(self, restaurant_id: int,
                                     uow: SqlAlchemyUnitOfWork, **kwargs) -> List[MenuRetrieveOut]:

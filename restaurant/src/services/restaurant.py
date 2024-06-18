@@ -130,7 +130,9 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         logger.info(f"Retrieved restaurant with id={id}.")
         return retrieved_instance
 
-    async def list_instances(self, uow: SqlAlchemyUnitOfWork, limit: int = 100, offset: int = 0, **kwargs) -> PaginatedModel[Restaurant]:
+    async def list_instances(self, uow: SqlAlchemyUnitOfWork,
+                             limit: int = 100,
+                             offset: int = 0, **kwargs) -> PaginatedModel[Restaurant]:
         """
         List instances of the Restaurant class.
 
@@ -307,7 +309,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, id)
 
         # Get image url
-        image_url = upload_restaurant_image_to_firebase(restaurant, file)
+        image_url = upload_restaurant_image_to_firebase(restaurant, file.file)
 
         # Upload image
         updated_restaurant = await uow.restaurants.update(id, {
@@ -390,6 +392,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         publisher.publish(
             RestaurantUpdatedEvent(
                 id=retrieved_restaurant.id,
+                address=retrieved_restaurant.address,
                 is_active=retrieved_restaurant.is_active
             )
         )
@@ -437,6 +440,7 @@ class RestaurantService(RetrieveMixin[Restaurant, RestaurantRetrieveOut],
         publisher.publish(
             RestaurantUpdatedEvent(
                 id=retrieved_restaurant.id,
+                address=retrieved_restaurant.address,
                 is_active=retrieved_restaurant.is_active
             )
         )

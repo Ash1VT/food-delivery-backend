@@ -13,6 +13,14 @@ import BaseService from "@src/core/services/BaseService";
 import { MenuItemNotFoundWithIdError, MenuItemNotInSameOrderRestaurantError, MenuItemAlreadyInOrderError } from "@src/modules/menu/errors/menuItem.errors";
 import { OrderItemNotFoundWithIdError, OrderItemNotInOrderError } from "../../errors/orderItem.errors";
 import getLogger from "@src/core/setup/logger";
+import { calculateOrderPrice } from "../../utils/price";
+import IPriceInformationRepository from "../../repositories/interfaces/IPriceInformationRepository";
+import { PriceInformationModel, PriceInformationUpdateInput } from "../../models/priceInformation.models";
+import { OrderUpdateOutputDto } from "../../dto/order.dto";
+import { IOrderUpdateMapper } from "../../mappers/interfaces/order.mappers";
+import { OrderModel } from "../../models/order.models";
+import stripe from "@src/core/setup/stripe";
+import { PaymentInformationModel } from "../../models/paymentInformation.models";
 
 
 const logger = getLogger(module)
@@ -23,7 +31,9 @@ export class OrderItemService extends BaseService implements IOrderItemService {
         protected orderItemGetMapper: IOrderItemGetMapper,
         protected orderItemCreateMapper: IOrderItemCreateMapper,
         protected orderItemUpdateMapper: IOrderItemUpdateMapper,
+        protected orderUpdateMapper: IOrderUpdateMapper,
         protected orderItemRepository: IOrderItemRepository,
+        protected priceInformationRepository: IPriceInformationRepository,
         protected orderRepository: IOrderRepository,
         protected menuItemRepository: IMenuItemRepository
     ) {
@@ -68,7 +78,7 @@ export class OrderItemService extends BaseService implements IOrderItemService {
         return orderItemsDtos
     }
     
-    public async updateOrderItem(orderId: bigint, orderItemId: bigint, orderItemData: OrderItemUpdateInputDto): Promise<OrderItemUpdateOutputDto> {
+    public async updateOrderItem(orderId: bigint, orderItemId: bigint, orderItemData: OrderItemUpdateInputDto): Promise<OrderUpdateOutputDto> {
         // Check if user is customer
         if (!this.customer) {
             logger.warn("User is not authenticated as Customer")
@@ -76,7 +86,7 @@ export class OrderItemService extends BaseService implements IOrderItemService {
         }
 
         // Check that order exists
-        const orderInstance = await this.orderRepository.getOne(orderId, true)
+        const orderInstance = await this.orderRepository.getOne(orderId, true, true, true, true)
 
         if (!orderInstance) {
             logger.warn(`Order with id=${orderId} not found`)
@@ -111,13 +121,50 @@ export class OrderItemService extends BaseService implements IOrderItemService {
             throw new OrderItemNotInOrderError(orderId, orderItemId)
         }
 
+        // Update Order Item
         const orderItemUpdateInput = this.orderItemUpdateMapper.toDbModel(orderItemData)
 
-        const orderItemUpdated = await this.orderItemRepository.update(orderItemId, orderItemUpdateInput)
+        const orderItemUpdated = await this.orderItemRepository.update(orderItemId, orderItemUpdateInput) as OrderItemModel
 
         logger.info(`Updated OrderItem with id=${orderItemId}`)
+        
+        // Update Order Price Information
 
-        return this.orderItemUpdateMapper.toDto(orderItemUpdated as OrderItemModel)
+        const orderItems = (orderInstance.items as OrderItemModel[]).map((orderItem) => {
+            if (orderItem.id === orderItemUpdated.id) {
+                return orderItemUpdated
+            }
+            return orderItem
+        })
+
+        const priceInformation = orderInstance.priceInformation as PriceInformationModel
+        const orderItemsPrice = orderItems.reduce((acc, orderItem) => acc + orderItem.menuItemPrice * orderItem.quantity, 0)
+
+        const orderPrice = calculateOrderPrice(orderItemsPrice, priceInformation.promocodeDiscount, priceInformation.deliveryPrice)
+
+        const priceInformationUpdateInput: PriceInformationUpdateInput = {
+            orderItemsPrice: orderPrice.orderItemsPrice,
+            decountedPrice: orderPrice.decountedPrice,
+            totalPrice: orderPrice.totalPrice,
+        }
+
+        const priceInformationUpdated = await this.priceInformationRepository.update(priceInformation.id, priceInformationUpdateInput) as PriceInformationModel
+
+        
+        // Update payment intent
+        const paymentInformation = orderInstance.paymentInformation as PaymentInformationModel
+
+        await stripe.paymentIntents.update(paymentInformation.paymentIntentId, { 
+            amount: Math.trunc(priceInformationUpdated.totalPrice * 100)
+        })
+
+        orderInstance.items = orderItems
+        orderInstance.priceInformation = priceInformationUpdated
+
+        logger.info(`Updated Order with id=${orderId}`)
+
+        const data =  this.orderUpdateMapper.toDto(orderInstance as OrderModel)
+        return data
     }
 
     public async addOrderItem(orderId: bigint, orderItemData: OrderItemCreateInputDto): Promise<OrderItemCreateOutputDto> {

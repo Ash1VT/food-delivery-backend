@@ -299,7 +299,7 @@ class MenuCategoryService(CreateMixin[MenuCategory, MenuCategoryCreateIn, MenuCa
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant.id)
 
         # Get image url
-        image_url = upload_menu_category_image_to_firebase(menu_category, image)
+        image_url = upload_menu_category_image_to_firebase(menu_category, image.file)
 
         # Upload image
         updated_menu_category = await uow.categories.update(id, {

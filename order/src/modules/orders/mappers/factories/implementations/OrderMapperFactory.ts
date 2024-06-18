@@ -1,10 +1,12 @@
 import { DeliveryInformationCreateMapper, DeliveryInformationGetMapper, DeliveryInformationUpdateMapper } from "../../implementations/deliveryInformation.mappers";
 import { OrderGetMapper, OrderCreateMapper, OrderUpdateMapper } from "../../implementations/order.mappers";
 import { OrderItemGetMapper, OrderItemCreateMapper, OrderItemUpdateMapper } from "../../implementations/orderItem.mappers";
+import { PaymentInformationCreateMapper, PaymentInformationGetMapper, PaymentInformationUpdateMapper } from "../../implementations/paymentInformation.mappers";
 import { PriceInformationCreateMapper, PriceInformationGetMapper, PriceInformationUpdateMapper } from "../../implementations/priceInformation.mappers";
 import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper, IDeliveryInformationUpdateMapper } from "../../interfaces/deliveryInformation.mappers";
 import { IOrderGetMapper, IOrderCreateMapper, IOrderUpdateMapper } from "../../interfaces/order.mappers";
 import { IOrderItemGetMapper, IOrderItemCreateMapper, IOrderItemUpdateMapper } from "../../interfaces/orderItem.mappers";
+import { IPaymentInformationGetMapper, IPaymentInformationCreateMapper, IPaymentInformationUpdateMapper } from "../../interfaces/paymentInformation.mappers";
 import { IPriceInformationCreateMapper, IPriceInformationGetMapper, IPriceInformationUpdateMapper } from "../../interfaces/priceInformation.mappers";
 import { IOrderMapperFactory } from "../interfaces/IOrderMapperFactory";
 
@@ -14,7 +16,8 @@ export class OrderMapperFactory implements IOrderMapperFactory {
         return new OrderGetMapper(
             this.createOrderItemGetMapper(), 
             this.createDeliveryInformationGetMapper(),
-            this.createPriceInformationGetMapper()
+            this.createPriceInformationGetMapper(),
+            this.createPaymentInformationGetMapper()
         );
     }
 
@@ -22,7 +25,8 @@ export class OrderMapperFactory implements IOrderMapperFactory {
         return new OrderCreateMapper(
             this.createOrderItemCreateMapper(),
             this.createDeliveryInformationCreateMapper(),
-            this.createPriceInformationCreateMapper()
+            this.createPriceInformationCreateMapper(),
+            this.createPaymentInformationCreateMapper()
         );
     }
 
@@ -30,7 +34,8 @@ export class OrderMapperFactory implements IOrderMapperFactory {
         return new OrderUpdateMapper(
             this.createOrderItemUpdateMapper(),
             this.createDeliveryInformationUpdateMapper(),
-            this.createPriceInformationUpdateMapper()
+            this.createPriceInformationUpdateMapper(),
+            this.createPaymentInformationUpdateMapper()
         );
     }
 
@@ -68,5 +73,17 @@ export class OrderMapperFactory implements IOrderMapperFactory {
 
     public createPriceInformationUpdateMapper(): IPriceInformationUpdateMapper {
         return new PriceInformationUpdateMapper();
+    }
+
+    public createPaymentInformationGetMapper(): IPaymentInformationGetMapper {
+        return new PaymentInformationGetMapper()
+    }
+
+    public createPaymentInformationCreateMapper(): IPaymentInformationCreateMapper {
+        return new PaymentInformationCreateMapper()
+    }
+    
+    public createPaymentInformationUpdateMapper(): IPaymentInformationUpdateMapper {
+        return new PaymentInformationUpdateMapper()
     }
 }

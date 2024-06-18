@@ -6,6 +6,7 @@ import { IDeliveryInformationCreateMapper, IDeliveryInformationGetMapper, IDeliv
 import { IOrderGetMapper, IOrderCreateMapper, IOrderUpdateMapper } from "../interfaces/order.mappers";
 import { IOrderItemCreateMapper, IOrderItemGetMapper, IOrderItemUpdateMapper } from "../interfaces/orderItem.mappers";
 import { IPriceInformationCreateMapper, IPriceInformationGetMapper, IPriceInformationUpdateMapper } from "../interfaces/priceInformation.mappers";
+import { IPaymentInformationCreateMapper, IPaymentInformationGetMapper, IPaymentInformationUpdateMapper } from "../interfaces/paymentInformation.mappers";
 
 
 const logger = getLogger(module)
@@ -15,7 +16,8 @@ export class OrderGetMapper implements IOrderGetMapper {
     constructor(
         protected orderItemGetMapper: IOrderItemGetMapper,
         protected deliveryInformationGetMapper: IDeliveryInformationGetMapper,
-        protected priceInformationGetMapper: IPriceInformationGetMapper
+        protected priceInformationGetMapper: IPriceInformationGetMapper,
+        protected paymentInformationGetMapper: IPaymentInformationGetMapper
     ) {}
 
     toDto(dbModel: OrderModel): OrderGetOutputDto {
@@ -26,8 +28,12 @@ export class OrderGetMapper implements IOrderGetMapper {
             courierId: dbModel.courierId ? dbModel.courierId.toString() : undefined,
             restaurantId: dbModel.restaurantId.toString(),
             createdAt: dbModel.createdAt.toISOString(),
+            deliveryInformationId: dbModel.deliveryInformationId.toString(),
+            priceInformationId: dbModel.priceInformationId.toString(),
+            paymentInformationId: dbModel.paymentInformationId.toString(),
             deliveryInformation: dbModel.deliveryInformation ? this.deliveryInformationGetMapper.toDto(dbModel.deliveryInformation) : undefined,
             priceInformation: dbModel.priceInformation ? this.priceInformationGetMapper.toDto(dbModel.priceInformation) : undefined,
+            paymentInformation: dbModel.paymentInformation ? this.paymentInformationGetMapper.toDto(dbModel.paymentInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemGetMapper.toDto(orderItem))
         }
 
@@ -43,7 +49,8 @@ export class OrderCreateMapper implements IOrderCreateMapper {
     constructor(
         protected orderItemCreateMapper: IOrderItemCreateMapper,
         protected deliveryInformationCreateMapper: IDeliveryInformationCreateMapper,
-        protected priceInformationCreateMapper: IPriceInformationCreateMapper
+        protected priceInformationCreateMapper: IPriceInformationCreateMapper,
+        protected paymentInformationCreateMapper: IPaymentInformationCreateMapper
     ) {}
 
     toDto(dbModel: OrderModel): OrderCreateOutputDto {
@@ -54,8 +61,12 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             courierId: dbModel.courierId ? dbModel.courierId.toString() : undefined,
             restaurantId: dbModel.restaurantId.toString(),
             createdAt: dbModel.createdAt.toISOString(),
+            deliveryInformationId: dbModel.deliveryInformationId.toString(),
+            priceInformationId: dbModel.priceInformationId.toString(),
+            paymentInformationId: dbModel.paymentInformationId.toString(),
             deliveryInformation: dbModel.deliveryInformation ? this.deliveryInformationCreateMapper.toDto(dbModel.deliveryInformation) : undefined,
             priceInformation: dbModel.priceInformation ? this.priceInformationCreateMapper.toDto(dbModel.priceInformation) : undefined,
+            paymentInformation: dbModel.paymentInformation ? this.paymentInformationCreateMapper.toDto(dbModel.paymentInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemCreateMapper.toDto(orderItem))
         }
 
@@ -70,6 +81,7 @@ export class OrderCreateMapper implements IOrderCreateMapper {
             restaurantId: dtoModel.restaurantId,
             deliveryInformationId: additionalData.deliveryInformationId,
             priceInformationId: additionalData.priceInformationId,
+            paymentInformationId: additionalData.paymentInformationId,
             items: {
                 create: dtoModel.items.map((orderItem, index) => {
                     const data = additionalData.items[index]
@@ -90,7 +102,8 @@ export class OrderUpdateMapper implements IOrderUpdateMapper {
     constructor(
         protected orderItemUpdateMapper: IOrderItemUpdateMapper,
         protected deliveryInformationUpdateMapper: IDeliveryInformationUpdateMapper,
-        protected priceInformationUpdateMapper: IPriceInformationUpdateMapper
+        protected priceInformationUpdateMapper: IPriceInformationUpdateMapper,
+        protected paymentInformationUpdateMapper: IPaymentInformationUpdateMapper
     ) {}
 
     toDto(dbModel: OrderModel): OrderUpdateOutputDto {
@@ -101,8 +114,12 @@ export class OrderUpdateMapper implements IOrderUpdateMapper {
             courierId: dbModel.courierId ? dbModel.courierId.toString() : undefined,
             restaurantId: dbModel.restaurantId.toString(),
             createdAt: dbModel.createdAt.toISOString(),
+            deliveryInformationId: dbModel.deliveryInformationId.toString(),
+            priceInformationId: dbModel.priceInformationId.toString(),
+            paymentInformationId: dbModel.paymentInformationId.toString(),
             deliveryInformation: dbModel.deliveryInformation ? this.deliveryInformationUpdateMapper.toDto(dbModel.deliveryInformation) : undefined,
             priceInformation: dbModel.priceInformation ? this.priceInformationUpdateMapper.toDto(dbModel.priceInformation) : undefined,
+            paymentInformation: dbModel.paymentInformation ? this.paymentInformationUpdateMapper.toDto(dbModel.paymentInformation) : undefined,
             items: dbModel.items?.map((orderItem) => this.orderItemUpdateMapper.toDto(orderItem))
         }
 

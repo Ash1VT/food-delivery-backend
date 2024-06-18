@@ -13,7 +13,7 @@ export const getRestaurantOrders = async (req: Request, res: Response) => {
     const orderStatus = orderStatusValidator.parse(req.query.status)
     const restaurantId = idValidator.parse(req.params.restaurantId)
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey, appSettings.variables.stripeSecretKey)
     const orderService = orderServiceFactory.createOrderService()
 
     await authenticateWithPrisma(req, prismaClient, orderService)

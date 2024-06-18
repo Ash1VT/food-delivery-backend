@@ -1,7 +1,7 @@
 from datetime import time
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 from models import DayOfWeek
 
 __all__ = [
@@ -70,6 +70,14 @@ class WorkingHoursCreatedSchema(BaseModel):
     closing_time: time
     restaurant_id: int = Field(ge=0)
 
+    @field_serializer('opening_time', 'closing_time')
+    def serialize_time(self, time: time, _info):
+        return time.strftime("%H:%M")
+
+    model_config = {
+        "use_enum_values": True,
+    }
+
 
 class WorkingHoursUpdatedSchema(BaseModel):
     """
@@ -80,6 +88,10 @@ class WorkingHoursUpdatedSchema(BaseModel):
     id: int = Field(ge=0)
     opening_time: time
     closing_time: time
+
+    @field_serializer('opening_time', 'closing_time')
+    def serialize_time(self, time: time, _info):
+        return time.strftime("%H:%M")
 
 
 class WorkingHoursDeletedSchema(BaseModel):

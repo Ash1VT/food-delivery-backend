@@ -2,12 +2,13 @@ from abc import ABC
 from typing import Optional
 
 from models.rating import RatingModel
-from models.restaurant import RestaurantModel, RestaurantCreateModel
-from repositories.interfaces.mixins import IRetrieveMixin, ICreateMixin, IDeleteMixin
+from models.restaurant import RestaurantModel, RestaurantCreateModel, RestaurantUpdateModel
+from repositories.interfaces.mixins import IRetrieveMixin, ICreateMixin, IDeleteMixin, IUpdateMixin
 
 
 class IRestaurantRepository(IRetrieveMixin[RestaurantModel],
                             ICreateMixin[RestaurantModel, RestaurantCreateModel],
+                            IUpdateMixin[RestaurantModel, RestaurantUpdateModel],
                             IDeleteMixin,
                             ABC):
     """

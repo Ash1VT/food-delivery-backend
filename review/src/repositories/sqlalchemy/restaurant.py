@@ -2,11 +2,12 @@ from dataclasses import asdict
 from typing import Optional
 
 from loguru import logger
-from sqlalchemy import insert, select, delete, Delete, Insert, Select, func
+from sqlalchemy import insert, select, delete, update, Delete, Update, Insert, Select, func
 
 from db.sqlalchemy.models import Restaurant, Review
 from models.rating import RatingModel
-from models.restaurant import RestaurantCreateModel, RestaurantModel
+from models.restaurant import RestaurantCreateModel, RestaurantModel, RestaurantUpdateModel
+from repositories.interfaces.mixins import UpdateModel, Model
 from repositories.interfaces.restaurant import IRestaurantRepository
 from repositories.sqlalchemy.base import SqlAlchemyRepository
 from repositories.sqlalchemy.mappers import to_restaurant_model
@@ -59,6 +60,20 @@ class RestaurantRepository(IRestaurantRepository, SqlAlchemyRepository):
 
         return insert(Restaurant).values(asdict(restaurant)).returning(Restaurant)
 
+    def _get_update_stmt(self, id: int, restaurant: RestaurantUpdateModel) -> Update:
+        """
+        Create an UPDATE statement to modify an existing restaurant by its ID.
+
+        Args:
+            id (int): The ID of the customer to update.
+            restaurant (RestaurantUpdateModel): A dataclass containing the updated data.
+
+        Returns:
+            Update: The UPDATE statement to modify the existing restaurant.
+        """
+
+        return update(Restaurant).where(Restaurant.id == id).values(asdict(restaurant)).returning(Restaurant)
+
     def _get_delete_stmt(self, id: int) -> Delete:
         """
         Create a DELETE statement to remove a restaurant by its ID.
@@ -91,8 +106,8 @@ class RestaurantRepository(IRestaurantRepository, SqlAlchemyRepository):
 
         return RatingModel(
             id=restaurant_id,
-            rating=result.average_rating,
-            review_count=result.reviews_count,
+            rating=result[1] if result[1] else 0,
+            reviews_count=result[0],
         )
 
     async def create(self, restaurant: RestaurantCreateModel) -> RestaurantModel:
@@ -103,6 +118,15 @@ class RestaurantRepository(IRestaurantRepository, SqlAlchemyRepository):
         logger.debug(f"Created restaurant with id={restaurant.id}")
 
         return to_restaurant_model(restaurant)
+
+    async def update(self, id: int, restaurant: RestaurantUpdateModel) -> Optional[RestaurantModel]:
+        stmt = self._get_update_stmt(id, restaurant)
+        result = await self._session.execute(stmt)
+        restaurant = result.scalar_one_or_none()
+
+        if restaurant:
+            logger.debug(f"Updated restaurant with id={restaurant.id}")
+            return to_restaurant_model(restaurant)
 
     async def delete(self, id: int) -> None:
         stmt = self._get_delete_stmt(id)

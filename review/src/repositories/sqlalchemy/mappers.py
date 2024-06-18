@@ -114,6 +114,8 @@ def to_review_model(review: Review) -> ReviewModel:
         menu_item_id=review.menu_item_id,
         restaurant_id=review.restaurant_id,
         created_at=review.created_at,
+        customer_full_name=review.customer.full_name,
+        customer_image_url=review.customer.image_url
     )
 
     logger.debug(f"Converted database review model with id={review.id} to review model.")

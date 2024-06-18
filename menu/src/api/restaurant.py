@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get('/{restaurant_id}/menu/', response_model=MenuRetrieveOut)
+@router.get('/{restaurant_id}/menu/', response_model=Optional[MenuRetrieveOut])
 @handle_app_errors
 async def get_restaurant_current_menu(restaurant_id: int,
                                       menu_service: MenuService = Depends(get_menu_service),

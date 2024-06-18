@@ -1,7 +1,7 @@
 from typing import Union, Optional, Dict
 
 from fastapi import HTTPException
-from grpc import RpcError
+from grpc import RpcError, StatusCode
 from loguru import logger
 
 from grpc_files import grpc_roles_client
@@ -55,6 +55,9 @@ async def authenticate(access_token: Optional[str],
         logger.warning(f"User role {str(grpc_response.role)} is not supported in this microservice")
         logger.info("Authenticated as anonymous user")
     except RpcError as e:
+        if e.code() == StatusCode.UNAUTHENTICATED:
+            return
+
         logger.error(f"Error communicating with User microservice: {e.details()}")
 
         raise HTTPException(

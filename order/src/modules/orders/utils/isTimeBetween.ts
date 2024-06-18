@@ -17,3 +17,5 @@ const isTimeBetween = (dateToCheck: Date, startTime: Date, endTime: Date): boole
     // Check if the time of dateToCheck is between startTime and endTime
     return checkTotalMinutes >= startTotalMinutes && checkTotalMinutes <= endTotalMinutes;
 }
+
+export default isTimeBetween

@@ -89,24 +89,6 @@ export const orderRouter = Router()
 
 /**
  * @swagger
- * /orders/{orderId}:
- *   get:
- *     summary: Retrieve an order
- *     description: Retrieve an order. Can be used by customers, couriers, restaurant managers and moderators.
- *     tags:
- *       - "orders"
- *     parameters:
- *       - $ref: '#/components/parameters/orderId'
- *     responses:
- *       200:
- *         description: An order.
- *       403:
- *         description: Error connected with authorization.
-*/
-orderRouter.get("/:orderId", asyncHandler(getOrder))
-
-/**
- * @swagger
  * /orders:
  *   get:
  *     summary: Retrieve a list of all orders
@@ -139,7 +121,7 @@ orderRouter.get("/", asyncHandler(getAllOrders))
  *       403:
  *         description: Error connected with authorization.
 */
-orderRouter.get("/customer", asyncHandler(getCurrentCustomerOrders))
+orderRouter.get("/customer/", asyncHandler(getCurrentCustomerOrders))
 
 /**
  * @swagger
@@ -174,6 +156,24 @@ orderRouter.get("/courier", asyncHandler(getCurrentCourierOrders))
  *         description: Error connected with authorization.
 */
 orderRouter.get("/available", asyncHandler(getAvailableForDeliveryOrders))
+
+/**
+ * @swagger
+ * /orders/{orderId}:
+ *   get:
+ *     summary: Retrieve an order
+ *     description: Retrieve an order. Can be used by customers, couriers, restaurant managers and moderators.
+ *     tags:
+ *       - "orders"
+ *     parameters:
+ *       - $ref: '#/components/parameters/orderId'
+ *     responses:
+ *       200:
+ *         description: An order.
+ *       403:
+ *         description: Error connected with authorization.
+*/
+orderRouter.get("/:orderId", asyncHandler(getOrder))
 
 /**
  * @swagger

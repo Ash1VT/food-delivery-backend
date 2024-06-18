@@ -91,8 +91,8 @@ class MenuItemRepository(IMenuItemRepository, SqlAlchemyRepository):
 
         return RatingModel(
             id=menu_item_id,
-            rating=result.average_rating,
-            review_count=result.reviews_count,
+            rating=result[1] if result[1] else 0,
+            reviews_count=result[0],
         )
 
     async def create(self, menu_item: MenuItemCreateModel) -> MenuItemModel:

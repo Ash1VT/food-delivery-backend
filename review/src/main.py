@@ -1,4 +1,3 @@
-from setup.logger import logger
 from setup.utils import start_app
 
 

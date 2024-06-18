@@ -45,7 +45,8 @@ export class AppSettingsBuilder implements ISettingsBuilder {
                     ]
                 }
             ],
-            "bingApiKey": EnvManager.getVariable("BING_API_KEY")
+            "bingApiKey": EnvManager.getVariable("BING_API_KEY"),
+            "stripeSecretKey": EnvManager.getVariable("STRIPE_SECRET_KEY"),
         })
     }
 }

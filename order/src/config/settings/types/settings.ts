@@ -37,6 +37,7 @@ export type AppSettingsOptions = {
     kafkaProducerEventsTopics: KafkaProducerEventTopics[]
 
     bingApiKey: string
+    stripeSecretKey: string
 } & BaseSettingsOptions
 
 export type ServerSettingsOptions = {

@@ -13,6 +13,11 @@ export async function authenticate(accessToken?: string): Promise<GrpcUser | und
 
     const user = await getUser(accessToken)
 
+    if (!user) {
+        logger.info('Authenticated as anonymous user')
+        return
+    }
+
     if (!user.role || !user.userId) {
         logger.info('Authenticated as anonymous user')
         return

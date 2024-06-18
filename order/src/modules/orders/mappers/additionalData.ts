@@ -15,5 +15,6 @@ export type OrderAdditionalData = {
     customerId: bigint
     deliveryInformationId: bigint
     priceInformationId: bigint
+    paymentInformationId: bigint
     items: OrderItemWithOrderAdditionalData[]
 }

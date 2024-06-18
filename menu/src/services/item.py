@@ -37,6 +37,7 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
         schema_update_out (MenuItemUpdateOut): The schema for output representation of updated instances.
     """
 
+    schema_retrieve_out = MenuItemRetrieveOut
     schema_create_out = MenuItemCreateOut
     schema_update_out = MenuItemUpdateOut
 
@@ -50,7 +51,7 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
 
         self._restaurant_manager = restaurant_manager
 
-    async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> Model:
+    async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
         """
         Retrieve a menu item instance by its ID from the repository.
 
@@ -72,7 +73,7 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
         if not menu_item:
             logger.warning(f"MenuItem with id={id} not found")
             raise MenuItemNotFoundWithIdError(id)
-
+        print(menu_item)
         return menu_item
 
     async def create_instance(self, item: MenuItemCreateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
@@ -276,7 +277,7 @@ class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, menu_item.restaurant_id)
 
         # Get image url
-        image_url = upload_menu_item_image_to_firebase(menu_item, image)
+        image_url = upload_menu_item_image_to_firebase(menu_item, image.file)
 
         # Upload image
         updated_menu_item = await uow.items.update(id, {

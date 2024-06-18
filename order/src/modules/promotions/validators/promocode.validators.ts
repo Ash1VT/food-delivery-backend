@@ -3,15 +3,15 @@ import { z } from "zod";
 
 
 const promocodeNameValidator = z.string().
-    min(5, {
-        message: "Name is too short. Minimum length is 5"
+    min(1, {
+        message: "Name is too short. Minimum length is 1"
     }).
     max(20, {
         message: "Name is too long. Maximum length is 20"
     })
 
 const promocodeDiscountPercentageValidator = z.coerce.number().
-    min(5, {
+    min(1, {
         message: "Discount percentage is too small. Minimum value is 1"
     }).
     max(100, {

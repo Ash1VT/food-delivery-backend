@@ -8,7 +8,6 @@ class RestaurantBaseModel(ABC):
     Base model for a restaurant.
     """
 
-    id: int
     is_active: bool
 
 
@@ -18,7 +17,7 @@ class RestaurantModel(RestaurantBaseModel):
     Model for a restaurant.
     """
 
-    pass
+    id: int
 
 
 @dataclass
@@ -27,4 +26,12 @@ class RestaurantCreateModel(RestaurantBaseModel):
     Model for creating a restaurant.
     """
 
+    id: int
+
+
+@dataclass
+class RestaurantUpdateModel(RestaurantBaseModel):
+    """
+    Model for updating restaurant.
+    """
     pass

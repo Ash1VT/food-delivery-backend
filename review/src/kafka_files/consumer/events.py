@@ -5,7 +5,7 @@ from models.courier import CourierModel, CourierCreateModel
 from models.customer import CustomerCreateModel, CustomerUpdateModel
 from models.menu_item import MenuItemCreateModel, MenuItemModel
 from models.order import OrderCreateModel
-from models.restaurant import RestaurantCreateModel
+from models.restaurant import RestaurantCreateModel, RestaurantUpdateModel
 from uow.generic import GenericUnitOfWork
 from uow.utils import uow_transaction_with_commit
 
@@ -98,8 +98,9 @@ class CustomerUpdatedEvent(ConsumerEvent[CustomerUpdateModel]):
         return CustomerUpdateModel(**self._data)
 
     async def action(self, uow: GenericUnitOfWork):
+        customer_id = self._data.pop("id")
         async with uow_transaction_with_commit(uow) as uow:
-            await uow.customers.update(self._data["id"], self._serialize_data())
+            await uow.customers.update(customer_id, self._serialize_data())
 
 
 class MenuItemCreatedEvent(ConsumerEvent[MenuItemCreateModel]):
@@ -124,8 +125,9 @@ class MenuItemDeletedEvent(ConsumerEvent[MenuItemModel]):
         return MenuItemModel(**self._data)
 
     async def action(self, uow: GenericUnitOfWork):
+        menu_item_id = self._data.pop("id")
         async with uow_transaction_with_commit(uow) as uow:
-            await uow.menu_items.delete(self._serialize_data().id)
+            await uow.menu_items.delete(menu_item_id)
 
 
 class OrderFinishedEvent(ConsumerEvent[OrderCreateModel]):
@@ -134,7 +136,11 @@ class OrderFinishedEvent(ConsumerEvent[OrderCreateModel]):
     """
 
     def _serialize_data(self) -> OrderCreateModel:
-        return OrderCreateModel(**self._data)
+        return OrderCreateModel(
+            id=int(self._data["id"]),
+            customer_id=int(self._data['customer_id']),
+            courier_id=int(self._data['courier_id'])
+        )
 
     async def action(self, uow: GenericUnitOfWork):
         async with uow_transaction_with_commit(uow) as uow:
@@ -152,3 +158,18 @@ class RestaurantCreatedEvent(ConsumerEvent[RestaurantCreateModel]):
     async def action(self, uow: GenericUnitOfWork):
         async with uow_transaction_with_commit(uow) as uow:
             await uow.restaurants.create(self._serialize_data())
+
+
+class RestaurantUpdatedEvent(ConsumerEvent[RestaurantUpdateModel]):
+    """
+    Event when Restaurant is created.
+    """
+
+    def _serialize_data(self) -> RestaurantUpdateModel:
+        return RestaurantUpdateModel(**self._data)
+
+    async def action(self, uow: GenericUnitOfWork):
+        restaurant_id = self._data.pop("id")
+
+        async with uow_transaction_with_commit(uow) as uow:
+            await uow.restaurants.update(restaurant_id, self._serialize_data())

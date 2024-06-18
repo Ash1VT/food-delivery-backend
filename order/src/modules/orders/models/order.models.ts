@@ -1,6 +1,7 @@
 import { DeliveryInformationModel } from "./deliveryInformation.models";
 import { OrderItemModel, OrderItemWithOrderCreateInput } from "./orderItem.models";
 import { OrderStatus } from "./orderStatus.models";
+import { PaymentInformationModel } from "./paymentInformation.models";
 import { PriceInformationModel } from "./priceInformation.models";
 
 export type OrderModel = {
@@ -10,11 +11,13 @@ export type OrderModel = {
     restaurantId: bigint
     deliveryInformationId: bigint
     priceInformationId: bigint
+    paymentInformationId: bigint
     status: OrderStatus
     createdAt: Date
     items?: OrderItemModel[]
     deliveryInformation?: DeliveryInformationModel
     priceInformation?: PriceInformationModel
+    paymentInformation?: PaymentInformationModel
 }
 
 export type OrderCreateInput = {
@@ -24,6 +27,7 @@ export type OrderCreateInput = {
     restaurantId: bigint
     deliveryInformationId: bigint
     priceInformationId: bigint
+    paymentInformationId: bigint
     status?: OrderStatus
     createdAt?: Date
     items?: {
@@ -38,6 +42,7 @@ export type OrderUpdateInput = {
     restaurantId?: bigint
     deliveryInformationId?: bigint
     priceInformationId?: bigint
+    paymentInformationId?: bigint
     status?: OrderStatus
     createdAt?: Date
 }

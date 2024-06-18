@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from loguru import logger
-from sqlalchemy import Select, select
+from sqlalchemy import Select, select, desc
 from sqlalchemy.orm import selectinload
 
 from models import Restaurant
@@ -87,10 +87,20 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
         stmt = self.__get_select_stmt_with_options(stmt=stmt,
                                                    fetch_working_hours=fetch_working_hours,
                                                    **kwargs)
+        if kwargs.get('address', None):
+            stmt = stmt.filter(Restaurant.address.contains(kwargs['address']))
+
+        if kwargs.get('name', None):
+            stmt = stmt.filter(Restaurant.name.contains(kwargs['name']))
+
+        if kwargs.get('order_by_rating', None):
+            stmt = stmt.order_by(desc(kwargs['order_by_rating']))
 
         return stmt
 
-    def _get_list_active_restaurants_stmt(self, fetch_working_hours: bool = False, **kwargs) -> Select:
+    def _get_list_active_restaurants_stmt(self,
+                                          fetch_working_hours: bool = False,
+                                          **kwargs) -> Select:
         """
         Create a SELECT statement to retrieve a list of active restaurants, with optional additional data.
 
@@ -108,6 +118,15 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
         stmt = self.__get_select_stmt_with_options(stmt=stmt,
                                                    fetch_working_hours=fetch_working_hours,
                                                    **kwargs)
+
+        if kwargs.get('address', None):
+            stmt = stmt.filter(Restaurant.address.contains(kwargs['address']))
+
+        if kwargs.get('name', None):
+            stmt = stmt.filter(Restaurant.name.contains(kwargs['name']))
+
+        if kwargs.get('order_by_rating', None):
+            stmt = stmt.order_by(desc(Restaurant.rating))
 
         return stmt
 
@@ -155,14 +174,15 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
             When `fetch_working_hours` is True, associated working hours are fetched for each restaurant in the list.
         """
 
-        stmt = self._get_list_stmt(**kwargs)
+        stmt = self._get_list_stmt(fetch_working_hours=fetch_working_hours, **kwargs)
         result = await paginate(stmt, self._session, limit=limit, offset=offset)
 
         logger.debug(f"Retrieved list of {self.model.__name__}")
 
         return PaginatedModel(limit=limit, offset=offset, count=result['count'], items=result['items'])
 
-    async def list_active_restaurants(self, fetch_working_hours: bool = False,
+    async def list_active_restaurants(self,
+                                      fetch_working_hours: bool = False,
                                       limit: int = 100, offset: int = 0, **kwargs) -> PaginatedModel[Restaurant]:
         """
         Retrieve a list of active Restaurants, with optional additional data.

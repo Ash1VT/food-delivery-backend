@@ -16,7 +16,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
     }
 
     
-    public async getOne(id: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean): Promise<OrderModel | null> {
+    public async getOne(id: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, includePaymentInformation?: boolean): Promise<OrderModel | null> {
         const order = await this.delegate.findFirst({
             where: {
                 id
@@ -24,7 +24,8 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             include: {
                 items: !!includeItems,
                 deliveryInformation: !!includeDeliveryInformation,
-                priceInformation: !!includePriceInformation
+                priceInformation: !!includePriceInformation,
+                paymentInformation: !!includePaymentInformation
             }
         })
 
@@ -33,7 +34,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         return order
     }
 
-    public async getMany(includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getMany(includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, includePaymentInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         const orders = await this.delegate.findMany({
             where: {
                 status
@@ -41,7 +42,8 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             include: {
                 items: !!includeItems,
                 deliveryInformation: !!includeDeliveryInformation,
-                priceInformation: !!includePriceInformation
+                priceInformation: !!includePriceInformation,
+                paymentInformation: !!includePaymentInformation
             }
         })
 
@@ -56,7 +58,8 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             include: {
                 items: true,
                 deliveryInformation: true,
-                priceInformation: true
+                priceInformation: true,
+                paymentInformation: true
             }                
         })
 
@@ -65,7 +68,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
         return createdOrder
     }
 
-    public async getCustomerOrders(customerId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
+    public async getCustomerOrders(customerId: bigint, includeItems?: boolean, includeDeliveryInformation?: boolean, includePriceInformation?: boolean, includePaymentInformation?: boolean, status?: OrderStatus): Promise<OrderModel[]> {
         const orders = await this.delegate.findMany({
             where: {
                 customerId,
@@ -74,7 +77,8 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             include: {
                 items: !!includeItems,
                 deliveryInformation: !!includeDeliveryInformation,
-                priceInformation: !!includePriceInformation
+                priceInformation: !!includePriceInformation,
+                paymentInformation: !!includePaymentInformation
             }
         })
 
@@ -92,7 +96,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             include: {
                 items: !!includeItems,
                 deliveryInformation: !!includeDeliveryInformation,
-                priceInformation: !!includePriceInformation
+                priceInformation: !!includePriceInformation,
             }
         })
 
@@ -110,7 +114,7 @@ export default class PrismaOrderRepository extends PrismaBaseRepository<OrderDel
             include: {
                 items: !!includeItems,
                 deliveryInformation: !!includeDeliveryInformation,
-                priceInformation: !!includePriceInformation
+                priceInformation: !!includePriceInformation,
             }
         })
 

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Query
 
@@ -19,9 +19,12 @@ router = APIRouter(
 @handle_app_errors
 async def get_all_restaurants(service: RestaurantService = Depends(get_restaurant_service),
                               uow: SqlAlchemyUnitOfWork = Depends(get_uow),
+                              name: Optional[str] = Query(default=None),
+                              address: Optional[str] = Query(default=None),
+                              order_by_rating: Optional[bool] = Query(default=False),
                               limit: int = Query(100, ge=1),
                               offset: int = Query(0, ge=0)):
-    return await service.list(uow, limit=limit, offset=offset)
+    return await service.list(uow, name=name, address=address, order_by_rating=order_by_rating, limit=limit, offset=offset)
 
 
 @router.get('/current/', response_model=RestaurantRetrieveOut | None)

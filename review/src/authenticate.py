@@ -1,7 +1,7 @@
 from typing import Optional, Union, Dict, Any, List, Type
 
 from fastapi import HTTPException
-from grpc import RpcError
+from grpc import RpcError, StatusCode
 from loguru import logger
 
 from grpc_files.repository import get_repository
@@ -54,6 +54,9 @@ async def authenticate(access_token: Optional[str],
         return user
 
     except RpcError as e:
+        if e.code() == StatusCode.UNAUTHENTICATED:
+            return
+
         logger.error(f"Error communicating with User microservice: {e.details()}")
         raise HTTPException(
             status_code=grpc_status_to_http(e.code()),

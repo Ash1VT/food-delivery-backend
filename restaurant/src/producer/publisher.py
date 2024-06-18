@@ -55,6 +55,7 @@ class KafkaPublisher(AbstractPublisher):
         for topic in event.get_topics():
             key = event.get_event_name()
             data = event.get_data(topic)
+
             self._producer.send(topic, key=key, value=data)
 
             data_string = ", ".join(f"{key}={value}" for key, value in data.items())

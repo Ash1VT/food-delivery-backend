@@ -73,4 +73,4 @@ class RestaurantApplicationUpdateOut(RestaurantApplicationBaseOut):
     Schema class for output representation after updating a restaurant application.
     """
 
-    pass
+    type: ApplicationType

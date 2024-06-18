@@ -32,19 +32,19 @@ class Settings(BaseSettings):
             'consumer.events.RestaurantManagerCreatedEvent',
             'consumer.events.ModeratorCreatedEvent',
         ],
-        'restaurant_review': [
+        'review_restaurant': [
             'consumer.events.RestaurantRatingUpdatedEvent'
         ]
     }
 
     kafka_producer_events_topics: Dict[str, Dict[str, str]] = {
         'producer.events.RestaurantCreatedEvent': {
-            'menu_restaurant': 'producer.schemas.RestaurantCreatedSchema',
+            'restaurant_menu': 'producer.schemas.RestaurantCreatedSchema',
             'restaurant_order': 'producer.schemas.RestaurantCreatedSchema',
             'restaurant_review': 'producer.schemas.RestaurantCreatedToReviewSchema'
         },
         'producer.events.RestaurantUpdatedEvent': {
-            'menu_restaurant': 'producer.schemas.RestaurantUpdatedSchema',
+            'restaurant_menu': 'producer.schemas.RestaurantUpdatedSchema',
             'restaurant_order': 'producer.schemas.RestaurantUpdatedSchema',
             'restaurant_review': 'producer.schemas.RestaurantUpdatedToReviewSchema'
         },

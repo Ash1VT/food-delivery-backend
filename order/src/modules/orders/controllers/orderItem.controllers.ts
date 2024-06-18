@@ -12,7 +12,7 @@ export const getOrderItems = async (req: Request, res: Response) => {
     
     const orderId = idValidator.parse(req.params.orderId)
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey, appSettings.variables.stripeSecretKey)
     const orderItemService = orderServiceFactory.createOrderItemService()
 
     await authenticateWithPrisma(req, prismaClient, orderItemService)
@@ -30,7 +30,7 @@ export const updateOrderItem = async (req: Request, res: Response) => {
     const orderItemId = idValidator.parse(req.params.orderItemId)
     const orderItemUpdateInputDto = orderItemUpdateValidator.parse(req.body)
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey, appSettings.variables.stripeSecretKey)
     const orderItemService = orderServiceFactory.createOrderItemService()
 
     await authenticateWithPrisma(req, prismaClient, orderItemService)
@@ -46,7 +46,7 @@ export const addOrderItem = async (req: Request, res: Response) => {
     const orderId = idValidator.parse(req.params.orderId)
     const orderItemCreateInputDto = orderItemCreateValidator.parse(req.body)
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey, appSettings.variables.stripeSecretKey)
     const orderItemService = orderServiceFactory.createOrderItemService()
 
     await authenticateWithPrisma(req, prismaClient, orderItemService)
@@ -62,7 +62,7 @@ export const removeOrderItem = async (req: Request, res: Response) => {
     const orderId = idValidator.parse(req.params.orderId)
     const orderItemId = idValidator.parse(req.params.orderItemId)
 
-    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey)
+    const orderServiceFactory = new PrismaOrderServiceFactory(prismaClient, appSettings.variables.bingApiKey, appSettings.variables.stripeSecretKey)
     const orderItemService = orderServiceFactory.createOrderItemService()
 
     await authenticateWithPrisma(req, prismaClient, orderItemService)

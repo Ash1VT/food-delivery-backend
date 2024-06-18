@@ -92,6 +92,13 @@ class UserService:
         user.user_profile.image_url = image_url
         user.user_profile.save()
 
+        if user.role == UserRole.CUSTOMER:
+            publisher.publish(CustomerUpdatedEvent(data={
+                'id': user.id,
+                'full_name': user.user_profile.full_name,
+                'image_url': user.user_profile.image_url
+            }))
+
         return user
 
     @classmethod

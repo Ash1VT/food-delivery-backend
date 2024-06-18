@@ -150,6 +150,13 @@ model PriceInformation {
   order             Order?
 }
 
+model PaymentInformation {
+  id              BigInt @id @default(autoincrement())
+  paymentIntentId String @map("payment_intent_id")
+  clientSecretKey String @map("client_secret_key")
+  order           Order?
+}
+
 model Order {
   id                    BigInt      @id @default(autoincrement())
   customerId            BigInt      @map("customer_id")
@@ -157,6 +164,7 @@ model Order {
   restaurantId          BigInt      @map("restaurant_id")
   deliveryInformationId BigInt      @unique @map("delivery_information_id")
   priceInformationId    BigInt      @unique @map("price_information_id")
+  paymentInformationId  BigInt      @unique @map("payment_information_id")
   status                OrderStatus @default(PLACING)
   createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz()
 
@@ -165,6 +173,7 @@ model Order {
   restaurant          Restaurant          @relation(fields: [restaurantId], references: [id])
   deliveryInformation DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
   priceInformation    PriceInformation    @relation(fields: [priceInformationId], references: [id])
+  paymentInformation PaymentInformation  @relation(fields: [paymentInformationId], references: [id])
   items               OrderItem[]
   promotionId         BigInt?
 

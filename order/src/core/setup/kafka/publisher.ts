@@ -14,3 +14,4 @@ export const initProducerEventsTopics = (settings: AppSettings) => {
 
 const kafkaProducer = kafkaProducerBuilder.build()
 export const publisher = new KafkaPublisher(kafkaProducer)
+publisher.connect()

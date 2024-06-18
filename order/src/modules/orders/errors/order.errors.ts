@@ -90,3 +90,14 @@ export class OrderHasNoDestinationAddressError extends AppError {
         return 400
     }
 }
+
+export class OrderNotPaidError extends AppError {
+
+    constructor(orderId: bigint) {
+        super(`Order with id=${orderId} is not paid`)        
+    }
+
+    public get statusCode(): number {
+        return 400
+    }
+}

@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import List, Optional
 
 from loguru import logger
@@ -75,7 +76,7 @@ class ReviewService(IReviewService):
 
         logger.info(f"Retrieved courier rating for courier_id={courier_id}.")
 
-        return RatingRetrieveOutSchema.model_validate(courier_rating)
+        return RatingRetrieveOutSchema.model_validate(asdict(courier_rating))
 
     async def get_customer_restaurant_review(self, restaurant_id: int,
                                              uow: GenericUnitOfWork) -> Optional[ReviewRetrieveOutSchema]:
