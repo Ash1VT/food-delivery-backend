@@ -41,10 +41,7 @@ services:
       - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
       - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
       - BING_API_KEY=${BING_API_KEY}
-<<<<<<< Updated upstream
-=======
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
->>>>>>> Stashed changes
       - GRAYLOG_HOST=graylog
       - GRAYLOG_UDP_PORT=12201
     depends_on:
