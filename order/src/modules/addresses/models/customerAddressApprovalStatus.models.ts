@@ -1,0 +1,1 @@
+export type CustomerAddressApprovalStatus = "PENDING" | "APPROVED" | "REJECTED"

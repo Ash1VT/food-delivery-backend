@@ -40,17 +40,23 @@ services:
           - KAFKA_BOOTSTRAP_SERVER_PORT=9092
           - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
           - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
+          - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+          - GRAYLOG_HOST=graylog
+          - GRAYLOG_UDP_PORT=12201
         depends_on:
           - db
         networks:
           - restaurant_network
           - user_grpc_network
           - kafka_kafka_network
+          - graylog_graylog_network
 
 
 networks:
   kafka_kafka_network:
     external: true
   user_grpc_network:
+    external: true
+  graylog_graylog_network:
     external: true
   restaurant_network:

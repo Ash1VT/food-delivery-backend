@@ -7,6 +7,9 @@ __all__ = [
     'ProducerEvent',
     'RestaurantManagerCreatedEvent',
     'ModeratorCreatedEvent',
+    'CourierCreatedEvent',
+    'CustomerCreatedEvent',
+    'CustomerUpdatedEvent',
 ]
 
 
@@ -80,6 +83,30 @@ class ProducerEvent(ABC):
             str: Name of the event
         """
         return cls.__name__
+
+
+class CustomerCreatedEvent(ProducerEvent):
+    """
+    Event when Customer is created.
+    """
+
+    _topics_serializers = dict()
+
+
+class CustomerUpdatedEvent(ProducerEvent):
+    """
+    Event when Customer is updated.
+    """
+
+    _topics_serializers = dict()
+
+
+class CourierCreatedEvent(ProducerEvent):
+    """
+    Event when Courier is created.
+    """
+
+    _topics_serializers = dict()
 
 
 class RestaurantManagerCreatedEvent(ProducerEvent):

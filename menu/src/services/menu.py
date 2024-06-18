@@ -1,11 +1,12 @@
 from typing import Optional, List
+from loguru import logger
 
 from models import RestaurantManager, Menu
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantNotActiveError, \
     RestaurantMissingCurrentMenuError
 from exceptions.permissions import PermissionDeniedError
-from roles import RestaurantManagerRole
+from user_roles import RestaurantManagerRole
 from schemas.menu import MenuRetrieveOut, MenuCreateIn, MenuCreateOut, MenuUpdateIn, MenuUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
@@ -61,10 +62,12 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(item.restaurant_id):
+            logger.warning(f"Restaurant with id={item.restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(item.restaurant_id)
 
         # Check if restaurant manager owns restaurant of a menu to create
@@ -72,7 +75,11 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         # Create
         data = item.model_dump()
-        return await uow.menus.create(data, **kwargs)
+        menu = await uow.menus.create(data, **kwargs)
+
+        logger.info(f"Created Menu with id={menu.id}")
+
+        return menu
 
     async def update_instance(self, id: int, item: MenuUpdateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> Menu:
         """
@@ -93,12 +100,14 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Get menu
         menu = await uow.menus.retrieve(id)
 
         if not menu:
+            logger.warning(f"Menu with id={id} not found")
             raise MenuNotFoundWithIdError(id)
 
         # Check if restaurant manager owns restaurant of a menu
@@ -106,7 +115,11 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         # Update
         data = item.model_dump()
-        return await uow.menus.update(id, data, **kwargs)
+        menu = await uow.menus.update(id, data, **kwargs)
+
+        logger.info(f"Updated Menu with id={menu.id}")
+
+        return menu
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -123,12 +136,14 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Get menu
         menu = await uow.menus.retrieve(id)
 
         if not menu:
+            logger.warning(f"Menu with id={id} not found")
             raise MenuNotFoundWithIdError(id)
 
         # Check if restaurant manager owns restaurant of a menu
@@ -137,8 +152,10 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         # Delete
         await uow.menus.delete(id, **kwargs)
 
+        logger.info(f"Deleted Menu with id={id}")
+
     async def retrieve_current_restaurant_menu_instance(self, restaurant_id: int, uow: SqlAlchemyUnitOfWork,
-                                                        **kwargs) -> Menu:
+                                                        **kwargs) -> Optional[Menu]:
         """
         Retrieve a current menu instance of a restaurant by its ID from the repository.
 
@@ -159,6 +176,7 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         restaurant = await uow.restaurants.retrieve(restaurant_id)
 
         if not restaurant:
+            logger.warning(f"Restaurant with id={restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Permission checks if restaurant is not active
@@ -166,6 +184,7 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
             if self._restaurant_manager:
                 check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
             else:
+                logger.warning(f"Restaurant with id={restaurant_id} is not active")
                 raise RestaurantNotActiveError(restaurant_id)
 
         # Get current menu
@@ -173,8 +192,11 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
                                                                         fetch_categories=True,
                                                                         **kwargs)
 
-        if not current_menu:
-            raise RestaurantMissingCurrentMenuError(restaurant_id)
+        # if not current_menu:
+        #     logger.warning(f"Current Menu for Restaurant with id={restaurant_id} not found")
+        #     raise RestaurantMissingCurrentMenuError(restaurant_id)
+
+        logger.info(f"Retrieved Current Menu for Restaurant with id={restaurant_id}")
 
         return current_menu
 
@@ -198,20 +220,26 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(restaurant_id):
+            logger.warning(f"Restaurant with id={restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Check if restaurant manager owns restaurant
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
 
         # List
-        return await uow.menus.list_restaurant_menus(restaurant_id, fetch_categories=True, **kwargs)
+        menus = await uow.menus.list_restaurant_menus(restaurant_id, fetch_categories=True, **kwargs)
+
+        logger.info(f"Retrieved list of Menu for Restaurant with id={restaurant_id}")
+
+        return menus
 
     async def retrieve_current_restaurant_menu(self, restaurant_id: int,
-                                               uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuRetrieveOut:
+                                               uow: SqlAlchemyUnitOfWork, **kwargs) -> Optional[MenuRetrieveOut]:
         """
         Retrieve a current menu schema restaurant's ID with associated categories.
 
@@ -224,7 +252,8 @@ class MenuService(CreateMixin[Menu, MenuCreateIn, MenuCreateOut],
         """
 
         retrieved_instance = await self.retrieve_current_restaurant_menu_instance(restaurant_id, uow, **kwargs)
-        return MenuRetrieveOut.model_validate(retrieved_instance)
+        if retrieved_instance:
+            return MenuRetrieveOut.model_validate(retrieved_instance)
 
     async def list_restaurant_menus(self, restaurant_id: int,
                                     uow: SqlAlchemyUnitOfWork, **kwargs) -> List[MenuRetrieveOut]:

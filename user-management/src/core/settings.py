@@ -1,5 +1,7 @@
 from datetime import timedelta
 import os
+from typing import Optional
+
 from configurations import Configuration
 from pathlib import Path
 from .env import env
@@ -30,6 +32,7 @@ class Base(Configuration):
         'rest_framework',
         'rest_framework_simplejwt',
         'django_grpc',
+        'corsheaders',
 
         'users',
         'tokens',
@@ -42,11 +45,21 @@ class Base(Configuration):
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
+
+    # CORS
+
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:3000',
+        'http://192.168.0.101:3000'
     ]
 
     # Urls
@@ -111,7 +124,7 @@ class Base(Configuration):
         "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
         "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
-        "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+        "TOKEN_OBTAIN_SERIALIZER": "tokens.serializers.CookieTokenObtainPairSerializer",
         "TOKEN_REFRESH_SERIALIZER": "tokens.serializers.CookieTokenRefreshSerializer",
         "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
         "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
@@ -122,7 +135,7 @@ class Base(Configuration):
         'AUTH_COOKIE_REFRESH': 'refresh_token',  # Cookie name. Enables cookies if value is set.
         'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
         'AUTH_COOKIE_SECURE': False,  # Whether the auth cookies should be secure (https:// only).
-        'AUTH_COOKIE_HTTP_ONLY': True,  # Http only cookie flag.It's not fetch by javascript.
+        'AUTH_COOKIE_HTTP_ONLY': False,  # Http only cookie flag.It's not fetch by javascript.
         'AUTH_COOKIE_PATH': '/',  # The path of the auth cookie.
         'AUTH_COOKIE_SAMESITE': 'Lax',  # Whether to set the flag restricting cookie leaks on cross-site requests.
 
@@ -158,22 +171,42 @@ class Base(Configuration):
     EMAIL_PORT = env('EMAIL_PORT')
     EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
+    # Firebase
+
+    FIREBASE_STORAGE_BUCKET = env('FIREBASE_STORAGE_BUCKET')
+    DEFAULT_USER_AVATAR_URL = 'https://storage.googleapis.com/fooddelivery-21854.appspot.com/users/avatars/default_user_avatar.svg'
+
     # Kafka
 
     KAFKA_BOOTSTRAP_SERVER_HOST = env('KAFKA_BOOTSTRAP_SERVER_HOST')
     KAFKA_BOOTSTRAP_SERVER_PORT = env('KAFKA_BOOTSTRAP_SERVER_PORT')
-    KAFKA_SASL_MECHANISM = 'PLAIN'
+    KAFKA_SSL_CAFILE: Optional[str] = f'{BASE_DIR}/cacert.pem'
+    KAFKA_SSL_CERTFILE: Optional[str] = f'{BASE_DIR}/cert.pem'
+    KAFKA_SSL_KEYFILE: Optional[str] = f'{BASE_DIR}/key.pem'
     KAFKA_BROKER_USER = env('KAFKA_BROKER_USER')
     KAFKA_BROKER_PASSWORD = env('KAFKA_BROKER_PASSWORD')
 
     KAFKA_PRODUCER_EVENTS_TOPICS = {
+        'producer.events.CustomerCreatedEvent': {
+            'user_order': 'producer.serializers.CustomerCreatedSerializer',
+            'user_review': 'producer.serializers.CustomerCreatedToReviewSerializer',
+        },
+        'producer.events.CustomerUpdatedEvent': {
+            'user_review': 'producer.serializers.CustomerUpdatedSerializer',
+        },
+        'producer.events.CourierCreatedEvent': {
+            'user_order': 'producer.serializers.CourierCreatedSerializer',
+            'user_review': 'producer.serializers.CourierCreatedSerializer',
+        },
         'producer.events.RestaurantManagerCreatedEvent': {
             'user_restaurant': 'producer.serializers.RestaurantManagerCreatedSerializer',
-            'user_menu': 'producer.serializers.RestaurantManagerCreatedSerializer'
+            'user_menu': 'producer.serializers.RestaurantManagerCreatedSerializer',
+            'user_order': 'producer.serializers.RestaurantManagerCreatedSerializer',
         },
         'producer.events.ModeratorCreatedEvent': {
             'user_restaurant': 'producer.serializers.ModeratorCreatedSerializer',
-        }
+            'user_order': 'producer.serializers.ModeratorCreatedSerializer',
+        },
     }
 
     # Auth user model
@@ -206,7 +239,8 @@ class Base(Configuration):
         'disable_existing_loggers': False,
         'formatters': {
             'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+                'format': '%(asctime)s | %(levelname)s | USER | %(name)s:%(filename)s:%(lineno)s '
+                          '| %(process)d %(thread)d | %(message)s',
             },
             'simple': {
                 'format': '%(levelname)s %(message)s',
@@ -222,6 +256,12 @@ class Base(Configuration):
                 'filename': BASE_DIR / 'logs.log',
                 'formatter': 'verbose',
             },
+            'graylog': {
+                'class': 'graypy.GELFUDPHandler',
+                'host': env('GRAYLOG_HOST'),
+                'port': int(env('GRAYLOG_UDP_PORT')),
+                'formatter': 'verbose',
+            }
         },
         'loggers': {
             'django': {
@@ -229,19 +269,19 @@ class Base(Configuration):
                 'level': 'INFO',
             },
             'users': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
             'tokens': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
             'producer': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
             'consumer': {
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'file', 'graylog'],
                 'level': 'DEBUG',
             },
         },
@@ -262,9 +302,7 @@ class Develop(Base):
     DEBUG = True
 
     ALLOWED_HOSTS = [
-        'localhost',
-        '127.0.0.1',
-        '192.168.0.104'
+        '*'
     ]
 
     # Database
@@ -297,6 +335,7 @@ class Test(Base):
             'NAME': Base.BASE_DIR / 'db.sqlite3'
         }
     }
+
 
 class Production(Base):
     DEBUG = False

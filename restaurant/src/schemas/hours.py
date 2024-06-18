@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import time
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, field_serializer
 
 from models import DayOfWeek
 
@@ -42,8 +42,13 @@ class WorkingHoursBaseOut(WorkingHoursBase, ABC):
     id: int = Field(ge=0)
     day_of_week: DayOfWeek
 
+    @field_serializer('opening_time', 'closing_time')
+    def serialize_time(self, time: time, _info):
+        return time.strftime("%H:%M")
+
     model_config = {
-        "from_attributes": True
+        "from_attributes": True,
+        "use_enum_values": True
     }
 
 

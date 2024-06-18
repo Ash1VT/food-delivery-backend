@@ -10,6 +10,8 @@ __all__ = [
     "RestaurantApplicationBaseOut",
     "RestaurantApplicationRetrieveOut",
     "RestaurantApplicationCreateOut",
+    "RestaurantApplicationUpdateIn",
+    "RestaurantApplicationUpdateOut",
 ]
 
 
@@ -51,6 +53,24 @@ class RestaurantApplicationRetrieveOut(RestaurantApplicationBaseOut):
 class RestaurantApplicationCreateOut(RestaurantApplicationBaseOut):
     """
     Schema class for output representation after creating a restaurant application.
+    """
+
+    type: ApplicationType
+
+
+# Update
+
+class RestaurantApplicationUpdateIn(RestaurantApplicationBase):
+    """
+    Schema class for input representation of an updated restaurant application.
+    """
+
+    pass
+
+
+class RestaurantApplicationUpdateOut(RestaurantApplicationBaseOut):
+    """
+    Schema class for output representation after updating a restaurant application.
     """
 
     type: ApplicationType

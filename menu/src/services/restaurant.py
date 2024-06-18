@@ -1,4 +1,5 @@
 from typing import Optional
+from loguru import logger
 
 from exceptions.restaurant import RestaurantNotFoundWithIdError, RestaurantAlreadyExistsWithIdError, \
     RestaurantMissingCurrentMenuError
@@ -6,7 +7,7 @@ from exceptions.manager import RestaurantManagerNotFoundWithIdError
 from exceptions.menu import MenuNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
 from models import Restaurant, RestaurantManager
-from roles import RestaurantManagerRole
+from user_roles import RestaurantManagerRole
 from schemas.restaurant import RestaurantCreateIn, RestaurantCreateOut, RestaurantUpdateIn, RestaurantUpdateOut
 from uow import SqlAlchemyUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
@@ -61,12 +62,14 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Check if restaurant already exists
         if await uow.restaurants.exists(item.id):
+            logger.warning(f"Restaurant with id={item.id} already exists")
             raise RestaurantAlreadyExistsWithIdError(item.id)
 
         # Check restaurant manager for existence
         restaurant_manager = await uow.managers.retrieve(item.restaurant_manager_id)
 
         if not restaurant_manager:
+            logger.warning(f"RestaurantManager with id={item.restaurant_manager_id} not found")
             raise RestaurantManagerNotFoundWithIdError(item.restaurant_manager_id)
 
         # Create
@@ -74,7 +77,14 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
         del data['restaurant_manager_id']
 
         restaurant_instance = await uow.restaurants.create(data, **kwargs)
+
+        logger.info(f"Created Restaurant with id={restaurant_instance.id}")
+
+        # Set restaurant manager
         restaurant_manager.restaurant_id = restaurant_instance.id
+
+        logger.info(f"Set RestaurantManager with id={restaurant_manager.id} to Restaurant with id={restaurant_instance.id}")
+
         return restaurant_instance
 
     async def update_instance(self, id: int, item: RestaurantUpdateIn, uow: SqlAlchemyUnitOfWork,
@@ -96,11 +106,16 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(id):
+            logger.warning(f"Restaurant with id={id} not found")
             raise RestaurantNotFoundWithIdError(id)
 
         # Update
         data = item.model_dump()
-        return await uow.restaurants.update(id, data, **kwargs)
+        restaurant = await uow.restaurants.update(id, data, **kwargs)
+
+        logger.info(f"Updated Restaurant with id={id}")
+
+        return restaurant
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -116,10 +131,13 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(id):
+            logger.warning(f"Restaurant with id={id} not found")
             raise RestaurantNotFoundWithIdError(id)
 
         # Delete
         await uow.restaurants.delete(id, **kwargs)
+
+        logger.info(f"Deleted Restaurant with id={id}")
 
     async def set_current_menu(self, restaurant_id: int, menu_id: int,
                                uow: SqlAlchemyUnitOfWork, **kwargs):
@@ -139,10 +157,12 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(restaurant_id, **kwargs):
+            logger.warning(f"Restaurant with id={restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Check if restaurant manager owns restaurant
@@ -152,6 +172,7 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
         restaurant = await uow.restaurants.retrieve_by_menu(menu_id, **kwargs)
 
         if not restaurant:
+            logger.warning(f"Menu with id={menu_id} not found")
             raise MenuNotFoundWithIdError(menu_id)
 
         # Check if restaurant manager owns restaurant of a menu
@@ -159,6 +180,8 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Set current menu
         restaurant.current_menu_id = menu_id
+
+        logger.info(f"Set current menu of Restaurant with id={restaurant_id} to Menu with id={menu_id}")
 
     async def unset_current_menu(self, restaurant_id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -175,12 +198,14 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         restaurant = await uow.restaurants.retrieve(restaurant_id, **kwargs)
 
         if not restaurant:
+            logger.warning(f"Restaurant with id={restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Check if restaurant manager owns restaurant
@@ -188,44 +213,45 @@ class RestaurantService(CreateMixin[Restaurant, RestaurantCreateIn, RestaurantCr
 
         # Set current menu
         if not restaurant.current_menu_id:
+            logger.warning(f"Restaurant with id={restaurant_id} has no current menu")
             raise RestaurantMissingCurrentMenuError(restaurant_id)
 
         restaurant.current_menu_id = None
 
-    async def activate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
-        """
-        Activates a restaurant by its ID.
-
-        Args:
-            id (int): The ID of the restaurant.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-
-        Raises:
-            RestaurantNotFoundWithIdError: If the restaurant is not found.
-        """
-
-        restaurant = await uow.restaurants.retrieve(id, **kwargs)
-
-        if not restaurant:
-            raise RestaurantNotFoundWithIdError(id)
-
-        restaurant.is_active = True
-
-    async def deactivate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
-        """
-        Deactivates a restaurant by its ID.
-
-        Args:
-            id (int): The ID of the restaurant.
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-
-        Raises:
-            RestaurantNotFoundWithIdError: If the restaurant is not found.
-        """
-
-        restaurant = await uow.restaurants.retrieve(id, **kwargs)
-
-        if not restaurant:
-            raise RestaurantNotFoundWithIdError(id)
-
-        restaurant.is_active = False
+    # async def activate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+    #     """
+    #     Activates a restaurant by its ID.
+    #
+    #     Args:
+    #         id (int): The ID of the restaurant.
+    #         uow (SqlAlchemyUnitOfWork): The unit of work instance.
+    #
+    #     Raises:
+    #         RestaurantNotFoundWithIdError: If the restaurant is not found.
+    #     """
+    #
+    #     restaurant = await uow.restaurants.retrieve(id, **kwargs)
+    #
+    #     if not restaurant:
+    #         raise RestaurantNotFoundWithIdError(id)
+    #
+    #     restaurant.is_active = True
+    #
+    # async def deactivate(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
+    #     """
+    #     Deactivates a restaurant by its ID.
+    #
+    #     Args:
+    #         id (int): The ID of the restaurant.
+    #         uow (SqlAlchemyUnitOfWork): The unit of work instance.
+    #
+    #     Raises:
+    #         RestaurantNotFoundWithIdError: If the restaurant is not found.
+    #     """
+    #
+    #     restaurant = await uow.restaurants.retrieve(id, **kwargs)
+    #
+    #     if not restaurant:
+    #         raise RestaurantNotFoundWithIdError(id)
+    #
+    #     restaurant.is_active = False

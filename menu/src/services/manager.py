@@ -1,3 +1,5 @@
+from loguru import logger
+
 from models import RestaurantManager
 from schemas.manager import RestaurantManagerRetrieveOut, RestaurantManagerCreateIn, RestaurantManagerCreateOut
 from uow import SqlAlchemyUnitOfWork
@@ -44,7 +46,10 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
         retrieved_instance = await uow.managers.retrieve(id, **kwargs)
 
         if not retrieved_instance:
+            logger.warning(f"RestaurantManager with id={id} not found")
             raise RestaurantManagerNotFoundWithIdError(id)
+
+        logger.info(f"Retrieved RestaurantManager with id={id}")
 
         return retrieved_instance
 
@@ -66,11 +71,16 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         # Check if restaurant manager already exists
         if await uow.managers.exists(item.id):
+            logger.warning(f"RestaurantManager with id={item.id} already exists")
             raise RestaurantManagerAlreadyExistsWithIdError(item.id)
 
         # Create
         data = item.model_dump()
-        return await uow.managers.create(data, **kwargs)
+        created_instance = await uow.managers.create(data, **kwargs)
+
+        logger.info(f"Created RestaurantManager with id={created_instance.id}")
+
+        return created_instance
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -86,7 +96,10 @@ class RestaurantManagerService(RetrieveMixin[RestaurantManager, RestaurantManage
 
         # Check restaurant manager for existence
         if not await uow.managers.exists(id):
+            logger.warning(f"RestaurantManager with id={id} not found")
             raise RestaurantManagerNotFoundWithIdError(id)
 
         # Delete
         await uow.managers.delete(id, **kwargs)
+
+        logger.info(f"Deleted RestaurantManager with id={id}")

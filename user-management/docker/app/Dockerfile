@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 
 COPY src/ $WEB_APP_DIR/src
-COPY requirements.txt $WEB_APP_DIR
+COPY requirements.txt key.json $WEB_APP_DIR
 COPY docker/app/start.sh $WEB_APP_DIR
 
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \

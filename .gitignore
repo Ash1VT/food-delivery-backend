@@ -52,6 +52,10 @@ atlassian-ide-plugin.xml
 *.py[cod]
 *$py.class
 
+# Node #
+node_modules/
+dist/
+
 # Distribution / packaging
 .Python build/
 develop-eggs/
@@ -79,6 +83,7 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .coverage
+coverage/
 .coverage.*
 .cache
 .pytest_cache/
@@ -132,9 +137,8 @@ Control.system-ca-bundle
 GitHub.sublime-settings
 
 # Visual Studio Code #
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode
 .history
+
+# Firebase #
+key.json

@@ -31,6 +31,8 @@ async def get_application_service(access_token: Optional[str] = Cookie(default=N
     user = await authenticate(access_token, uow)
     if isinstance(user, Moderator):
         return RestaurantApplicationService(moderator=user)
+    if isinstance(user, RestaurantManager):
+        return RestaurantApplicationService(restaurant_manager=user)
     return RestaurantApplicationService()
 
 

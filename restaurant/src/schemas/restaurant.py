@@ -33,6 +33,10 @@ class RestaurantBaseOut(RestaurantBase, ABC):
     """
 
     id: int = Field(ge=0)
+    rating: Optional[float]
+    reviews_count: int
+    image_url: str = Field(min_length=1, max_length=1000)
+    is_active: bool
 
     model_config = {
         "from_attributes": True
@@ -63,6 +67,14 @@ class RestaurantCreateIn(RestaurantBase):
 class RestaurantUpdateIn(RestaurantBase):
     """
     Schema class for input data when updating a restaurant.
+    """
+
+    pass
+
+
+class RestaurantUpdateOut(RestaurantBaseOut):
+    """
+    Schema class for output representation of an updated restaurant.
     """
 
     pass

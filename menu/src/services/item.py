@@ -1,21 +1,29 @@
 from typing import Optional, List
 
+from fastapi import UploadFile
+from loguru import logger
+
+from config import get_settings
 from models import RestaurantManager, MenuItem
 from exceptions.item import MenuItemNotFoundWithIdError
 from exceptions.restaurant import RestaurantNotFoundWithIdError
 from exceptions.permissions import PermissionDeniedError
-from roles import RestaurantManagerRole
+from producer import publisher
+from producer.events import MenuItemCreatedEvent, MenuItemDeletedEvent, MenuItemUpdatedEvent
+from user_roles import RestaurantManagerRole
 from schemas.item import MenuItemRetrieveOut, MenuItemCreateIn, MenuItemCreateOut, MenuItemUpdateIn, MenuItemUpdateOut
-from uow import SqlAlchemyUnitOfWork
+from uow import SqlAlchemyUnitOfWork, GenericUnitOfWork
 from utils import check_restaurant_manager_ownership_on_restaurant
-from .mixins import CreateMixin, UpdateMixin, DeleteMixin
+from utils.firebase import upload_menu_item_image_to_firebase
+from .mixins import CreateMixin, UpdateMixin, DeleteMixin, RetrieveMixin, Model
 
 __all__ = [
     'MenuItemService',
 ]
 
 
-class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut],
+class MenuItemService(RetrieveMixin[MenuItem, MenuItemRetrieveOut],
+                      CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut],
                       UpdateMixin[MenuItem, MenuItemUpdateIn, MenuItemUpdateOut],
                       DeleteMixin[MenuItem]):
     """
@@ -29,6 +37,7 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
         schema_update_out (MenuItemUpdateOut): The schema for output representation of updated instances.
     """
 
+    schema_retrieve_out = MenuItemRetrieveOut
     schema_create_out = MenuItemCreateOut
     schema_update_out = MenuItemUpdateOut
 
@@ -41,6 +50,31 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
         """
 
         self._restaurant_manager = restaurant_manager
+
+    async def retrieve_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
+        """
+        Retrieve a menu item instance by its ID from the repository.
+
+        Args:
+            id (int): The ID of the menu item to retrieve.
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+
+        Raises:
+            PermissionDeniedError: If the user is not a restaurant manager.
+            MenuItemNotFoundWithIdError: If the menu item is not found.
+
+        Returns:
+            MenuItem: The retrieved menu item instance.
+        """
+
+        # Get menu item
+        menu_item = await uow.items.retrieve(id)
+
+        if not menu_item:
+            logger.warning(f"MenuItem with id={id} not found")
+            raise MenuItemNotFoundWithIdError(id)
+        print(menu_item)
+        return menu_item
 
     async def create_instance(self, item: MenuItemCreateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
         """
@@ -60,10 +94,12 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(item.restaurant_id):
+            logger.warning(f"Restaurant with id={item.restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(item.restaurant_id)
 
         # Check if restaurant manager owns restaurant of a menu item to create
@@ -71,7 +107,21 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Create
         data = item.model_dump()
-        return await uow.items.create(data, **kwargs)
+        settings = get_settings()
+        data['image_url'] = settings.default_menu_item_image_url
+        created_item = await uow.items.create(data, **kwargs)
+
+        logger.info(f"Created MenuItem with id={created_item.id}")
+
+        publisher.publish(MenuItemCreatedEvent(
+            id=created_item.id,
+            name=created_item.name,
+            image_url=created_item.image_url,
+            price=created_item.price,
+            restaurant_id=created_item.restaurant_id
+        ))
+
+        return created_item
 
     async def update_instance(self, id: int, item: MenuItemUpdateIn, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItem:
         """
@@ -92,12 +142,14 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Get menu item
         menu_item = await uow.items.retrieve(id)
 
         if not menu_item:
+            logger.warning(f"MenuItem with id={id} not found")
             raise MenuItemNotFoundWithIdError(id)
 
         # Check if restaurant manager owns restaurant of a menu item
@@ -105,7 +157,18 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Update
         data = item.model_dump()
-        return await uow.items.update(id, data, **kwargs)
+        updated_item = await uow.items.update(id, data, **kwargs)
+
+        logger.info(f"Updated MenuItem with id={updated_item.id}")
+
+        publisher.publish(MenuItemUpdatedEvent(
+            id=updated_item.id,
+            name=updated_item.name,
+            image_url=updated_item.image_url,
+            price=updated_item.price,
+        ))
+
+        return updated_item
 
     async def delete_instance(self, id: int, uow: SqlAlchemyUnitOfWork, **kwargs):
         """
@@ -122,12 +185,14 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Get menu item
         menu_item = await uow.items.retrieve(id)
 
         if not menu_item:
+            logger.warning(f"MenuItem with id={id} not found")
             raise MenuItemNotFoundWithIdError(id)
 
         # Check if restaurant manager owns restaurant of a menu item
@@ -135,6 +200,12 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Delete
         await uow.items.delete(id, **kwargs)
+
+        logger.info(f"Deleted MenuItem with id={id}")
+
+        publisher.publish(
+            MenuItemDeletedEvent(id=id)
+        )
 
     async def list_restaurant_items_instances(self, restaurant_id: int,
                                               uow: SqlAlchemyUnitOfWork,
@@ -156,17 +227,21 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         # Permissions checks
         if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
             raise PermissionDeniedError(RestaurantManagerRole)
 
         # Check restaurant for existence
         if not await uow.restaurants.exists(restaurant_id):
+            logger.warning(f"Restaurant with id={restaurant_id} not found")
             raise RestaurantNotFoundWithIdError(restaurant_id)
 
         # Check if restaurant manager owns Restaurant
         check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, restaurant_id)
 
         # List
-        return await uow.items.list_restaurant_items(restaurant_id, **kwargs)
+        menu_items = await uow.items.list_restaurant_items(restaurant_id, **kwargs)
+        logger.info(f"Retrieved list of MenuItem for Restaurant with id={restaurant_id}")
+        return menu_items
 
     async def list_restaurant_items(self, restaurant_id: int,
                                     uow: SqlAlchemyUnitOfWork, **kwargs) -> List[MenuItemRetrieveOut]:
@@ -183,3 +258,32 @@ class MenuItemService(CreateMixin[MenuItem, MenuItemCreateIn, MenuItemCreateOut]
 
         instance_list = await self.list_restaurant_items_instances(restaurant_id, uow, **kwargs)
         return [MenuItemRetrieveOut.model_validate(instance) for instance in instance_list]
+
+    async def upload_image(self, id: int, image: UploadFile, uow: SqlAlchemyUnitOfWork, **kwargs) -> MenuItemUpdateOut:
+
+        # Permission checks
+        if not self._restaurant_manager:
+            logger.warning(f"User is not a restaurant manager")
+            raise PermissionDeniedError(RestaurantManagerRole)
+
+        # Check for existence
+        menu_item = await uow.items.retrieve(id)
+
+        if not menu_item:
+            logger.warning(f"MenuItem with id={id} not found")
+            raise MenuItemNotFoundWithIdError(id)
+
+        # Check if restaurant manager owns a menu item
+        check_restaurant_manager_ownership_on_restaurant(self._restaurant_manager, menu_item.restaurant_id)
+
+        # Get image url
+        image_url = upload_menu_item_image_to_firebase(menu_item, image.file)
+
+        # Upload image
+        updated_menu_item = await uow.items.update(id, {
+            'image_url': image_url
+        })
+
+        logger.info(f"Uploaded image for MenuItem with id={id}")
+
+        return self.schema_update_out.model_validate(updated_menu_item)

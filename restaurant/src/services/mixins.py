@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
+from dataclasses import asdict
 from typing import TypeVar, Generic, List
 
 from pydantic import BaseModel
 
 from models import CustomBase
+from models.pagination import PaginatedModel
+from schemas.pagination import PaginatedResponse
 from uow import GenericUnitOfWork
 
 __all__ = ["Model",

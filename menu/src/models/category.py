@@ -7,11 +7,9 @@ category_items_association = Table(
     "category_items_association",
     Base.metadata,
     Column("item_id", Integer, ForeignKey('menu_items.id',
-                                          name='fk_item_id',
-                                          ondelete="CASCADE"), primary_key=True),
+                                          name='fk_item_id'), primary_key=True),
     Column("category_id", Integer, ForeignKey('menu_categories.id',
-                                              name='fk_category_id',
-                                              ondelete="CASCADE"), primary_key=True),
+                                              name='fk_category_id'), primary_key=True),
 )
 
 
@@ -19,6 +17,7 @@ class MenuCategory(CustomBase):
     __tablename__ = 'menu_categories'
 
     name = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
 
     menu_id = Column(Integer, ForeignKey('menus.id',
                                          name='fk_menu_id',
@@ -29,7 +28,7 @@ class MenuCategory(CustomBase):
     items = relationship("MenuItem", secondary="category_items_association",
                          collection_class=set,
                          uselist=True,
-                         cascade="all, delete-orphan",
+                         cascade="all, delete",
                          single_parent=True
                          )
 

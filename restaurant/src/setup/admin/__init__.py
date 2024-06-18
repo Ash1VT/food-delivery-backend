@@ -1,3 +1,4 @@
+from loguru import logger
 from sqladmin import Admin
 
 from db import async_engine
@@ -23,3 +24,5 @@ admin.add_model_view(RestaurantAdmin)
 admin.add_model_view(RestaurantManagerAdmin)
 admin.add_model_view(ModeratorAdmin)
 admin.add_model_view(WorkingHoursAdmin)
+
+logger.info("Admin panel initialized")

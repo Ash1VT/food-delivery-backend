@@ -3,13 +3,13 @@ from typing import List, Set, TypeVar, Type, Iterable, Dict
 
 from pydantic import BaseModel
 
-from .schemas import RestaurantActivatedSchema, RestaurantDeactivatedSchema, RestaurantApplicationConfirmedSchema
-
 __all__ = [
     "ProducerEvent",
-    "RestaurantActivatedEvent",
-    "RestaurantDeactivatedEvent",
-    "RestaurantApplicationConfirmedEvent",
+    "RestaurantCreatedEvent",
+    "RestaurantUpdatedEvent",
+    "WorkingHoursCreatedEvent",
+    "WorkingHoursUpdatedEvent",
+    "WorkingHoursDeletedEvent",
 ]
 
 BaseEventSchema = TypeVar("BaseEventSchema", bound=BaseModel)
@@ -88,25 +88,41 @@ class ProducerEvent(ABC):
         return cls.__name__
 
 
-class RestaurantActivatedEvent(ProducerEvent):
+class RestaurantCreatedEvent(ProducerEvent):
     """
-    Event that is published when a restaurant is activated.
-    """
-
-    _topics_schemas = dict()
-
-
-class RestaurantDeactivatedEvent(ProducerEvent):
-    """
-    Event that is published when a restaurant is deactivated.
+    Event that is published when a restaurant is created.
     """
 
     _topics_schemas = dict()
 
 
-class RestaurantApplicationConfirmedEvent(ProducerEvent):
+class RestaurantUpdatedEvent(ProducerEvent):
     """
-    Event that is published when a restaurant application is confirmed.
+    Event that is published when a restaurant is updated.
+    """
+
+    _topics_schemas = dict()
+
+
+class WorkingHoursCreatedEvent(ProducerEvent):
+    """
+    Event that is published when working hours are created.
+    """
+
+    _topics_schemas = dict()
+
+
+class WorkingHoursUpdatedEvent(ProducerEvent):
+    """
+    Event that is published when working hours are updated.
+    """
+
+    _topics_schemas = dict()
+
+
+class WorkingHoursDeletedEvent(ProducerEvent):
+    """
+    Event that is published when working hours are deleted.
     """
 
     _topics_schemas = dict()

@@ -1,7 +1,7 @@
 from typing import Type
 
 from exceptions import AppError
-from roles import UserRole
+from user_roles import UserRole
 
 __all__ = [
     'PermissionDeniedError',

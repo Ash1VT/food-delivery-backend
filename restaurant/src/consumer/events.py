@@ -3,15 +3,17 @@ from typing import Generic, TypeVar, Type
 
 from pydantic import BaseModel
 
+from schemas import RestaurantManagerCreateIn, ModeratorCreateIn
 from services import RestaurantManagerService, ModeratorService
 from uow import SqlAlchemyUnitOfWork
-from utils import uow_transaction_with_commit
-from .schemas import RestaurantManagerCreatedSchema, ModeratorCreatedSchema
+from utils.uow import uow_transaction_with_commit
+from .schemas import RestaurantManagerCreatedSchema, ModeratorCreatedSchema, RestaurantRatingUpdatedSchema
 
 __all__ = [
     "ConsumerEvent",
     "RestaurantManagerCreatedEvent",
     "ModeratorCreatedEvent",
+    "RestaurantRatingUpdatedEvent"
 ]
 
 BaseEventSchema = TypeVar("BaseEventSchema", bound=BaseModel)
@@ -80,7 +82,8 @@ class RestaurantManagerCreatedEvent(ConsumerEvent[RestaurantManagerCreatedSchema
         restaurant_manager_service = RestaurantManagerService()
 
         async with uow_transaction_with_commit(uow) as uow:
-            await restaurant_manager_service.create(self._data, uow)
+            restaurant_manager_data = RestaurantManagerCreateIn(**self._data.model_dump())
+            await restaurant_manager_service.create(restaurant_manager_data, uow)
 
 
 class ModeratorCreatedEvent(ConsumerEvent[ModeratorCreatedSchema]):
@@ -101,4 +104,28 @@ class ModeratorCreatedEvent(ConsumerEvent[ModeratorCreatedSchema]):
         moderator_service = ModeratorService()
 
         async with uow_transaction_with_commit(uow) as uow:
-            await moderator_service.create(self._data, uow)
+            moderator_data = ModeratorCreateIn(**self._data.model_dump())
+            await moderator_service.create(moderator_data, uow)
+
+
+class RestaurantRatingUpdatedEvent(ConsumerEvent[RestaurantRatingUpdatedSchema]):
+    """
+    Event when rating of a restaurant is updated.
+    """
+
+    schema_class = RestaurantRatingUpdatedSchema
+
+    async def action(self, uow: SqlAlchemyUnitOfWork):
+        """
+        Updates a restaurant rating.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+        """
+
+        async with uow_transaction_with_commit(uow) as uow:
+            await uow.restaurants.update(self._data.id, {
+                "rating": self._data.rating,
+                "reviews_count": self._data.reviews_count
+            })
+

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from sqlalchemy import Select, select
+from loguru import logger
 
 from models import Restaurant, MenuCategory, Menu
 from .generic import SQLAlchemyRepository
@@ -66,7 +67,13 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
         stmt = self._get_retrieve_by_category_stmt(category_id=category_id, **kwargs)
         result = await self._session.execute(stmt)
-        return result.scalar_one_or_none()
+        result = result.scalar_one_or_none()
+
+        if result:
+            logger.debug(f"Retrieved Restaurant with id={result.id} by MenuCategory with id={category_id}")
+            return result
+
+        logger.warning(f"Requested Restaurant by MenuCategory with id={category_id} but it not found")
 
     async def retrieve_by_menu(self, menu_id: int, **kwargs) -> Optional[Restaurant]:
         """
@@ -82,4 +89,10 @@ class RestaurantRepository(SQLAlchemyRepository[Restaurant]):
 
         stmt = self._get_retrieve_by_menu_stmt(menu_id=menu_id, **kwargs)
         result = await self._session.execute(stmt)
-        return result.scalar_one_or_none()
+        result = result.scalar_one_or_none()
+
+        if result:
+            logger.debug(f"Retrieved Restaurant with id={result.id} by Menu with id={menu_id}")
+            return result
+
+        logger.warning(f"Requested Restaurant by Menu with id={menu_id} but it not found")

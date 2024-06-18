@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id BigInt @id
+
+  orders    Order[]
+  addresses CustomerAddress[]
+
+  @@map("customers")
+}
+
+model Courier {
+  id BigInt @id
+
+  orders Order[]
+
+  @@map("couriers")
+}
+
+model Moderator {
+  id BigInt @id
+
+  @@map("moderators")
+}
+
+model RestaurantManager {
+  id           BigInt  @id
+  restaurantId BigInt? @unique @map("restaurant_id")
+
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
+
+  @@map("restaurant_managers")
+}
+
+model CustomerAddress {
+  id BigInt @id @default(autoincrement())
+
+  country    String @map("country")
+  region     String @map("region")
+  details    String @map("details")
+  customerId BigInt @map("customer_id")
+
+  approvalStatus CustomerAddressApprovalStatus @default(PENDING) @map("is_approved")
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@map("customers_addresses")
+}
+
+model WorkingHours {
+  id BigInt @id
+
+  dayOfWeek   DayOfWeek @map("day_of_week")
+  openingTime DateTime  @map("opening_time") @db.Time()
+  closingTime DateTime  @map("closing_time") @db.Time()
+
+  restaurantId BigInt @map("restaurant_id")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+model Restaurant {
+  id                BigInt             @id
+  restaurantManager RestaurantManager?
+  address           String             @map("address")
+  isActive          Boolean            @map("is_active")
+
+  orders       Order[]
+  menuItem     MenuItem[]
+  promocodes   Promocode[]
+  workingHours WorkingHours[]
+
+  @@map("restaurants")
+}
+
+model Promocode {
+  id                 BigInt   @id @default(autoincrement())
+  nameIdentifier     String   @map("name_identifier") @db.VarChar(25)
+  discountPercentage Int      @map("discount_percentage")
+  validFrom          DateTime @map("valid_from") @db.Timestamptz()
+  validUntil         DateTime @map("valid_until") @db.Timestamptz()
+  maxUsageCount      Int      @map("max_usage_count")
+  currentUsageCount  Int      @default(0) @map("current_usage_count")
+  isActive           Boolean  @default(true) @map("is_active")
+  restaurantId       BigInt   @map("restaurant_id")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("promocodes")
+}
+
+model MenuItem {
+  id           BigInt @id
+  name         String @map("name")
+  imageUrl     String @map("image_url")
+  price        Float  @map("price")
+  restaurantId BigInt @map("restaurant_id")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("menu_items")
+}
+
+model OrderItem {
+  id BigInt @id @default(autoincrement())
+
+  menuItemPrice    Float  @map("menu_item_price")
+  menuItemName     String @map("menu_item_name")
+  menuItemImageUrl String @map("menu_item_image_url")
+  orderId          BigInt @map("order_id")
+  quantity         Int
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("order_items")
+}
+
+model DeliveryInformation {
+  id                   BigInt        @id @default(autoincrement())
+  deliveryType         DeliveryType? @map("delivery_type")
+  deliveryDistance     Float?        @map("delivery_distance")
+  supposedDeliveryTime Int?          @map("supposed_delivery_time")
+
+  originAddress      String  @map("origin_address")
+  destinationAddress String? @map("destination_address")
+
+  deliveryAcceptedAt DateTime? @map("delivery_accepted_at") @db.Timestamptz()
+  actualDeliveryTime Int?      @map("actual_delivery_time")
+  deliveryFinishedAt DateTime? @map("delivery_finished_at") @db.Timestamptz()
+  order              Order?
+
+  @@map("deliveries_information")
+}
+
+model PriceInformation {
+  id                BigInt  @id @default(autoincrement())
+  orderItemsPrice   Float   @map("order_items_price")
+  promocodeName     String? @map("promocode_name")
+  promocodeDiscount Int?    @map("promocode_discount")
+  decountedPrice    Float   @map("decounted_price")
+  deliveryPrice     Float?  @map("delivery_price")
+  totalPrice        Float   @map("total_price")
+  order             Order?
+}
+
+model PaymentInformation {
+  id              BigInt @id @default(autoincrement())
+  paymentIntentId String @map("payment_intent_id")
+  clientSecretKey String @map("client_secret_key")
+  order           Order?
+}
+
+model Order {
+  id                    BigInt      @id @default(autoincrement())
+  customerId            BigInt      @map("customer_id")
+  courierId             BigInt?     @map("courier_id")
+  restaurantId          BigInt      @map("restaurant_id")
+  deliveryInformationId BigInt      @unique @map("delivery_information_id")
+  priceInformationId    BigInt      @unique @map("price_information_id")
+  paymentInformationId  BigInt      @unique @map("payment_information_id")
+  status                OrderStatus @default(PLACING)
+  createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz()
+
+  customer            Customer            @relation(fields: [customerId], references: [id])
+  courier             Courier?            @relation(fields: [courierId], references: [id])
+  restaurant          Restaurant          @relation(fields: [restaurantId], references: [id])
+  deliveryInformation DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
+  priceInformation    PriceInformation    @relation(fields: [priceInformationId], references: [id])
+  paymentInformation PaymentInformation  @relation(fields: [paymentInformationId], references: [id])
+  items               OrderItem[]
+  promotionId         BigInt?
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PLACING
+  PENDING
+  PREPARING
+  READY
+  DELIVERING
+  DELIVERED
+  CANCELLED
+
+  @@map("order_statuses")
+}
+
+enum DeliveryType {
+  WALKING
+  DRIVING
+
+  @@map("delivery_types")
+}
+
+enum CustomerAddressApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("customers_addresses_approval_status")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+
+  @@map("days_of_week")
+}

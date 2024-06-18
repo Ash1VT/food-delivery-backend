@@ -32,6 +32,9 @@ class MenuItemBaseOut(MenuItemBase, ABC):
     """
 
     id: int = Field(ge=0)
+    rating: Optional[float]
+    reviews_count: int
+    image_url: str
     restaurant_id: int = Field(ge=0)
 
     model_config = {

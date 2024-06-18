@@ -1,9 +1,13 @@
 import logging
 
-from .models import User, UserRole, UserProfile, CustomerProfile, CourierProfile
-from .utils import send_verification_email
+from django.conf import settings
+
+from .models import User, UserRole, UserProfile
+from .utils import upload_to_firebase, send_customer_verification_email, send_courier_verification_email, \
+    send_restaurant_manager_verification_email
 from producer import publisher
-from producer.events import RestaurantManagerCreatedEvent, ModeratorCreatedEvent
+from producer.events import CustomerCreatedEvent, CourierCreatedEvent, RestaurantManagerCreatedEvent, \
+    ModeratorCreatedEvent, CustomerUpdatedEvent
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +16,15 @@ class UserService:
 
     @classmethod
     def _create_user_profile(cls, user: User, user_profile_data: dict) -> UserProfile:
+        # image = user_profile_data.pop('image', None)
+        #
+        # if image:
+        #     image_url = upload_to_firebase(user=user, image=image)
+        # else:
+        image_url = settings.DEFAULT_USER_AVATAR_URL
+
+        user_profile_data['image_url'] = image_url
+
         user_profile = UserProfile.objects.create(user=user, **user_profile_data)
 
         logger.info(f"Created user profile for user: {user}")
@@ -19,24 +32,14 @@ class UserService:
         return user_profile
 
     @classmethod
-    def _create_customer_profile(cls, user: User) -> CustomerProfile:
-        customer_profile = CustomerProfile.objects.create(user=user)
-
-        logger.info(f"Created customer profile for user: {user}")
-
-        return customer_profile
-
-    @classmethod
-    def _create_courier_profile(cls, user: User) -> CourierProfile:
-        courier_profile = CourierProfile.objects.create(user=user)
-
-        logger.info(f"Created courier profile for user: {user}")
-
-        return courier_profile
-
-    @classmethod
-    def _update_user_profile(cls, user_profile: UserProfile, user_profile_data: dict) -> UserProfile:
+    def _update_user_profile(cls, user: User, user_profile: UserProfile, user_profile_data: dict) -> UserProfile:
         if user_profile_data:
+            # image = user_profile_data.pop('image', None)
+            #
+            # if image:
+            #     image_url = upload_to_firebase(user=user, image=image)
+            #     user_profile_data['image_url'] = image_url
+
             for key, value in user_profile_data.items():
                 setattr(user_profile, key, value)
             user_profile.save()
@@ -53,10 +56,20 @@ class UserService:
         logger.info(f"Email verified for user: {user}")
 
     @classmethod
+    def create_user(cls, role: UserRole, user_data: dict, user_profile_data: dict) -> User:
+        user = User.objects.create_user(**user_data, role=role)
+
+        logger.info(f"Created user: {user}")
+
+        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+
+        return user
+
+    @classmethod
     def update_user(cls, user: User, user_data: dict) -> User:
         user_profile_data = user_data.pop('user_profile', None)
 
-        cls._update_user_profile(user.user_profile, user_profile_data)
+        user_profile = cls._update_user_profile(user, user.user_profile, user_profile_data)
 
         for key, value in user_data.items():
             setattr(user, key, value)
@@ -65,37 +78,60 @@ class UserService:
 
         logger.info(f"Updated user: {user}")
 
+        if user.role == UserRole.CUSTOMER:
+            publisher.publish(CustomerUpdatedEvent(data={
+                'id': user.id,
+                'full_name': user_profile.full_name,
+                'image_url': user_profile.image_url
+            }))
+        return user
+
+    @classmethod
+    def upload_user_avatar(cls, user: User, image):
+        image_url = upload_to_firebase(user=user, image=image)
+        user.user_profile.image_url = image_url
+        user.user_profile.save()
+
+        if user.role == UserRole.CUSTOMER:
+            publisher.publish(CustomerUpdatedEvent(data={
+                'id': user.id,
+                'full_name': user.user_profile.full_name,
+                'image_url': user.user_profile.image_url
+            }))
+
         return user
 
     @classmethod
     def create_customer(cls, user_data: dict, user_profile_data: dict) -> User:
-        user = User.objects.create_user(**user_data, role=UserRole.CUSTOMER)
+        user = cls.create_user(role=UserRole.CUSTOMER, user_data=user_data, user_profile_data=user_profile_data)
 
-        logger.info(f"Created customer: {user}")
+        send_customer_verification_email(user)
 
-        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
-        cls._create_customer_profile(user=user)
-        send_verification_email(user)
+        publisher.publish(CustomerCreatedEvent(data={
+            'id': user.id,
+            'full_name': user.user_profile.full_name,
+            'image_url': user.user_profile.image_url
+        }))
+
         return user
 
     @classmethod
     def create_courier(cls, user_data: dict, user_profile_data: dict) -> User:
-        user = User.objects.create_user(**user_data, role=UserRole.COURIER)
+        user = cls.create_user(role=UserRole.COURIER, user_data=user_data, user_profile_data=user_profile_data)
 
-        logger.info(f"Created courier: {user}")
+        send_courier_verification_email(user)
 
-        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
-        cls._create_courier_profile(user=user)
-        send_verification_email(user)
+        publisher.publish(CourierCreatedEvent(data={
+            'id': user.id
+        }))
+
         return user
 
     @classmethod
     def create_restaurant_manager(cls, user_data: dict, user_profile_data: dict) -> User:
-        user = User.objects.create_user(**user_data, role=UserRole.RESTAURANT_MANAGER)
+        user = cls.create_user(role=UserRole.RESTAURANT_MANAGER, user_data=user_data, user_profile_data=user_profile_data)
 
-        logger.info(f"Created restaurant manager: {user}")
-
-        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+        send_restaurant_manager_verification_email(user)
 
         publisher.publish(RestaurantManagerCreatedEvent(data={
             'id': user.id
@@ -105,11 +141,8 @@ class UserService:
 
     @classmethod
     def create_moderator(cls, user_data: dict, user_profile_data: dict) -> User:
-        user = User.objects.create_user(**user_data, role=UserRole.MODERATOR)
-
-        logger.info(f"Created moderator: {user}")
-
-        cls._create_user_profile(user=user, user_profile_data=user_profile_data)
+        user = cls.create_user(role=UserRole.MODERATOR, user_data=user_data,
+                               user_profile_data=user_profile_data)
 
         publisher.publish(ModeratorCreatedEvent(data={
             'id': user.id

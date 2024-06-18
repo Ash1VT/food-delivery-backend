@@ -1,36 +1,38 @@
 from pydantic import BaseModel, Field
 
-from schemas.restaurant import RestaurantCreateIn
-from schemas.manager import RestaurantManagerCreateIn
 
-
-class RestaurantApplicationConfirmedSchema(RestaurantCreateIn):
+class RestaurantCreatedSchema(BaseModel):
     """
-    Schema class for output representation of a confirmed restaurant application.
-    """
-
-    pass
-
-
-class RestaurantActivatedSchema(BaseModel):
-    """
-    Schema class for output representation of an activated restaurant.
+    Schema class for output representation of a created restaurant.
     """
 
     id: int = Field(ge=0)
+    restaurant_manager_id: int = Field(ge=0)
+    is_active: bool
 
 
-class RestaurantDeactivatedSchema(BaseModel):
+class RestaurantUpdatedSchema(BaseModel):
     """
-    Schema class for output representation of a deactivated restaurant.
+    Schema class for output representation of an updated restaurant.
     """
 
     id: int = Field(ge=0)
+    is_active: bool
 
 
-class RestaurantManagerCreatedSchema(RestaurantManagerCreateIn):
+class RestaurantManagerCreatedSchema(BaseModel):
     """
     Schema class for output representation of a created restaurant manager.
     """
 
-    pass
+    id: int = Field(ge=0)
+
+
+class MenuItemRatingUpdatedSchema(BaseModel):
+    """
+    Schema class for output representation of an updated rating of a menu item.
+    """
+
+    id: int = Field(ge=0)
+    rating: float
+    reviews_count: int

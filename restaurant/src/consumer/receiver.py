@@ -3,6 +3,7 @@ from threading import Thread
 from typing import List, Type
 
 from kafka import KafkaConsumer
+from loguru import logger
 
 from exceptions import AppError
 from utils.uow import get_sqlalchemy_uow
@@ -43,11 +44,11 @@ class KafkaReceiver:
         """
 
         for message in self._consumer:
-            print('Received event:', message.key)
+            logger.info(f'Received message: {message.key}, {message.value}')
 
             event_class = get_consumer_event_by_name(message.key, self._consumer_events)
             if not event_class:
-                print('Could not find event class for key:', message.key)
+                logger.critical(f'Could not find event class for key: {message.key}')
                 continue
 
             event = event_class(message.value)
@@ -56,8 +57,7 @@ class KafkaReceiver:
             try:
                 await event.action(uow)
             except AppError as e:
-                print(e)
-                print('Critical Error! This should never happen')
+                logger.critical(f'Critical error: {str(e)}')
 
     def __between_callback(self):
         """

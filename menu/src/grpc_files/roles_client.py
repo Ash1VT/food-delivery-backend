@@ -1,6 +1,7 @@
 import grpc
-import grpc_files.generated.roles_pb2_grpc as pb2_grpc
-import grpc_files.generated.roles_pb2 as pb2
+import grpc_files.generated.roles.roles_pb2_grpc as pb2_grpc
+import grpc_files.generated.roles.roles_pb2 as pb2
+from loguru import logger
 
 __all__ = [
     "RolesClient"
@@ -21,8 +22,12 @@ class RolesClient(object):
             '{}:{}'.format(self.host, self.server_port))
 
         # bind the client
-        self.stub = pb2_grpc.RolesStub(self.channel)
+        self.stub = pb2_grpc.RolesServiceStub(self.channel)
 
     def get_user_role(self, access_token):
         request = pb2.GetUserRoleRequest(access_token=access_token)
-        return self.stub.GetUserRole(request)
+        response = self.stub.GetUserRole(request)
+
+        logger.info(f"Got gRPC response for user with id={response.user_id} and role={response.role}")
+
+        return response

@@ -1,11 +1,15 @@
 import logging
+from typing import Any
 
+from PIL.Image import Image
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.conf import settings
+from firebase_admin import storage
 
 from tokens.generators import email_verification_token_generator
 from users.models import User
@@ -13,12 +17,13 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
-def send_verification_email(user: User):
+def send_verification_email(user: User, template_name: str):
     """
     Send a verification email to the user with instructions on how to verify their account.
 
     Args:
         user (User): The user for whom to send the verification email.
+        template_name (str): The name of the email template to use.
     """
 
     try:
@@ -26,7 +31,7 @@ def send_verification_email(user: User):
         verification_url = generate_email_verification_url(user)
         company_name = settings.COMPANY_NAME
 
-        message = get_template("email_verification.html").render({
+        message = get_template(template_name).render({
             'first_name': user.user_profile.first_name,
             'last_name': user.user_profile.last_name,
             'company_name': company_name,
@@ -46,6 +51,39 @@ def send_verification_email(user: User):
 
     except Exception as e:
         logger.error(f"Error sending verification email to user: {user}. Error: {str(e)}")
+
+
+def send_customer_verification_email(user: User):
+    """
+    Send a verification email to the customer with instructions on how to verify their account.
+
+    Args:
+        user (User): The user for whom to send the verification email.
+    """
+
+    send_verification_email(user, 'customer_verification_email.html')
+
+
+def send_courier_verification_email(user: User):
+    """
+    Send a verification email to the courier with instructions on how to verify their account.
+
+    Args:
+        user (User): The user for whom to send the verification email.
+    """
+
+    send_verification_email(user, 'courier_verification_email.html')
+
+
+def send_restaurant_manager_verification_email(user: User):
+    """
+    Send a verification email to the restaurant manager with instructions on how to verify their account.
+
+    Args:
+        user (User): The user for whom to send the verification email.
+    """
+
+    send_verification_email(user, 'restaurant_manager_verification_email.html')
 
 
 def generate_email_verification_url(user: User) -> str:
@@ -71,3 +109,21 @@ def generate_email_verification_url(user: User) -> str:
     except Exception as e:
         logger.error(f"Error generating verification URL for user: {user}. Error: {str(e)}")
         raise
+
+
+def upload_to_firebase(user: User, image: Any) -> str:
+    bucket = storage.bucket()
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    image_number = 0
+
+    if user.user_profile.image_url != settings.DEFAULT_USER_AVATAR_URL:
+        image_file_name = user.user_profile.image_url.split('/')[-1]
+        image_number = int(image_file_name.split('.')[0].split('_')[1])
+        blob = bucket.blob(f'users/avatars/{uid}_{image_number}.jpeg')
+        blob.delete()
+        image_number += 1
+
+    blob = bucket.blob(f'users/avatars/{uid}_{image_number}.jpeg')
+    blob.upload_from_file(image, content_type='image/jpeg')
+    blob.make_public()
+    return blob.public_url

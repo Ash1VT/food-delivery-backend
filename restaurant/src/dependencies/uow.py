@@ -1,5 +1,5 @@
 from uow import SqlAlchemyUnitOfWork
-from utils import get_sqlalchemy_uow, uow_transaction, uow_transaction_with_commit
+from utils.uow import get_sqlalchemy_uow, uow_transaction, uow_transaction_with_commit
 
 __all__ = [
     "get_uow",

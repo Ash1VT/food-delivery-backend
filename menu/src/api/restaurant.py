@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get('/{restaurant_id}/menu', response_model=MenuRetrieveOut)
+@router.get('/{restaurant_id}/menu/', response_model=Optional[MenuRetrieveOut])
 @handle_app_errors
 async def get_restaurant_current_menu(restaurant_id: int,
                                       menu_service: MenuService = Depends(get_menu_service),
@@ -22,7 +22,7 @@ async def get_restaurant_current_menu(restaurant_id: int,
     return await menu_service.retrieve_current_restaurant_menu(restaurant_id, uow)
 
 
-@router.get('/{restaurant_id}/menus', response_model=List[MenuRetrieveOut])
+@router.get('/{restaurant_id}/menus/', response_model=List[MenuRetrieveOut])
 @handle_app_errors
 async def get_restaurant_menus(restaurant_id: int,
                                menu_service: MenuService = Depends(get_menu_service),
@@ -30,7 +30,7 @@ async def get_restaurant_menus(restaurant_id: int,
     return await menu_service.list_restaurant_menus(restaurant_id, uow)
 
 
-@router.get('/{restaurant_id}/items', response_model=List[MenuItemRetrieveOut])
+@router.get('/{restaurant_id}/items/', response_model=List[MenuItemRetrieveOut])
 @handle_app_errors
 async def get_restaurant_items(restaurant_id: int,
                                menu_item_service: MenuItemService = Depends(get_menu_item_service),
@@ -38,7 +38,7 @@ async def get_restaurant_items(restaurant_id: int,
     return await menu_item_service.list_restaurant_items(restaurant_id, uow)
 
 
-@router.post('/{restaurant_id}/menus/{menu_id}/current')
+@router.post('/{restaurant_id}/menus/{menu_id}/current/')
 @handle_app_errors
 async def set_restaurant_current_menu(restaurant_id: int,
                                       menu_id: int,
@@ -48,7 +48,7 @@ async def set_restaurant_current_menu(restaurant_id: int,
     return {}
 
 
-@router.delete('/{restaurant_id}/menus/current')
+@router.delete('/{restaurant_id}/menus/current/')
 @handle_app_errors
 async def unset_restaurant_current_menu(restaurant_id: int,
                                         restaurant_service: RestaurantService = Depends(get_restaurant_service),

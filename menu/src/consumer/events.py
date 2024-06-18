@@ -3,19 +3,20 @@ from typing import Generic, TypeVar, Type
 
 from pydantic import BaseModel
 
+from schemas import RestaurantUpdateIn, RestaurantCreateIn, RestaurantManagerCreateIn
 from services import RestaurantService, RestaurantManagerService
 from uow import SqlAlchemyUnitOfWork
 from utils.uow import uow_transaction, uow_transaction_with_commit
 
-from .schemas import RestaurantApplicationConfirmedSchema, RestaurantActivatedSchema, RestaurantDeactivatedSchema, \
-    RestaurantManagerCreatedSchema
+from .schemas import RestaurantManagerCreatedSchema, RestaurantCreatedSchema, RestaurantUpdatedSchema, \
+    MenuItemRatingUpdatedSchema
 
 __all__ = [
     "ConsumerEvent",
-    "RestaurantApplicationConfirmedEvent",
-    "RestaurantActivatedEvent",
-    "RestaurantDeactivatedEvent",
+    "RestaurantCreatedEvent",
+    "RestaurantUpdatedEvent",
     "RestaurantManagerCreatedEvent",
+    "MenuItemRatingUpdatedEvent"
 ]
 
 BaseEventSchema = TypeVar("BaseEventSchema", bound=BaseModel)
@@ -66,12 +67,12 @@ class ConsumerEvent(Generic[BaseEventSchema], ABC):
         return cls.__name__
 
 
-class RestaurantApplicationConfirmedEvent(ConsumerEvent[RestaurantApplicationConfirmedSchema]):
+class RestaurantCreatedEvent(ConsumerEvent[RestaurantCreatedSchema]):
     """
-    Event when RestaurantApplication is confirmed.
+    Event when Restaurant is created.
     """
 
-    schema_class = RestaurantApplicationConfirmedSchema
+    schema_class = RestaurantCreatedSchema
 
     async def action(self, uow: SqlAlchemyUnitOfWork):
         """
@@ -84,15 +85,16 @@ class RestaurantApplicationConfirmedEvent(ConsumerEvent[RestaurantApplicationCon
         restaurant_service = RestaurantService()
 
         async with uow_transaction_with_commit(uow) as uow:
-            await restaurant_service.create(self._data, uow)
+            restaurant_data = RestaurantCreateIn(**self._data.model_dump())
+            await restaurant_service.create(restaurant_data, uow)
 
 
-class RestaurantActivatedEvent(ConsumerEvent[RestaurantActivatedSchema]):
+class RestaurantUpdatedEvent(ConsumerEvent[RestaurantUpdatedSchema]):
     """
-    Event when Restaurant is activated.
+    Event when Restaurant is updated.
     """
 
-    schema_class = RestaurantActivatedSchema
+    schema_class = RestaurantUpdatedSchema
 
     async def action(self, uow: SqlAlchemyUnitOfWork):
         """
@@ -105,28 +107,9 @@ class RestaurantActivatedEvent(ConsumerEvent[RestaurantActivatedSchema]):
         restaurant_service = RestaurantService()
 
         async with uow_transaction_with_commit(uow) as uow:
-            await restaurant_service.activate(self._data.id, uow)
-
-
-class RestaurantDeactivatedEvent(ConsumerEvent[RestaurantDeactivatedSchema]):
-    """
-    Event when Restaurant is deactivated.
-    """
-
-    schema_class = RestaurantDeactivatedSchema
-
-    async def action(self, uow: SqlAlchemyUnitOfWork):
-        """
-        Deactivates a restaurant.
-
-        Args:
-            uow (SqlAlchemyUnitOfWork): The unit of work instance.
-        """
-
-        restaurant_service = RestaurantService()
-
-        async with uow_transaction_with_commit(uow) as uow:
-            await restaurant_service.deactivate(self._data.id, uow)
+            restaurant_id = self._data.id
+            restaurant_data = RestaurantUpdateIn(**self._data.model_dump())
+            await restaurant_service.update(restaurant_id, restaurant_data, uow)
 
 
 class RestaurantManagerCreatedEvent(ConsumerEvent[RestaurantManagerCreatedSchema]):
@@ -147,4 +130,28 @@ class RestaurantManagerCreatedEvent(ConsumerEvent[RestaurantManagerCreatedSchema
         restaurant_manager_service = RestaurantManagerService()
 
         async with uow_transaction_with_commit(uow) as uow:
-            await restaurant_manager_service.create(self._data, uow)
+            restaurant_manager_data = RestaurantManagerCreateIn(**self._data.model_dump())
+            await restaurant_manager_service.create(restaurant_manager_data, uow)
+
+
+class MenuItemRatingUpdatedEvent(ConsumerEvent[MenuItemRatingUpdatedSchema]):
+    """
+    Event when rating of a menu item is updated.
+    """
+
+    schema_class = MenuItemRatingUpdatedSchema
+
+    async def action(self, uow: SqlAlchemyUnitOfWork):
+        """
+        Updates a menu item rating.
+
+        Args:
+            uow (SqlAlchemyUnitOfWork): The unit of work instance.
+        """
+
+        async with uow_transaction_with_commit(uow) as uow:
+            await uow.items.update(self._data.id, {
+                "rating": self._data.rating,
+                "reviews_count": self._data.reviews_count
+            })
+

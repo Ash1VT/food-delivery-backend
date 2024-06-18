@@ -2,9 +2,9 @@ import abc
 import logging
 
 from django.utils.http import urlsafe_base64_decode
-from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework import status, generics
+from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView, CreateAPIView, UpdateAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,10 +13,11 @@ from tokens.utils import set_jwt_cookies
 from .models import User, UserRole
 from .serializers import CustomerPostSerializer, CourierPostSerializer, RestaurantManagerPostSerializer, \
     ModeratorPostSerializer, UserUpdateSerializer, UserOutSerializer, \
-    UserUpdateModeratorSerializer, UserOutModeratorSerializer
+    UserUpdateModeratorSerializer, UserUploadImageSerializer
 from .permissions import IsModerator, IsEmailVerified
 from .services import UserService
-from .utils import send_verification_email
+from .utils import send_verification_email, send_customer_verification_email, send_courier_verification_email, \
+    send_restaurant_manager_verification_email
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +30,14 @@ class BaseCreateUserView(CreateAPIView, abc.ABC):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        expires_session = serializer.validated_data.pop('expires_session')
+
         user = serializer.save()
         headers = self.get_success_headers(serializer.data)
 
         response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        set_jwt_cookies(response, user)
+        set_jwt_cookies(response, user, expires_session)
 
         return response
 
@@ -58,17 +61,28 @@ class CreateRestaurantManagerView(BaseCreateUserView):
 
 
 class CreateModeratorView(BaseCreateUserView):
-    """View for registering moderator's account (staff permissions)"""
-    permission_classes = [IsAdminUser]
-    
+    """View for registering moderator's account (IsModerator permission)"""
+    permission_classes = [IsModerator]
+
     serializer_class = ModeratorPostSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+
+        response = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        return response
 
 
 class RetrieveUpdateCurrentUserView(RetrieveUpdateAPIView):
     """View for retrieving (IsAuthenticated permission)
     or updating authenticated user account's common information (IsAuthenticated permission)"""
 
-    permission_classes = [IsEmailVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user
@@ -93,7 +107,7 @@ class ListUsersView(ListAPIView):
         restaurant managers (role=rm)
     """
 
-    serializer_class = UserOutModeratorSerializer
+    serializer_class = UserOutSerializer
     permission_classes = [IsModerator]
 
     def get_queryset(self):
@@ -108,26 +122,50 @@ class ListUsersView(ListAPIView):
             elif role == 'rm':
                 queryset = queryset.filter(role=UserRole.RESTAURANT_MANAGER)
 
-        return queryset
+        return queryset.order_by('id')
 
 
 class RetrieveUpdateUserView(RetrieveUpdateAPIView):
-    """View for retrieving user (IsModerator permission)
+    """View for retrieving user (AllowAny permission)
     or updating any user account's information (IsModerator permission)"""
 
-    permission_classes = [IsModerator]
     queryset = User.objects.all()
+
+    def get_permissions(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return [IsModerator()]
+        return [AllowAny()]
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:
             return UserUpdateModeratorSerializer
-        return UserOutModeratorSerializer
+        return UserOutSerializer
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs, partial=False)
 
     def patch(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs, partial=True)
+
+
+class UploadUserImageView(UpdateAPIView):
+    permission_classes = [IsModerator]
+    serializer_class = UserUploadImageSerializer
+    queryset = User.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs, partial=False)
+
+
+class UploadCurrentUserImageView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserUploadImageSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs, partial=False)
 
 
 # API Views #
@@ -146,7 +184,12 @@ class SendVerificationEmailView(APIView):
             return Response({'detail': 'Email has already been verified'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Send the verification email
-        send_verification_email(user)
+        if user.role == UserRole.CUSTOMER:
+            send_customer_verification_email(user)
+        elif user.role == UserRole.COURIER:
+            send_courier_verification_email(user)
+        elif user.role == UserRole.RESTAURANT_MANAGER:
+            send_restaurant_manager_verification_email(user)
 
         return Response({'detail': 'Verification email sent successfully'}, status=status.HTTP_200_OK)
 

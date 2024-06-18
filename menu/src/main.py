@@ -1,8 +1,10 @@
 import os
 
 import uvicorn
+from kafka import KafkaProducer
 
-from config import get_settings
+from setup.logger import logger
+from config import get_settings, BASE_DIRECTORY
 
 if __name__ == "__main__":
     os.environ.setdefault('CONFIGURATION', 'Develop')

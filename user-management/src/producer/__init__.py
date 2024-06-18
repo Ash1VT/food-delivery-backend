@@ -1,28 +1,33 @@
+import logging
+
 from django.conf import settings
-from django.utils.module_loading import import_string
 
 from .events import *
 from .creator import *
 from .publisher import *
+from .publisher import DummyPublisher
 
-# Init producer creator
-producer_sasl_creator = KafkaProducerSASLCreator(bootstrap_server_host=settings.KAFKA_BOOTSTRAP_SERVER_HOST,
-                                                 bootstrap_server_port=settings.KAFKA_BOOTSTRAP_SERVER_PORT,
-                                                 sasl_mechanism=settings.KAFKA_SASL_MECHANISM,
-                                                 sasl_plain_username=settings.KAFKA_BROKER_USER,
-                                                 sasl_plain_password=settings.KAFKA_BROKER_PASSWORD)
+logger = logging.getLogger(__name__)
 
-# Init producer
-producer = producer_sasl_creator.create()
+try:
+    # Init producer creator
+    producer_creator = KafkaProducerSASLPlaintextCreator(bootstrap_server_host=settings.KAFKA_BOOTSTRAP_SERVER_HOST,
+                                                         bootstrap_server_port=settings.KAFKA_BOOTSTRAP_SERVER_PORT,
+                                                         sasl_plain_username=settings.KAFKA_BROKER_USER,
+                                                         sasl_plain_password=settings.KAFKA_BROKER_PASSWORD)
 
-# Init producer events
-for producer_str_event, producer_topics_str_serializers in settings.KAFKA_PRODUCER_EVENTS_TOPICS.items():
+    # producer_creator = KafkaProducerSCRAM256Creator(bootstrap_server_host=settings.KAFKA_BOOTSTRAP_SERVER_HOST,
+    #                                                 bootstrap_server_port=settings.KAFKA_BOOTSTRAP_SERVER_PORT,
+    #                                                 sasl_plain_username=settings.KAFKA_BROKER_USER,
+    #                                                 sasl_plain_password=settings.KAFKA_BROKER_PASSWORD,
+    #                                                 ssl_cafile=settings.KAFKA_SSL_CAFILE,
+    #                                                 ssl_certfile=settings.KAFKA_SSL_CERTFILE,
+    #                                                 ssl_keyfile=settings.KAFKA_SSL_KEYFILE)
+    # Init producer
+    producer = producer_creator.create()
 
-    producer_event = import_string(producer_str_event)
-    producer_topics_serializers = {topic: import_string(serializer_str)
-                                   for topic, serializer_str in producer_topics_str_serializers.items()}
-
-    producer_event.extend_topics_serializers(producer_topics_serializers)
-
-# Init publisher
-publisher = KafkaPublisher(producer)
+    # Init publisher
+    publisher = KafkaPublisher(producer)
+except Exception as e:
+    logger.error(f"Failed to init publisher: {e}")
+    publisher = DummyPublisher()

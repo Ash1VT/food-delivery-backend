@@ -1,0 +1,61 @@
+version: "3.6"
+name: "order"
+
+services:
+  db:
+    image: postgres:15.4-alpine
+    container_name: order-postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - ~/apps/postgres/order:/var/lib/postgresql/data
+    environment:
+      - PGPORT=5435
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=order
+    expose:
+      - "5435"
+    networks:
+      - order_network
+  app:
+    build:
+      context: ../
+      dockerfile: ./docker/app/Dockerfile
+    container_name: order-app
+    ports:
+      - "8003:8003"
+    environment:
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8003
+      - ROLES_GRPC_SERVER_HOST=user-app
+      - ROLES_GRPC_SERVER_PORT=50051
+      - PG_HOST=db
+      - PG_PORT=5435
+      - PG_DATABASE=order
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - DATABASE_URL=postgresql://${PG_USER}:${PG_PASSWORD}@db:5435/${PG_DATABASE}
+      - KAFKA_BOOTSTRAP_SERVER_HOST=kafka
+      - KAFKA_BOOTSTRAP_SERVER_PORT=9092
+      - KAFKA_BROKER_USER=${KAFKA_BROKER_USER}
+      - KAFKA_BROKER_PASSWORD=${KAFKA_BROKER_PASSWORD}
+      - BING_API_KEY=${BING_API_KEY}
+      - GRAYLOG_HOST=graylog
+      - GRAYLOG_UDP_PORT=12201
+    depends_on:
+      - db
+    networks:
+      - order_network
+      - user_grpc_network
+      - kafka_kafka_network
+      - graylog_graylog_network
+
+networks:
+  kafka_kafka_network:
+    external: true
+  user_grpc_network:
+    external: true
+  graylog_graylog_network:
+    external: true
+  order_network:
