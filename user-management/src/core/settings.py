@@ -269,19 +269,19 @@ class Base(Configuration):
                 'level': 'INFO',
             },
             'users': {
-                'handlers': ['console', 'file', 'graylog'],
+                'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
             'tokens': {
-                'handlers': ['console', 'file', 'graylog'],
+                'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
             'producer': {
-                'handlers': ['console', 'file', 'graylog'],
+                'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
             'consumer': {
-                'handlers': ['console', 'file', 'graylog'],
+                'handlers': ['console', 'file'],
                 'level': 'DEBUG',
             },
         },
