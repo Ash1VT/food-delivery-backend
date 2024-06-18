@@ -39,13 +39,13 @@ logger.add(
 
 settings = get_settings()
 
-handler = graypy.GELFUDPHandler(settings.graylog_host, settings.graylog_udp_port)
-
-logger.add(
-    sink=handler,
-    level="DEBUG",
-    format=comprehensive_fmt,
-    backtrace=True,
-    diagnose=True
-)
+# handler = graypy.GELFUDPHandler(settings.graylog_host, settings.graylog_udp_port)
+#
+# logger.add(
+#     sink=handler,
+#     level="DEBUG",
+#     format=comprehensive_fmt,
+#     backtrace=True,
+#     diagnose=True
+# )
 
