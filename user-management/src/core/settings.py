@@ -256,12 +256,12 @@ class Base(Configuration):
                 'filename': BASE_DIR / 'logs.log',
                 'formatter': 'verbose',
             },
-            'graylog': {
-                'class': 'graypy.GELFUDPHandler',
-                'host': env('GRAYLOG_HOST'),
-                'port': int(env('GRAYLOG_UDP_PORT')),
-                'formatter': 'verbose',
-            }
+            # 'graylog': {
+            #     'class': 'graypy.GELFUDPHandler',
+            #     'host': env('GRAYLOG_HOST'),
+            #     'port': int(env('GRAYLOG_UDP_PORT')),
+            #     'formatter': 'verbose',
+            # }
         },
         'loggers': {
             'django': {
